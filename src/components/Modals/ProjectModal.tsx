@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Save, Trash2, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project } from '../../pages/Dashboard';
 
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<Partial<Project>>({
     client: '',
     startDate: new Date().toISOString().split('T')[0],
