@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { User } from '@supabase/supabase-js';
 
 interface AuthContextType {
-  user: User | null;
+  user: User | null | any; // Any for mock user
   loading: boolean;
   login: (email: string, pass: string) => Promise<{ error: any }>;
   logout: () => Promise<void>;
@@ -17,6 +17,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      // Demo Mode: Check local storage for mock user
+      const mockUser = localStorage.getItem('demo_user');
+      if (mockUser) setUser(JSON.parse(mockUser));
+      setLoading(false);
+      return;
+    }
+
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -33,6 +41,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, pass: string) => {
+    if (!isSupabaseConfigured) {
+      // Demo Mode Fallback
+      if (email === 'admin@admin.com' && pass === 'admin') {
+        const mockUser = { email: 'admin@admin.com', id: '123-demo' };
+        setUser(mockUser as any);
+        localStorage.setItem('demo_user', JSON.stringify(mockUser));
+        return { error: null };
+      }
+      return { error: { message: 'Invalid credentials in Demo Mode' } };
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password: pass,
@@ -41,6 +60,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
+    if (!isSupabaseConfigured) {
+      setUser(null);
+      localStorage.removeItem('demo_user');
+      return;
+    }
     await supabase.auth.signOut();
   };
 

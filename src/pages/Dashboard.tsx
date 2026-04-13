@@ -8,11 +8,15 @@ import {
   Users, 
   Plus,
   BarChart3,
-  AlertCircle
+  AlertCircle,
+  DatabaseZap
 } from 'lucide-react';
 import ProjectCard from '../components/ProjectCard';
 import TaskManager from '../components/TaskManager';
 import ProjectDetailsSlideover from '../components/ProjectDetailsSlideover';
+import { isSupabaseConfigured } from '../lib/supabase';
+
+// ... (previous interfaces and data)
 
 // Tipos evolucionados para Gestión Estratégica
 export interface ClientService {
@@ -140,6 +144,27 @@ const Dashboard = () => {
       </header>
 
       <main className="flex-1 p-8 max-w-7xl mx-auto w-full">
+        {!isSupabaseConfigured && (
+           <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between gap-4"
+           >
+              <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-500">
+                    <DatabaseZap size={20} />
+                 </div>
+                 <div>
+                    <h4 className="text-amber-500 font-bold text-sm">Modo Demostracin Activo</h4>
+                    <p className="text-amber-500/60 text-[11px]">No se detectaron credenciales de Supabase. Los cambios solo se guardarn localmente en esta sesin.</p>
+                 </div>
+              </div>
+              <div className="text-[10px] font-black text-amber-500/40 uppercase tracking-widest border border-amber-500/10 px-3 py-1 rounded-lg">
+                 OFFLINE
+              </div>
+           </motion.div>
+        )}
+
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* KPIs Rápidos */}
