@@ -35,19 +35,19 @@
 }
 
 body {
-  @apply bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen font-sans transition-colors duration-300;
+  @apply bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen font-sans transition-colors duration-500 antialiased;
   background-image: 
-    radial-gradient(at 0% 0%, var(--bg-secondary) 0, transparent 50%),
-    radial-gradient(at 100% 0%, var(--bg-primary) 0, transparent 50%),
-    radial-gradient(at 50% 100%, var(--bg-secondary) 0, transparent 50%);
+    radial-gradient(at 0% 0%, var(--bg-secondary) 0, transparent 40%),
+    radial-gradient(at 100% 0%, var(--bg-primary) 0, transparent 40%),
+    radial-gradient(at 50% 100%, var(--bg-secondary) 0, transparent 40%);
 }
 
 .glass-card {
-  @apply bg-[var(--card-bg)] backdrop-blur-md border border-[var(--glass-border)] shadow-2xl;
+  @apply bg-[var(--card-bg)] backdrop-blur-xl border border-[var(--glass-border)] shadow-sm hover:shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)];
 }
 
 .glass-panel {
-  @apply bg-[var(--sidebar-bg)] backdrop-blur-lg border-r border-[var(--glass-border)];
+  @apply bg-[var(--sidebar-bg)] backdrop-blur-2xl border-r border-[var(--glass-border)];
 }
 
 /* Custom Utilities */
@@ -55,19 +55,24 @@ body {
   @apply relative;
   &::after {
     content: '';
-    @apply absolute inset-0 rounded-full blur-md opacity-20 pointer-events-none;
+    @apply absolute inset-0 rounded-full blur-xl opacity-20 pointer-events-none transition-opacity duration-1000;
   }
 }
 
-/* Scrollbar styling */
+/* Custom transitions for Framer Motion */
+.spring-transition {
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Scrollbar styling - iOS style */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-slate-950;
+  @apply bg-transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-800 rounded-full hover:bg-slate-700 transition-colors;
+  @apply bg-slate-400/20 dark:bg-slate-500/20 rounded-full hover:bg-slate-400/40 transition-all;
 }

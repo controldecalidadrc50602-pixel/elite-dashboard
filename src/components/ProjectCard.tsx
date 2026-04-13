@@ -1,97 +1,93 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Project } from '../pages/Dashboard';
-import { Calendar, Layers, Star, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Calendar, Layers, Star, AlertTriangle, ShieldCheck, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({ project, onOpenDetail }) => {
   const { t } = useTranslation();
   const latestEval = project.evaluations[0];
   
-  const getStatusColor = (status: string) => {
+  const getStatusStyle = (status: string) => {
     switch (status) {
-      case 'Stable': return 'emerald';
-      case 'Growth': return 'rc-teal';
-      case 'At Risk': return 'amber';
-      case 'Critical': return 'rose';
-      default: return 'slate';
+      case 'Stable': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
+      case 'Growth': return 'text-[#3BC7AA] bg-[#3BC7AA]/10 border-[#3BC7AA]/20';
+      case 'At Risk': return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
+      case 'Critical': return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
+      default: return 'text-slate-500 bg-slate-500/10 border-slate-500/20';
     }
   };
 
-  const statusColor = getStatusColor(latestEval?.status || 'Stable');
+  const statusStyle = getStatusStyle(latestEval?.status || 'Stable');
 
   return (
     <motion.div 
-      whileHover={{ y: -8 }}
-      className={`glass-card p-7 rounded-[32px] border-t-4 border-${statusColor}-500 relative overflow-hidden group`}
+      whileHover={{ y: -4, shadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' }}
+      className="glass-card p-5 rounded-[32px] border border-[var(--glass-border)] relative overflow-hidden group cursor-pointer"
+      onClick={onOpenDetail}
     >
-      <div className="flex justify-between items-start mb-6">
-        <div>
-          <h4 className="text-[var(--text-primary)] font-black text-xl leading-tight group-hover:text-rc-teal transition-colors uppercase tracking-tighter">
+      {/* Background Accent */}
+      <div className={`absolute -top-12 -right-12 w-24 h-24 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity ${statusStyle.split(' ')[1]}`} />
+
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex-1 min-w-0">
+          <h4 className="text-[var(--text-primary)] font-black text-lg leading-tight group-hover:text-rc-teal transition-colors truncate uppercase tracking-tighter">
              {project.client}
           </h4>
-          <div className="flex items-center gap-2 text-[var(--text-secondary)] text-[10px] font-bold mt-1 uppercase tracking-widest">
-            <Calendar size={12} className="text-rc-teal" /> {t('projects.since')}: {project.startDate}
+          <div className="flex items-center gap-2 text-[var(--text-secondary)] text-[10px] font-bold mt-0.5 uppercase tracking-widest">
+            <Calendar size={10} className="text-rc-teal" /> {project.startDate}
           </div>
         </div>
-        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest bg-${statusColor}-500/10 text-${statusColor}-500 border border-${statusColor}-500/20`}>
+        <div className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest border shrink-0 ${statusStyle}`}>
           {latestEval?.status === 'At Risk' || latestEval?.status === 'Critical' ? (
-             <AlertTriangle size={12} />
+             <AlertTriangle size={10} />
           ) : (
-             <ShieldCheck size={12} />
+             <ShieldCheck size={10} />
           )}
           {t(`status.${(latestEval?.status || 'stable').toLowerCase()}`)}
         </div>
       </div>
 
-      {/* Evaluación Cualitativa Rápida */}
-      <div className="bg-black/5 dark:bg-white/5 p-4 rounded-2xl border border-[var(--glass-border)] mb-8">
-         <p className="text-[11px] text-[var(--text-secondary)] font-medium italic line-clamp-2 leading-relaxed">
-            "{latestEval?.qualitative || 'Sin evaluación cualitativa registrada para este periodo.'}"
+      {/* Snapshot Qualitativo Compacto */}
+      <div className="bg-black/5 dark:bg-white/5 p-3 rounded-2xl border border-[var(--glass-border)] mb-4 h-14 flex items-center">
+         <p className="text-[10px] text-[var(--text-secondary)] font-medium italic line-clamp-2 leading-tight">
+            "{latestEval?.qualitative || 'Sin evaluación registrada.'}"
          </p>
       </div>
 
-      <div className="space-y-4">
-        <p className="text-[var(--text-secondary)] text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
-          <Layers size={14} className="text-rc-teal" /> {t('projects.activeServices')} ({project.services.length})
-        </p>
-        <div className="grid gap-2">
-          {project.services.slice(0, 2).map((service) => (
-            <div key={service.id} className="bg-white/40 dark:bg-black/20 p-3 rounded-xl border border-[var(--glass-border)] hover:border-rc-teal/30 transition-all">
-              <div className="flex items-center justify-between mb-1">
-                 <span className="text-xs font-black text-[var(--text-primary)]">{service.name}</span>
-                 <div className="flex items-center gap-0.5">
-                   {[...Array(5)].map((_, i) => (
-                     <Star 
-                       key={i} 
-                       size={10} 
-                       className={i < service.score ? 'text-rc-teal fill-rc-teal' : 'text-slate-300 dark:text-slate-800'} 
-                     />
-                   ))}
-                 </div>
-              </div>
+      <div className="flex items-center justify-between gap-4">
+        {/* Services Count */}
+        <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-rc-teal/10 flex items-center justify-center text-rc-teal">
+                <Layers size={16} />
             </div>
-          ))}
+            <div>
+                <div className="text-[10px] font-black text-[var(--text-primary)] leading-none">{project.services.length}</div>
+                <div className="text-[8px] font-bold text-[var(--text-secondary)] uppercase tracking-tighter">{t('projects.activeServices')}</div>
+            </div>
         </div>
-      </div>
 
-      <div className="mt-8 pt-6 border-t border-[var(--glass-border)] flex items-center justify-between">
-        <div className="flex flex-col gap-1">
-           <span className="text-[9px] text-[var(--text-secondary)] font-black uppercase tracking-widest">{t('projects.strategicHealth')}</span>
-           <div className="w-24 h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-              <div 
-                 className={`h-full bg-gradient-to-r from-rc-teal to-rc-teal/60 transition-all duration-1000`} 
-                 style={{ width: `${(latestEval?.quantitative || 3) * 20}%` }} 
+        {/* Health Score */}
+        <div className="flex flex-col items-end gap-1 flex-1 max-w-[100px]">
+           <div className="flex items-center gap-1">
+              <span className="text-[9px] text-[var(--text-secondary)] font-black uppercase tracking-widest">{t('projects.strategicHealth')}</span>
+              <span className="text-xs font-black text-rc-teal">{latestEval?.quantitative || 0}/5</span>
+           </div>
+           <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+              <motion.div 
+                 initial={{ width: 0 }}
+                 animate={{ width: `${(latestEval?.quantitative || 0) * 20}%` }}
+                 className="h-full bg-rc-teal" 
               />
            </div>
         </div>
-        <button 
-           onClick={onOpenDetail}
-           className="text-[10px] text-rc-teal font-black uppercase tracking-widest hover:text-[var(--text-primary)] transition-colors flex items-center gap-1 group/btn"
-        >
-           {t('projects.auditDetail')}
-           <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>→</motion.span>
-        </button>
+      </div>
+
+      {/* Action Hover Overlay - Apple Style */}
+      <div className="absolute inset-0 bg-rc-teal/0 group-hover:bg-rc-teal/[0.02] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all pointer-events-none">
+         <div className="bg-rc-teal text-white p-2 rounded-full shadow-lg scale-50 group-hover:scale-100 transition-transform">
+            <ChevronRight size={16} />
+         </div>
       </div>
     </motion.div>
   );
