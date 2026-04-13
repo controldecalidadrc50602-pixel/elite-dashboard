@@ -22,7 +22,7 @@ const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({
 
   return (
     <motion.div 
-      whileHover={{ y: -4, shadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' }}
+      whileHover={{ y: -4, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' }}
       className="glass-card p-5 rounded-[32px] border border-[var(--glass-border)] relative overflow-hidden group cursor-pointer"
       onClick={onOpenDetail}
     >

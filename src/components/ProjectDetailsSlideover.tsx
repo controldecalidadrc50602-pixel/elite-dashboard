@@ -318,4 +318,3 @@ const TabNavItem = ({ active, onClick, label }: { active: boolean, onClick: () =
 );
 
 export default ProjectDetailsSlideover;
-r;

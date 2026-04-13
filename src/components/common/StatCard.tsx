@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 interface StatCardProps {
   title: string;
   value: string | number;
-  icon: React.ReactNode;
+  icon: React.ReactElement;
   color: string;
   trend?: string;
 }
@@ -26,7 +26,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, trend })
       className="glass-card p-5 rounded-[28px] relative overflow-hidden group transition-all flex items-center gap-4"
     >
       <div className={`w-12 h-12 rounded-2xl ${style.bg} ${style.text} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
-        {React.cloneElement(icon as React.ReactElement, { size: 22 })}
+        {React.cloneElement(icon, { size: 22 } as any)}
       </div>
       
       <div className="flex flex-col gap-0.5">
