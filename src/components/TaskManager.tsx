@@ -41,12 +41,13 @@ const TaskManager = () => {
   };
 
   return (
+  return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter uppercase">{i18n.language === 'es' ? 'Gestión de Tareas' : 'Task Management'}</h1>
+          <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter uppercase">{t('tasks.title')}</h1>
           <p className="text-[var(--text-secondary)] font-bold text-[10px] uppercase tracking-[0.3em] mt-2">
-            {tasks.length} {i18n.language === 'es' ? 'Asignaciones Activas' : 'Active Assignments'}
+            {tasks.length} {t('tasks.active_assignments')}
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -54,11 +55,11 @@ const TaskManager = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)] group-focus-within:text-rc-teal transition-colors" />
             <input 
               className="bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl py-3 pl-12 pr-6 text-xs font-medium focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all outline-none md:w-64 w-full"
-              placeholder={i18n.language === 'es' ? 'Buscar tareas...' : 'Search tasks...'}
+              placeholder={t('tasks.search_placeholder')}
             />
           </div>
           <button className="bg-rc-teal hover:shadow-xl hover:shadow-rc-teal/20 text-white px-6 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all">
-            <Plus size={18} /> {i18n.language === 'es' ? 'Nueva Tarea' : 'New Task'}
+            <Plus size={18} /> {t('tasks.new_task')}
           </button>
         </div>
       </div>
@@ -68,11 +69,11 @@ const TaskManager = () => {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-black/5 dark:bg-white/5 border-b border-[var(--glass-border)]">
-                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">STATE</th>
-                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">TASK / PROJECT</th>
-                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">PRIORITY</th>
-                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-center">DUE DATE</th>
-                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-right">ACTIONS</th>
+                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('tasks.table_state')}</th>
+                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('tasks.table_task_project')}</th>
+                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('tasks.table_priority')}</th>
+                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-center">{t('tasks.table_due_date')}</th>
+                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-right">{t('tasks.table_actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--glass-border)]">
@@ -105,7 +106,7 @@ const TaskManager = () => {
                   </td>
                   <td className="p-6">
                     <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center w-fit gap-2 border ${getPriorityColor(task.priority)} transition-all`}>
-                      <Flag size={10} /> {task.priority}
+                      <Flag size={10} /> {t(`tasks.priority_${task.priority.toLowerCase()}`)}
                     </span>
                   </td>
                   <td className="p-6 text-center">

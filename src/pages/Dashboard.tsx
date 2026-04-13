@@ -157,11 +157,11 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                   <DatabaseZap size={16} />
                </div>
                <div>
-                  <h4 className="text-amber-500 font-bold text-xs tracking-tight">Modo Offline Activo</h4>
-                  <p className="text-amber-500/60 text-[10px] font-medium leading-none">Datos persistidos localmente.</p>
+                  <h4 className="text-amber-500 font-bold text-xs tracking-tight">{t('stats.offline_mode')}</h4>
+                  <p className="text-amber-500/60 text-[10px] font-medium leading-none">{t('stats.offline_desc')}</p>
                </div>
             </div>
-            <div className="text-[9px] font-black text-amber-500/40 uppercase tracking-widest border border-amber-500/10 px-2 py-1 rounded-lg">Executive Demo</div>
+            <div className="text-[9px] font-black text-amber-500/40 uppercase tracking-widest border border-amber-500/10 px-2 py-1 rounded-lg">{t('stats.demo_mode')}</div>
          </motion.div>
       )}
 
@@ -189,10 +189,10 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
              <div className="glass-card p-8 rounded-[32px] min-h-[300px] flex flex-col">
                 <div className="flex items-center justify-between mb-8">
-                   <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest">Audit Pulse (6m)</h3>
+                   <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest">{t('dashboard.audit_pulse')}</h3>
                    <div className="flex gap-2 text-[8px] font-bold uppercase tracking-widest">
-                      <span className="flex items-center gap-1"><div className="w-1.5 h-1.5 bg-rc-teal rounded-full"></div> Target</span>
-                      <span className="flex items-center gap-1 text-[var(--text-secondary)]"><div className="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full"></div> Actual</span>
+                      <span className="flex items-center gap-1"><div className="w-1.5 h-1.5 bg-rc-teal rounded-full"></div> {t('dashboard.target')}</span>
+                      <span className="flex items-center gap-1 text-[var(--text-secondary)]"><div className="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full"></div> {t('dashboard.actual')}</span>
                    </div>
                 </div>
                 
@@ -212,13 +212,13 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                       <circle cx="400" cy="25" r="4" fill="#3BC7AA" className="animate-pulse" />
                    </svg>
                    <div className="flex justify-between mt-4 text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest">
-                      <span>Oct</span><span>Nov</span><span>Dic</span><span>Ene</span><span>Feb</span><span>Mar</span>
+                      <span>{t('months.oct')}</span><span>{t('months.nov')}</span><span>{t('months.dec')}</span><span>{t('months.jan')}</span><span>{t('months.feb')}</span><span>{t('months.mar')}</span>
                    </div>
                 </div>
              </div>
 
              <div className="glass-card p-8 rounded-[32px] min-h-[300px] flex flex-col">
-                <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest mb-8">Urgency Matrix</h3>
+                <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest mb-8">{t('dashboard.urgency_matrix')}</h3>
                 <div className="flex-1 flex items-center justify-center gap-12">
                    <div className="relative w-32 h-32">
                       <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
@@ -229,21 +229,21 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                       </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
                          <span className="text-2xl font-black text-[var(--text-primary)]">{stats.total}</span>
-                         <span className="text-[8px] font-bold text-[var(--text-secondary)] uppercase">Total CL</span>
+                         <span className="text-[8px] font-bold text-[var(--text-secondary)] uppercase">{t('dashboard.total_cl')}</span>
                       </div>
                    </div>
                    <div className="space-y-4">
                       <div className="flex items-center gap-3">
                          <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-emerald-500" />
-                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">Optimized <span className="text-[var(--text-primary)] ml-1">75%</span></span>
+                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.optimized')} <span className="text-[var(--text-primary)] ml-1">75%</span></span>
                       </div>
                       <div className="flex items-center gap-3">
                          <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-amber-500" />
-                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">Attention <span className="text-[var(--text-primary)] ml-1">15%</span></span>
+                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.attention')} <span className="text-[var(--text-primary)] ml-1">15%</span></span>
                       </div>
                       <div className="flex items-center gap-3">
                          <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-rose-500" />
-                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">Critical <span className="text-[var(--text-primary)] ml-1">10%</span></span>
+                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.critical')} <span className="text-[var(--text-primary)] ml-1">10%</span></span>
                       </div>
                    </div>
                 </div>
@@ -262,7 +262,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                 </div>
                 <div>
                    <h1 className="text-2xl font-black tracking-tighter text-[var(--text-primary)] leading-tight">{t('nav.clients')}</h1>
-                   <p className="text-[var(--text-secondary)] font-bold text-[10px] uppercase tracking-widest">{filteredProjects.length} Clientes Activos</p>
+                   <p className="text-[var(--text-secondary)] font-bold text-[10px] uppercase tracking-widest">{filteredProjects.length} {t('dashboard.active_clients')}</p>
                 </div>
              </div>
 
@@ -271,7 +271,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                    <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] group-focus-within:text-rc-teal transition-colors" />
                    <input 
                       type="text"
-                      placeholder="Filtrar por nombre o servicio..."
+                      placeholder={t('dashboard.search_placeholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl py-2.5 pl-12 pr-6 text-sm font-medium focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all outline-none w-full md:w-64"
@@ -304,7 +304,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
           {filteredProjects.length === 0 && (
             <div className="py-20 flex flex-col items-center justify-center space-y-4 opacity-40">
               <Search size={48} className="text-rc-teal" />
-              <p className="font-bold text-sm tracking-widest uppercase">No se encontraron clientes</p>
+              <p className="font-bold text-sm tracking-widest uppercase">{t('dashboard.no_clients')}</p>
             </div>
           )}
         </div>
@@ -321,7 +321,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                     </div>
                     <div>
                        <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tighter">{t('projects.individualTitle')}</h3>
-                       <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">Ejecución de Auditoría</p>
+                       <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">{t('dashboard.audit_execution')}</p>
                     </div>
                  </div>
               </div>
@@ -330,10 +330,10 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                  <table className="w-full text-left">
                     <thead>
                        <tr className="border-b border-[var(--glass-border)] text-[var(--text-secondary)] text-[10px] font-black uppercase tracking-widest">
-                          <th className="pb-4">CLIENTE</th>
-                          <th className="pb-4 text-center">HEALTH</th>
-                          <th className="pb-4">HISTORIAL RECIENTE</th>
-                          <th className="pb-4 text-right">STATUS</th>
+                          <th className="pb-4">{t('dashboard.table_client')}</th>
+                          <th className="pb-4 text-center">{t('dashboard.table_health')}</th>
+                          <th className="pb-4">{t('dashboard.table_history')}</th>
+                          <th className="pb-4 text-right">{t('dashboard.table_status')}</th>
                        </tr>
                     </thead>
                     <tbody className="divide-y divide-[var(--glass-border)]">
@@ -345,14 +345,14 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                           >
                              <td className="py-5">
                                 <div className="font-black text-[var(--text-primary)] text-sm tracking-tight">{p.client}</div>
-                                <div className="text-[10px] font-bold text-[var(--text-secondary)] mt-0.5">{p.services.length} Servicios Activos</div>
+                                <div className="text-[10px] font-bold text-[var(--text-secondary)] mt-0.5">{p.services.length} {t('projects.activeServices')}</div>
                              </td>
                              <td className="py-5 text-center">
                                 <span className="text-xl font-black text-rc-teal tracking-tighter">{p.evaluations[0]?.quantitative || '-'}</span>
                              </td>
                              <td className="py-5 max-w-sm">
                                 <p className="text-[11px] text-[var(--text-secondary)] font-medium italic line-clamp-1 pr-4">
-                                   "{p.evaluations[0]?.qualitative || 'Sin registros'}"
+                                   "{p.evaluations[0]?.qualitative || t('dashboard.no_records')}"
                                 </p>
                              </td>
                              <td className="py-5 text-right">
