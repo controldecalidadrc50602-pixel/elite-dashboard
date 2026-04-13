@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save } from 'lucide-react';
+import { X, Save, Trash2, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project } from '../../pages/Dashboard';
 
@@ -68,7 +68,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-[var(--bg-secondary)] border border-[var(--glass-border)] shadow-2xl z-[110] rounded-[40px] overflow-hidden"
           >
-            <div className="p-8 border-b border-[var(--glass-border)] flex items-center justify-between">
+            <div className="p-8 border-b border-[var(--glass-border)] flex items-center justify-between bg-[var(--bg-secondary)] relative z-10">
               <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tighter uppercase">
                 {project ? 'Editar Cliente' : 'Nuevo Cliente'}
               </h3>
@@ -77,31 +77,122 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-8 space-y-6">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Nombre del Cliente / Empresa</label>
-                <input 
-                  autoFocus
-                  required
-                  value={formData.client}
-                  onChange={e => setFormData({...formData, client: e.target.value})}
-                  placeholder="Ej: Rc506 Solutions"
-                  className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
-                />
+            <form onSubmit={handleSubmit} className="flex flex-col h-full max-h-[85vh]">
+              <div className="p-8 space-y-8 overflow-y-auto custom-scrollbar flex-1">
+                {/* Datos Básicos */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Cliente / Empresa</label>
+                    <input 
+                      autoFocus
+                      required
+                      value={formData.client}
+                      onChange={e => setFormData({...formData, client: e.target.value})}
+                      placeholder="Ej: Rc506 Solutions"
+                      className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Estatus Inicial</label>
+                    <select 
+                      value={formData.status}
+                      onChange={e => setFormData({...formData, status: e.target.value as any})}
+                      className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-sm font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)] appearance-none cursor-pointer"
+                    >
+                      <option value="Óptimo">🍏 Óptimo</option>
+                      <option value="Aceptable">🔷 Aceptable</option>
+                      <option value="Mejorable">⚠️ Mejorable</option>
+                      <option value="Deficiente">🚨 Deficiente</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Fecha de Inicio</label>
+                  <input 
+                    type="date"
+                    required
+                    value={formData.startDate}
+                    onChange={e => setFormData({...formData, startDate: e.target.value})}
+                    className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
+                  />
+                </div>
+
+                {/* Sección de Servicios */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between px-1">
+                    <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Servicios Contratados</label>
+                    <button 
+                      type="button"
+                      onClick={() => setFormData({
+                        ...formData, 
+                        services: [...(formData.services || []), { 
+                          id: Math.random().toString(36).substr(2, 9), 
+                          name: '', 
+                          description: '', 
+                          startDate: new Date().toISOString().split('T')[0], 
+                          score: 0 
+                        }]
+                      })}
+                      className="text-[10px] font-black text-rc-teal uppercase tracking-widest hover:underline flex items-center gap-1"
+                    >
+                      <Plus size={14} /> Añadir Servicio
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {formData.services?.map((service, index) => (
+                      <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        key={service.id} 
+                        className="p-5 bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-[24px] space-y-3 relative group"
+                      >
+                        <button 
+                          type="button"
+                          onClick={() => setFormData({
+                            ...formData,
+                            services: formData.services?.filter(s => s.id !== service.id)
+                          })}
+                          className="absolute top-4 right-4 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-rose-500/10 rounded-lg"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                        
+                        <input 
+                          required
+                          placeholder="Nombre del servicio (Ej: Auditoría CRM)"
+                          value={service.name}
+                          onChange={e => {
+                            const newServices = [...(formData.services || [])];
+                            newServices[index].name = e.target.value;
+                            setFormData({...formData, services: newServices});
+                          }}
+                          className="w-full bg-transparent border-b border-[var(--glass-border)] py-1 text-xs font-black uppercase tracking-tight outline-none focus:border-rc-teal transition-all text-[var(--text-primary)]"
+                        />
+                        <input 
+                          placeholder="Breve descripción..."
+                          value={service.description}
+                          onChange={e => {
+                            const newServices = [...(formData.services || [])];
+                            newServices[index].description = e.target.value;
+                            setFormData({...formData, services: newServices});
+                          }}
+                          className="w-full bg-transparent text-[10px] font-medium outline-none opacity-60 text-[var(--text-primary)]"
+                        />
+                      </motion.div>
+                    ))}
+                    {(formData.services?.length === 0) && (
+                      <div className="py-8 text-center border-2 border-dashed border-[var(--glass-border)] rounded-3xl opacity-40">
+                         <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">No hay servicios añadidos</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Fecha de Inicio de Relación</label>
-                <input 
-                  type="date"
-                  required
-                  value={formData.startDate}
-                  onChange={e => setFormData({...formData, startDate: e.target.value})}
-                  className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
-                />
-              </div>
-
-              <div className="pt-4 flex gap-3">
+              <div className="p-8 border-t border-[var(--glass-border)] flex gap-3 bg-[var(--bg-secondary)] relative z-10">
                 <button 
                   type="button"
                   onClick={onClose}
@@ -111,7 +202,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                 </button>
                 <button 
                   type="submit"
-                  className="flex-[2] bg-rc-teal text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-rc-teal/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                  className="flex-[2] bg-rc-teal text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-rc-teal/20 hover:scale-[1.14] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                 >
                   <Save size={16} /> {project ? 'Guardar Cambios' : 'Crear Proyecto'}
                 </button>

@@ -16,8 +16,7 @@ interface Props {
 
 const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, onUpdate, onDelete, onEditRequest }) => {
   const { t, i18n } = useTranslation();
-  if (!project) return null;
-
+  
   const [activeTab, setActiveTab] = useState<'services' | 'evaluations'>('services');
   const [newService, setNewService] = useState({ name: '', description: '', score: 5 });
   const [newEvaluation, setNewEvaluation] = useState<Evaluation>({
@@ -27,6 +26,8 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
     qualitative: '',
     status: 'Stable'
   });
+
+  if (!project) return null;
 
   const handleAddService = () => {
     if (!newService.name) return;
