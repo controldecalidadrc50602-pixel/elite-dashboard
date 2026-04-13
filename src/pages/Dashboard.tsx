@@ -49,7 +49,7 @@ export interface Project {
 }
 
 interface DashboardProps {
-  activeTab: 'overview' | 'status' | 'tasks';
+  activeTab: 'overview' | 'clients' | 'status' | 'tasks';
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
@@ -145,7 +145,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
 
   return (
     <div className="space-y-6">
-      {/* Demo Banner - Reduced height */}
+      {/* Demo Banner */}
       {!isSupabaseConfigured && (
          <motion.div 
             initial={{ opacity: 0, y: -10 }}
@@ -158,24 +158,111 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                </div>
                <div>
                   <h4 className="text-amber-500 font-bold text-xs tracking-tight">Modo Offline Activo</h4>
-                  <p className="text-amber-500/60 text-[10px] font-medium leading-none">Datos persistidos localmente en el navegador.</p>
+                  <p className="text-amber-500/60 text-[10px] font-medium leading-none">Datos persistidos localmente.</p>
                </div>
             </div>
-            <div className="text-[9px] font-black text-amber-500/40 uppercase tracking-widest border border-amber-500/10 px-2 py-1 rounded-lg">Demo</div>
+            <div className="text-[9px] font-black text-amber-500/40 uppercase tracking-widest border border-amber-500/10 px-2 py-1 rounded-lg">Executive Demo</div>
          </motion.div>
       )}
 
+      {/* VIEW: EXECUTIVE OVERVIEW */}
       {activeTab === 'overview' && (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          {/* Dashboard Header - Enhanced & Compact */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex items-center gap-4">
+             <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal">
+                <BarChart3 size={24} />
+             </div>
+             <div>
+                <h1 className="text-2xl font-black tracking-tighter text-[var(--text-primary)] leading-tight">{t('nav.dashboard')}</h1>
+                <p className="text-[var(--text-secondary)] font-bold text-[10px] uppercase tracking-widest">{t('stats.trends')}</p>
+             </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <StatCard title={t('stats.total')} value={stats.total} icon={<Users />} color="rc-teal" trend="+2.4%" />
+            <StatCard title={t('stats.optimal')} value={stats.optimos} icon={<TrendingUp />} color="emerald" trend="+12%" />
+            <StatCard title={t('stats.risk')} value={stats.riesgo} icon={<AlertCircle />} color="rose" trend="-5%" />
+            <StatCard title={t('stats.avgScore')} value={stats.avgScore} icon={<Star />} color="amber" trend="+0.2" />
+          </div>
+
+          {/* Executive Charts Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+             <div className="glass-card p-8 rounded-[32px] min-h-[300px] flex flex-col">
+                <div className="flex items-center justify-between mb-8">
+                   <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest">Audit Pulse (6m)</h3>
+                   <div className="flex gap-2 text-[8px] font-bold uppercase tracking-widest">
+                      <span className="flex items-center gap-1"><div className="w-1.5 h-1.5 bg-rc-teal rounded-full"></div> Target</span>
+                      <span className="flex items-center gap-1 text-[var(--text-secondary)]"><div className="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full"></div> Actual</span>
+                   </div>
+                </div>
+                
+                <div className="flex-1 w-full mt-auto">
+                   <svg viewBox="0 0 400 120" className="w-full h-32 overflow-visible">
+                      <path d="M0,80 Q50,75 100,50 T200,60 T300,30 T400,45" fill="none" stroke="var(--text-secondary)" strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
+                      <motion.path 
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 2, ease: "easeInOut" }}
+                        d="M0,90 C50,90 80,40 120,45 S180,85 240,75 S320,20 400,25" 
+                        fill="none" 
+                        stroke="#3BC7AA" 
+                        strokeWidth="3" 
+                        strokeLinecap="round" 
+                      />
+                      <circle cx="400" cy="25" r="4" fill="#3BC7AA" className="animate-pulse" />
+                   </svg>
+                   <div className="flex justify-between mt-4 text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest">
+                      <span>Oct</span><span>Nov</span><span>Dic</span><span>Ene</span><span>Feb</span><span>Mar</span>
+                   </div>
+                </div>
+             </div>
+
+             <div className="glass-card p-8 rounded-[32px] min-h-[300px] flex flex-col">
+                <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest mb-8">Urgency Matrix</h3>
+                <div className="flex-1 flex items-center justify-center gap-12">
+                   <div className="relative w-32 h-32">
+                      <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
+                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="3" className="text-emerald-500/20" />
+                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray="75 25" className="text-emerald-500" />
+                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray="15 85" strokeDashoffset="-75" className="text-amber-500" />
+                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray="10 90" strokeDashoffset="-90" className="text-rose-500" />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                         <span className="text-2xl font-black text-[var(--text-primary)]">{stats.total}</span>
+                         <span className="text-[8px] font-bold text-[var(--text-secondary)] uppercase">Total CL</span>
+                      </div>
+                   </div>
+                   <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                         <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-emerald-500" />
+                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">Optimized <span className="text-[var(--text-primary)] ml-1">75%</span></span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                         <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-amber-500" />
+                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">Attention <span className="text-[var(--text-primary)] ml-1">15%</span></span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                         <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-rose-500" />
+                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">Critical <span className="text-[var(--text-primary)] ml-1">10%</span></span>
+                      </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW: CLIENT MANAGEMENT (OPERATIONAL) */}
+      {activeTab === 'clients' && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal animate-pulse">
-                   <LayoutGrid size={24} />
+                <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal">
+                   <Users size={24} />
                 </div>
                 <div>
-                   <h1 className="text-2xl font-black tracking-tighter text-[var(--text-primary)] leading-tight">{t('nav.dashboard')}</h1>
-                   <p className="text-[var(--text-secondary)] font-bold text-[10px] uppercase tracking-widest">{user?.email}</p>
+                   <h1 className="text-2xl font-black tracking-tighter text-[var(--text-primary)] leading-tight">{t('nav.clients')}</h1>
+                   <p className="text-[var(--text-secondary)] font-bold text-[10px] uppercase tracking-widest">{filteredProjects.length} Clientes Activos</p>
                 </div>
              </div>
 
@@ -184,7 +271,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                    <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] group-focus-within:text-rc-teal transition-colors" />
                    <input 
                       type="text"
-                      placeholder="Buscar clientes..."
+                      placeholder="Filtrar por nombre o servicio..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl py-2.5 pl-12 pr-6 text-sm font-medium focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all outline-none w-full md:w-64"
@@ -199,65 +286,44 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
              </div>
           </div>
 
-          {/* KPIs Grid - More compact */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard title={t('stats.total')} value={stats.total} icon={<Users />} color="rc-teal" />
-            <StatCard title={t('stats.optimal')} value={stats.optimos} icon={<TrendingUp />} color="emerald" trend="+12%" />
-            <StatCard title={t('stats.risk')} value={stats.riesgo} icon={<AlertCircle />} color="rose" />
-            <StatCard title={t('stats.avgScore')} value={stats.avgScore} icon={<Star />} color="amber" />
-          </div>
+          <motion.div 
+             layout
+             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredProjects.map(project => (
+                <ProjectCard 
+                  key={project.id} 
+                  project={project} 
+                  onOpenDetail={() => openProjectDetail(project)}
+                />
+              ))}
+            </AnimatePresence>
+          </motion.div>
 
-          {/* Project Grid - Higher density */}
-          <div className="space-y-4 pt-2">
-            <div className="flex items-center justify-between">
-               <h3 className="text-lg font-black tracking-tight text-[var(--text-primary)] uppercase">{t('projects.title')}</h3>
-               <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase">{filteredProjects.length} Resultados</span>
-                  <div className="h-px w-8 bg-[var(--glass-border)]" />
-               </div>
+          {filteredProjects.length === 0 && (
+            <div className="py-20 flex flex-col items-center justify-center space-y-4 opacity-40">
+              <Search size={48} className="text-rc-teal" />
+              <p className="font-bold text-sm tracking-widest uppercase">No se encontraron clientes</p>
             </div>
-            
-            <motion.div 
-               layout
-               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-            >
-              <AnimatePresence mode="popLayout">
-                {filteredProjects.map(project => (
-                  <ProjectCard 
-                    key={project.id} 
-                    project={project} 
-                    onOpenDetail={() => openProjectDetail(project)}
-                  />
-                ))}
-              </AnimatePresence>
-            </motion.div>
-
-            {filteredProjects.length === 0 && (
-              <div className="py-20 flex flex-col items-center justify-center space-y-4 opacity-40">
-                <Search size={48} className="text-rc-teal" />
-                <p className="font-bold text-sm tracking-widest uppercase">No se encontraron clientes</p>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       )}
 
+      {/* VIEW: AUDIT VIEW (TABLE) */}
       {activeTab === 'status' && (
         <div className="animate-in fade-in slide-in-from-right-4 duration-500">
            <div className="glass-card p-6 md:p-8 rounded-[32px] border border-[var(--glass-border)]">
               <div className="flex items-center justify-between mb-8">
                  <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-rc-teal/10 rounded-xl flex items-center justify-center text-rc-teal">
-                      <BarChart3 size={20} />
+                      <Star size={20} />
                     </div>
                     <div>
                        <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tighter">{t('projects.individualTitle')}</h3>
-                       <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">Auditoría Ejecutiva</p>
+                       <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">Ejecución de Auditoría</p>
                     </div>
                  </div>
-                 <button className="p-3 bg-black/5 dark:bg-white/5 rounded-xl text-[var(--text-secondary)] hover:text-rc-teal transition-colors">
-                    <Filter size={18} />
-                 </button>
               </div>
 
               <div className="overflow-x-auto">

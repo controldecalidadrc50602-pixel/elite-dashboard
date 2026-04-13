@@ -33,7 +33,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
 
   const navItems = [
     { id: 'overview', icon: <LayoutGrid size={22} />, label: t('nav.dashboard') },
-    { id: 'status', icon: <Users size={22} />, label: t('nav.projects') },
+    { id: 'clients', icon: <Users size={22} />, label: t('nav.clients') },
+    { id: 'status', icon: <Star size={22} />, label: t('nav.projects') },
     { id: 'tasks', icon: <CheckSquare size={22} />, label: t('nav.tasks') },
   ];
 

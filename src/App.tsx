@@ -7,7 +7,7 @@ import MainLayout from './components/Layout/MainLayout';
 
 function App() {
   const { isAuthenticated } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'status' | 'tasks'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'clients' | 'status' | 'tasks'>('overview');
 
   return (
     <Routes>

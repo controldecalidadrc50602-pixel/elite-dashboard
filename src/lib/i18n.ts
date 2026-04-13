@@ -5,19 +5,21 @@ const resources = {
   en: {
     translation: {
       nav: {
-        dashboard: 'Global Dashboard',
-        projects: 'My Projects',
+        dashboard: 'Executive View',
+        clients: 'Client Portfolio',
+        projects: 'Account Audit',
         tasks: 'Task Manager',
         logout: 'Sign Out'
       },
       stats: {
-        total: 'Total Projects',
+        total: 'Total Clients',
         optimal: 'Optimal Health',
         risk: 'At Risk',
-        avgScore: 'Avg. Audit Score'
+        avgScore: 'Avg. Audit Score',
+        trends: 'Strategic Trends'
       },
       projects: {
-        title: 'Client Status',
+        title: 'Clients Portfolio',
         newProject: 'New Project',
         individualTitle: 'Account Audit',
         activeServices: 'Active Services',
@@ -44,19 +46,21 @@ const resources = {
   es: {
     translation: {
       nav: {
-        dashboard: 'Dashboard Global',
-        projects: 'Mis Clientes',
+        dashboard: 'Resumen Ejecutivo',
+        clients: 'Portafolio Clientes',
+        projects: 'Auditoría de Cuentas',
         tasks: 'Gestor de Tareas',
         logout: 'Cerrar Sesión'
       },
       stats: {
-        total: 'Proyectos Totales',
+        total: 'Clientes Totales',
         optimal: 'Estado Óptimo',
         risk: 'Cuentas en Riesgo',
-        avgScore: 'Score de Auditoría'
+        avgScore: 'Score Promedio',
+        trends: 'Tendencias Estratégicas'
       },
       projects: {
-        title: 'Estatus de Clientes',
+        title: 'Portafolio de Clientes',
         newProject: 'Nuevo Proyecto',
         individualTitle: 'Auditoría de Cuentas',
         activeServices: 'Servicios Activos',
