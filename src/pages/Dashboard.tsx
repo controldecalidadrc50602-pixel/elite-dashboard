@@ -14,6 +14,7 @@ import {
 import ProjectCard from '../components/ProjectCard';
 import TaskManager from '../components/TaskManager';
 import ProjectDetailsSlideover from '../components/ProjectDetailsSlideover';
+import { motion } from 'framer-motion';
 import { isSupabaseConfigured } from '../lib/supabase';
 
 // ... (previous interfaces and data)
