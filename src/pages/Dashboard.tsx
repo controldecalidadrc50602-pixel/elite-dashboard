@@ -11,7 +11,10 @@ import {
   Filter,
   Users,
   LayoutGrid,
-  TrendingUp
+  TrendingUp,
+  Bell,
+  ArrowRight,
+  ShieldAlert
 } from 'lucide-react';
 import ProjectCard from '../components/ProjectCard';
 import TaskManager from '../components/TaskManager';
@@ -32,11 +35,21 @@ export interface ClientService {
 }
 
 export interface Evaluation {
+  date?: string; // Fecha exacta de la evaluación
   month: number;
   year: number;
   quantitative: number;
   qualitative: string;
   status: 'Stable' | 'At Risk' | 'Critical' | 'Growth';
+}
+
+export interface Alert {
+  id: string;
+  date: string;
+  type: 'Technical' | 'Operational' | 'Strategic';
+  severity: 'Low' | 'Medium' | 'High';
+  description: string;
+  status: 'Open' | 'Resolved';
 }
 
 export interface Project {
@@ -45,6 +58,7 @@ export interface Project {
   startDate: string;
   services: ClientService[];
   evaluations: Evaluation[];
+  alerts?: Alert[]; // Incidencias o situaciones críticas
   status: 'Óptimo' | 'Aceptable' | 'Mejorable' | 'Deficiente';
 }
 
@@ -98,6 +112,68 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
       riesgo: riskCount,
       avgScore
     };
+  }, [projects]);
+
+  // Dynamic Chart Calculations
+  const chartData = useMemo(() => {
+     const months = [
+        { name: t('months.oct'), val: 0, count: 0 },
+        { name: t('months.nov'), val: 0, count: 0 },
+        { name: t('months.dec'), val: 0, count: 0 },
+        { name: t('months.jan'), val: 0, count: 0 },
+        { name: t('months.feb'), val: 0, count: 0 },
+        { name: t('months.mar'), val: 0, count: 0 },
+     ];
+
+     // Simple mapping logic for demonstration (assuming evaluations are recent)
+     projects.forEach(p => {
+        p.evaluations.forEach(ev => {
+           // Mapping evaluations to dummy months based on index for chart visual
+           const idx = ev.month % 6; 
+           months[idx].val += ev.quantitative;
+           months[idx].count += 1;
+        });
+     });
+
+     const points = months.map((m, i) => {
+        const avg = m.count > 0 ? m.val / m.count : 3; // default base line
+        const x = (i / 5) * 400;
+        const y = 120 - (avg * 20); // Scale 0-5 to 0-120
+        return `${x},${y}`;
+     });
+
+     return {
+        path: `M${points.join(' L')}`,
+        points: months
+     };
+  }, [projects, t]);
+
+  const urgencyStats = useMemo(() => {
+     const total = projects.length || 1;
+     const optimized = projects.filter(p => p.evaluations[0]?.status === 'Stable' || p.evaluations[0]?.status === 'Growth').length;
+     const attention = projects.filter(p => p.evaluations[0]?.status === 'At Risk').length;
+     const critical = projects.filter(p => p.evaluations[0]?.status === 'Critical').length;
+
+     return {
+        optimized: Math.round((optimized / total) * 100),
+        attention: Math.round((attention / total) * 100),
+        critical: Math.round((critical / total) * 100),
+        optimizedCount: optimized,
+        attentionCount: attention,
+        criticalCount: critical
+     };
+  }, [projects]);
+
+  const recentAlerts = useMemo(() => {
+     const allAlerts: { project: string, alert: Alert }[] = [];
+     projects.forEach(p => {
+        p.alerts?.forEach(a => {
+           if (a.status === 'Open') {
+              allAlerts.push({ project: p.client, alert: a });
+           }
+        });
+     });
+     return allAlerts.sort((a, b) => new Date(b.alert.date).getTime() - new Date(a.alert.date).getTime()).slice(0, 3);
   }, [projects]);
 
   const handleSaveProject = async (project: Project) => {
@@ -203,16 +279,16 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                         initial={{ pathLength: 0 }}
                         animate={{ pathLength: 1 }}
                         transition={{ duration: 2, ease: "easeInOut" }}
-                        d="M0,90 C50,90 80,40 120,45 S180,85 240,75 S320,20 400,25" 
+                        d={chartData.path}
                         fill="none" 
                         stroke="#3BC7AA" 
                         strokeWidth="3" 
                         strokeLinecap="round" 
                       />
-                      <circle cx="400" cy="25" r="4" fill="#3BC7AA" className="animate-pulse" />
+                      <circle cx="400" cy={chartData.path.split(' ').pop()?.split(',')[1] || 25} r="4" fill="#3BC7AA" className="animate-pulse" />
                    </svg>
                    <div className="flex justify-between mt-4 text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest">
-                      <span>{t('months.oct')}</span><span>{t('months.nov')}</span><span>{t('months.dec')}</span><span>{t('months.jan')}</span><span>{t('months.feb')}</span><span>{t('months.mar')}</span>
+                      {chartData.points.map((m, i) => <span key={i}>{m.name}</span>)}
                    </div>
                 </div>
              </div>
@@ -223,9 +299,9 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                    <div className="relative w-32 h-32">
                       <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="3" className="text-emerald-500/20" />
-                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray="75 25" className="text-emerald-500" />
-                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray="15 85" strokeDashoffset="-75" className="text-amber-500" />
-                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray="10 90" strokeDashoffset="-90" className="text-rose-500" />
+                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray={`${urgencyStats.optimized} ${100 - urgencyStats.optimized}`} className="text-emerald-500" />
+                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray={`${urgencyStats.attention} ${100 - urgencyStats.attention}`} strokeDashoffset={-urgencyStats.optimized} className="text-amber-500" />
+                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray={`${urgencyStats.critical} ${100 - urgencyStats.critical}`} strokeDashoffset={-(urgencyStats.optimized + urgencyStats.attention)} className="text-rose-500" />
                       </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
                          <span className="text-2xl font-black text-[var(--text-primary)]">{stats.total}</span>
@@ -235,18 +311,71 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                    <div className="space-y-4">
                       <div className="flex items-center gap-3">
                          <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-emerald-500" />
-                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.optimized')} <span className="text-[var(--text-primary)] ml-1">75%</span></span>
+                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.optimized')} <span className="text-[var(--text-primary)] ml-1">{urgencyStats.optimized}%</span></span>
                       </div>
                       <div className="flex items-center gap-3">
                          <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-amber-500" />
-                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.attention')} <span className="text-[var(--text-primary)] ml-1">15%</span></span>
+                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.attention')} <span className="text-[var(--text-primary)] ml-1">{urgencyStats.attention}%</span></span>
                       </div>
                       <div className="flex items-center gap-3">
                          <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-rose-500" />
-                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.critical')} <span className="text-[var(--text-primary)] ml-1">10%</span></span>
+                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.critical')} <span className="text-[var(--text-primary)] ml-1">{urgencyStats.critical}%</span></span>
                       </div>
                    </div>
                 </div>
+             </div>
+          </div>
+
+          {/* Quick Alerts Feed */}
+          <div className="glass-card p-8 rounded-[32px] border border-[var(--glass-border)]">
+             <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 bg-rose-500/10 rounded-xl flex items-center justify-center text-rose-500">
+                      <ShieldAlert size={20} />
+                   </div>
+                   <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest">{t('projects.recent_alerts')}</h3>
+                </div>
+                {recentAlerts.length > 0 && (
+                   <div className="flex items-center gap-1 text-rose-500 animate-pulse">
+                      <div className="w-1.5 h-1.5 bg-rose-500 rounded-full"></div>
+                      <span className="text-[8px] font-black uppercase tracking-widest">{recentAlerts.length} Active</span>
+                   </div>
+                )}
+             </div>
+             
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {recentAlerts.map(({ project, alert }, idx) => (
+                   <motion.div 
+                      key={alert.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="bg-[var(--bg-secondary)] border border-[var(--glass-border)] p-4 rounded-2xl relative overflow-hidden flex flex-col"
+                   >
+                      <div className="flex items-center justify-between mb-2">
+                         <span className="text-[8px] font-black text-rc-teal uppercase tracking-widest">{project}</span>
+                         <span className="text-[8px] font-bold text-[var(--text-secondary)]">{new Date(alert.date).toLocaleDateString()}</span>
+                      </div>
+                      <p className="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-tight line-clamp-2 mb-3">
+                         {alert.description}
+                      </p>
+                      <div className="mt-auto flex items-center justify-between">
+                         <span className={`px-2 py-0.5 rounded text-[7px] font-black uppercase tracking-widest border ${
+                            alert.severity === 'High' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                         }`}>
+                            {t(`projects.severity_${alert.severity.toLowerCase()}`)}
+                         </span>
+                         <button className="text-[var(--text-secondary)] hover:text-rc-teal transition-all">
+                            <ArrowRight size={14} />
+                         </button>
+                      </div>
+                   </motion.div>
+                ))}
+                {recentAlerts.length === 0 && (
+                   <div className="col-span-3 py-4 text-center">
+                      <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest opacity-50">{t('dashboard.no_records')}</p>
+                   </div>
+                )}
              </div>
           </div>
         </div>
@@ -339,9 +468,9 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                     <tbody className="divide-y divide-[var(--glass-border)]">
                        {projects.map(p => (
                           <tr 
-                            key={p.id} 
-                            onClick={() => openProjectDetail(p)}
-                            className="group hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
+                             key={p.id} 
+                             onClick={() => openProjectDetail(p)}
+                             className="group hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
                           >
                              <td className="py-5">
                                 <div className="font-black text-[var(--text-primary)] text-sm tracking-tight">{p.client}</div>
@@ -359,9 +488,10 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                                 <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${
                                    p.evaluations[0]?.status === 'Stable' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
                                    p.evaluations[0]?.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                   p.evaluations[0]?.status === 'Growth' ? 'bg-rc-teal/10 text-rc-teal border-rc-teal/10' :
                                    'bg-rose-500/10 text-rose-500 border-rose-500/20'
                                 }`}>
-                                   {t(`status.${(p.evaluations[0]?.status || 'stable').toLowerCase()}`)}
+                                   {t(`status.${(p.evaluations[0]?.status || 'stable').toLowerCase().replace(' ', '')}`)}
                                 </span>
                              </td>
                           </tr>

@@ -1,9 +1,22 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { X, Plus, Trash2, Calendar, Star, ShieldCheck, Edit3, AlertCircle, Save } from 'lucide-react';
+import { 
+  X, 
+  Plus, 
+  Trash2, 
+  Calendar, 
+  Star, 
+  ShieldCheck, 
+  Edit3, 
+  AlertCircle, 
+  Save,
+  Bell,
+  CheckCircle,
+  AlertTriangle
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Project, ClientService, Evaluation } from '../pages/Dashboard';
+import { Project, ClientService, Evaluation, Alert } from '../pages/Dashboard';
 
 interface Props {
   project: Project | null;
@@ -17,14 +30,24 @@ interface Props {
 const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, onUpdate, onDelete, onEditRequest }) => {
   const { t } = useTranslation();
   
-  const [activeTab, setActiveTab] = useState<'services' | 'evaluations'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'evaluations' | 'alerts'>('services');
   const [newService, setNewService] = useState({ name: '', description: '', score: 5 });
   const [newEvaluation, setNewEvaluation] = useState<Evaluation>({
+    date: new Date().toISOString().split('T')[0],
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
     quantitative: 5,
     qualitative: '',
     status: 'Stable'
+  });
+  
+  const [newAlert, setNewAlert] = useState<Alert>({
+    id: '',
+    date: new Date().toISOString().split('T')[0],
+    type: 'Operational',
+    severity: 'Medium',
+    description: '',
+    status: 'Open'
   });
 
   if (!project) return null;
@@ -43,12 +66,37 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
   };
 
   const handleAddEvaluation = () => {
-    onUpdate({ ...project, evaluations: [newEvaluation, ...project.evaluations] });
-    setNewEvaluation({ ...newEvaluation, qualitative: '' });
+    // Sincronizar mes/año con la fecha elegida si es necesario
+    const evalDate = new Date(newEvaluation.date || '');
+    const updatedEval = {
+       ...newEvaluation,
+       month: evalDate.getMonth() + 1,
+       year: evalDate.getFullYear()
+    };
+    onUpdate({ ...project, evaluations: [updatedEval, ...project.evaluations] });
+    setNewEvaluation({ ...newEvaluation, qualitative: '', date: new Date().toISOString().split('T')[0] });
+  };
+
+  const handleAddAlert = () => {
+    if (!newAlert.description) return;
+    const alertToAdd: Alert = {
+      ...newAlert,
+      id: Math.random().toString(36).substr(2, 9)
+    };
+    onUpdate({ ...project, alerts: [alertToAdd, ...(project.alerts || [])] });
+    setNewAlert({ ...newAlert, description: '', id: '' });
   };
 
   const handleDeleteService = (serviceId: string) => {
      onUpdate({ ...project, services: project.services.filter(s => s.id !== serviceId) });
+  };
+
+  const getSeverityStyles = (severity: string) => {
+    switch(severity) {
+      case 'High': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
+      case 'Medium': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+      default: return 'bg-rc-teal/10 text-rc-teal border-rc-teal/20';
+    }
   };
 
   return createPortal(
@@ -133,10 +181,10 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
             </div>
 
             {/* Tabs Navigation */}
-            <div className="flex px-6 gap-6 border-b border-[var(--glass-border)] bg-[var(--bg-primary)]/30">
+            <div className="flex px-6 gap-4 border-b border-[var(--glass-border)] bg-[var(--bg-primary)]/30">
                <button 
                   onClick={() => setActiveTab('services')}
-                  className={`py-4 text-[10px] font-black uppercase tracking-widest transition-all relative ${
+                  className={`py-4 text-[9px] font-black uppercase tracking-widest transition-all relative ${
                      activeTab === 'services' ? 'text-rc-teal' : 'text-[var(--text-secondary)]'
                   }`}
                >
@@ -145,12 +193,22 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                </button>
                <button 
                   onClick={() => setActiveTab('evaluations')}
-                  className={`py-4 text-[10px] font-black uppercase tracking-widest transition-all relative ${
+                  className={`py-4 text-[9px] font-black uppercase tracking-widest transition-all relative ${
                      activeTab === 'evaluations' ? 'text-rc-teal' : 'text-[var(--text-secondary)]'
                   }`}
                >
                   {t('projects.audit_history')}
                   {activeTab === 'evaluations' && <motion.div layoutId="tab-active" className="absolute bottom-0 left-0 right-0 h-0.5 bg-rc-teal" />}
+               </button>
+               <button 
+                  onClick={() => setActiveTab('alerts')}
+                  className={`py-4 text-[9px] font-black uppercase tracking-widest transition-all relative flex items-center gap-2 ${
+                     activeTab === 'alerts' ? 'text-rose-500' : 'text-[var(--text-secondary)]'
+                  }`}
+               >
+                  <Bell size={12} className={project.alerts?.some(a => a.status === 'Open') ? 'animate-bounce text-rose-500' : ''} />
+                  {t('projects.audit_cases')}
+                  {activeTab === 'alerts' && <motion.div layoutId="tab-active" className="absolute bottom-0 left-0 right-0 h-0.5 bg-rose-500" />}
                </button>
             </div>
 
@@ -244,25 +302,13 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                            <AlertCircle size={14} className="text-rc-teal" />
                            <h4 className="text-[10px] font-black text-rc-teal uppercase tracking-widest">{t('projects.quick_audit')}</h4>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3">
                            <div className="space-y-1">
-                              <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('common.month')}</label>
-                              <select 
-                                 value={newEvaluation.month}
-                                 onChange={e => setNewEvaluation({...newEvaluation, month: parseInt(e.target.value)})}
-                                 className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-3 py-2 text-[10px] font-bold outline-none text-[var(--text-primary)]"
-                              >
-                                 {Array.from({length: 12}, (_, i) => (
-                                    <option key={i+1} value={i+1}>{i+1}</option>
-                                 ))}
-                              </select>
-                           </div>
-                           <div className="space-y-1">
-                              <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('common.year')}</label>
+                              <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('audit.date')}</label>
                               <input 
-                                 type="number"
-                                 value={newEvaluation.year}
-                                 onChange={e => setNewEvaluation({...newEvaluation, year: parseInt(e.target.value)})}
+                                 type="date"
+                                 value={newEvaluation.date}
+                                 onChange={e => setNewEvaluation({...newEvaluation, date: e.target.value})}
                                  className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-3 py-2 text-[10px] font-bold outline-none text-[var(--text-primary)]"
                               />
                            </div>
@@ -296,6 +342,7 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                                  <option value="Stable">{t('status.stable')}</option>
                                  <option value="At Risk">{t('status.risk')}</option>
                                  <option value="Critical">{t('status.critical')}</option>
+                                 <option value="Growth">{t('status.growth')}</option>
                                </select>
                            </div>
                         </div>
@@ -303,7 +350,7 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                            onClick={handleAddEvaluation}
                            className="w-full bg-rc-teal text-white rounded-xl py-3 text-[9px] font-black uppercase tracking-widest transition-all hover:shadow-lg hover:shadow-rc-teal/20"
                         >
-                           {t('common.save')}
+                           {t('audit.sign')}
                         </button>
                      </div>
 
@@ -323,11 +370,12 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                                  <div className="flex-1 pb-6">
                                     <div className="flex items-center justify-between mb-1">
                                        <span className="text-[9px] font-black text-[var(--text-primary)] uppercase tracking-widest">
-                                          {evalItem.month}/{evalItem.year}
+                                          {evalItem.date ? new Date(evalItem.date).toLocaleDateString() : `${evalItem.month}/${evalItem.year}`}
                                        </span>
                                        <span className={`px-2 py-0.5 rounded-md text-[7px] font-black uppercase tracking-widest border ${
                                           evalItem.status === 'Stable' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/10' : 
                                           evalItem.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500 border-amber-500/10' : 
+                                          evalItem.status === 'Growth' ? 'bg-rc-teal/10 text-rc-teal border-rc-teal/10' :
                                           'bg-rose-500/10 text-rose-500 border-rose-500/10'
                                        }`}>
                                           {t(`status.${evalItem.status.toLowerCase().replace(' ', '')}`)}
@@ -339,6 +387,111 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                                  </div>
                               </div>
                            ))}
+                        </div>
+                     </div>
+                  </div>
+               )}
+
+               {activeTab === 'alerts' && (
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                     {/* New Alert Form */}
+                     <div className="p-6 bg-rose-500/5 border border-rose-500/10 rounded-[28px] space-y-4">
+                        <div className="flex items-center gap-2 mb-2">
+                           <Bell size={14} className="text-rose-500" />
+                           <h4 className="text-[10px] font-black text-rose-500 uppercase tracking-widest">{t('projects.add_alert')}</h4>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                           <div className="space-y-1">
+                              <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('audit.date')}</label>
+                              <input 
+                                 type="date"
+                                 value={newAlert.date}
+                                 onChange={e => setNewAlert({...newAlert, date: e.target.value})}
+                                 className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-3 py-2 text-[10px] font-bold outline-none text-[var(--text-primary)]"
+                              />
+                           </div>
+                           <div className="space-y-1">
+                              <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('projects.alert_severity')}</label>
+                              <select 
+                                 value={newAlert.severity}
+                                 onChange={e => setNewAlert({...newAlert, severity: e.target.value as any})}
+                                 className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-3 py-2 text-[10px] font-bold outline-none text-[var(--text-primary)]"
+                              >
+                                 <option value="Low">{t('projects.severity_low')}</option>
+                                 <option value="Medium">{t('projects.severity_medium')}</option>
+                                 <option value="High">{t('projects.severity_high')}</option>
+                              </select>
+                           </div>
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('projects.alert_type')}</label>
+                           <select 
+                              value={newAlert.type}
+                              onChange={e => setNewAlert({...newAlert, type: e.target.value as any})}
+                              className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-3 py-2 text-[10px] font-bold outline-none text-[var(--text-primary)]"
+                           >
+                              <option value="Technical">{t('projects.type_technical')}</option>
+                              <option value="Operational">{t('projects.type_operational')}</option>
+                              <option value="Strategic">{t('projects.type_strategic')}</option>
+                           </select>
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('projects.alert_desc')}</label>
+                           <textarea 
+                              value={newAlert.description}
+                              onChange={e => setNewAlert({...newAlert, description: e.target.value})}
+                              placeholder="Ej: Caída de flujo principal en bot..."
+                              className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-[10px] font-medium min-h-[80px] outline-none focus:ring-1 focus:ring-rose-500/30 text-[var(--text-primary)]"
+                           />
+                        </div>
+                        <button 
+                           onClick={handleAddAlert}
+                           disabled={!newAlert.description}
+                           className="w-full bg-rose-500 text-white rounded-xl py-3 text-[9px] font-black uppercase tracking-widest transition-all hover:shadow-lg hover:shadow-rose-500/20 disabled:opacity-50"
+                        >
+                           {t('projects.add_alert')}
+                        </button>
+                     </div>
+
+                     <div className="space-y-4">
+                        <h4 className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] px-1">{t('projects.audit_cases')}</h4>
+                        <div className="space-y-3">
+                           {project.alerts?.map((alertItem) => (
+                              <div key={alertItem.id} className="bg-[var(--bg-primary)] border border-[var(--glass-border)] p-4 rounded-2xl relative overflow-hidden group">
+                                 <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                       <div className="flex items-center gap-2 mb-2">
+                                          <span className={`px-2 py-0.5 rounded-md text-[7px] font-black uppercase tracking-widest border ${getSeverityStyles(alertItem.severity)}`}>
+                                             {t(`projects.severity_${alertItem.severity.toLowerCase()}`)}
+                                          </span>
+                                          <span className="text-[8px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">
+                                             {new Date(alertItem.date).toLocaleDateString()}
+                                          </span>
+                                       </div>
+                                       <p className="text-[10px] font-bold text-[var(--text-primary)] leading-tight mb-2 uppercase tracking-tight">
+                                          {alertItem.description}
+                                       </p>
+                                       <div className="flex items-center gap-3">
+                                          <span className="text-[8px] font-black text-rc-teal uppercase">{t(`projects.type_${alertItem.type.toLowerCase()}`)}</span>
+                                          <div className="w-1 h-1 rounded-full bg-[var(--glass-border)]" />
+                                          <span className={`text-[8px] font-black uppercase ${alertItem.status === 'Open' ? 'text-rose-500' : 'text-emerald-500'}`}>
+                                             {t(`projects.status_${alertItem.status.toLowerCase()}`)}
+                                          </span>
+                                       </div>
+                                    </div>
+                                    {alertItem.status === 'Open' ? (
+                                       <AlertTriangle size={20} className="text-rose-500/20 group-hover:text-rose-500 transition-colors" />
+                                    ) : (
+                                       <CheckCircle size={20} className="text-emerald-500/20" />
+                                    )}
+                                 </div>
+                              </div>
+                           ))}
+                           {(!project.alerts || project.alerts.length === 0) && (
+                              <div className="text-center py-8">
+                                 <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest opacity-50">{t('dashboard.no_records')}</p>
+                              </div>
+                           )}
                         </div>
                      </div>
                   </div>
