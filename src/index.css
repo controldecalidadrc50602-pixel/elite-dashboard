@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --color-status-optimo: #10b981;
+  --color-status-aceptable: #0ea5e9;
+  --color-status-mejorable: #f59e0b;
+  --color-status-deficiente: #f43f5e;
+  
+  --color-premium-bg: #0f172a;
+  --color-premium-card: rgba(30, 41, 59, 0.7);
+}
+
+:root {
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --accent-cyan: #22d3ee;
+}
+
+body {
+  @apply bg-slate-950 text-slate-200 min-h-screen font-sans;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(15, 23, 42, 1) 0, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(30, 41, 59, 1) 0, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(15, 23, 42, 1) 0, transparent 50%);
+}
+
+.glass-card {
+  @apply bg-slate-900/40 backdrop-blur-md border border-white/10 shadow-2xl;
+}
+
+.glass-panel {
+  @apply bg-slate-900/60 backdrop-blur-lg border-r border-white/5;
+}
+
+/* Custom Utilities */
+@utility status-ring {
+  @apply relative;
+  &::after {
+    content: '';
+    @apply absolute inset-0 rounded-full blur-md opacity-20 pointer-events-none;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-950;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-800 rounded-full hover:bg-slate-700 transition-colors;
+}
