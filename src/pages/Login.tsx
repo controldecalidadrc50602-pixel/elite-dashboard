@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Lock, LayoutDashboard, ArrowRight } from 'lucide-react';
+import { Lock, Mail, LayoutDashboard, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (login(password)) {
-      setError(false);
-    } else {
-      setError(true);
-      setTimeout(() => setError(false), 2000);
+    setLoading(true);
+    setError(null);
+    
+    const { error: authError } = await login(email, password);
+    
+    if (authError) {
+      setError('Acceso denegado. Verifique sus credenciales.');
+      setLoading(false);
+      setTimeout(() => setError(null), 3000);
     }
   };
 
@@ -35,7 +41,24 @@ const Login = () => {
           <p className="text-slate-400 mt-2">Executive Project Dashboard</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Correo Electrnico
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-slate-950/50 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all text-sm"
+                placeholder="usuario@ejemplo.com"
+                required
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
               Contrasea de Acceso
@@ -46,19 +69,30 @@ const Login = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full bg-slate-950/50 border ${error ? 'border-rose-500' : 'border-slate-800'} rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all`}
-                placeholder="Introduzca contrasea..."
+                className={`w-full bg-slate-950/50 border ${error ? 'border-rose-500' : 'border-slate-800'} rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all text-sm`}
+                placeholder="********"
+                required
               />
             </div>
-            {error && <p className="text-rose-500 text-xs mt-2">Acceso denegado. Intente de nuevo.</p>}
           </div>
+
+          {error && (
+            <motion.p 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              className="text-rose-500 text-xs font-medium"
+            >
+              {error}
+            </motion.p>
+          )}
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 group transition-all shadow-lg shadow-cyan-900/20"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 group transition-all shadow-lg shadow-cyan-900/20 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
           >
-            Entrar al Tablero
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            {loading ? 'Validando...' : 'Entrar al Tablero'}
+            {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
           </button>
         </form>
 
