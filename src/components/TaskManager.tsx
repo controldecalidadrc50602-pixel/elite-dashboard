@@ -126,4 +126,6 @@ const TaskManager = () => {
       </div>
     </div>
   );
+};
+
 export default TaskManager;
