@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { X, Plus, Trash2, Save, Calendar, Star, ShieldCheck, Edit3, AlertCircle } from 'lucide-react';
+import { X, Plus, Trash2, Calendar, Star, ShieldCheck, Edit3, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project, ClientService, Evaluation } from '../pages/Dashboard';
 
@@ -49,7 +50,7 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
      onUpdate({ ...project, services: project.services.filter(s => s.id !== serviceId) });
   };
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -58,14 +59,14 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 dark:bg-slate-950/60 backdrop-blur-md z-[60]" 
+            className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-[100]" 
           />
           <motion.div 
             initial={{ x: '100%' }} 
             animate={{ x: 0 }} 
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full max-w-xl bg-[var(--bg-secondary)] border-l border-[var(--glass-border)] shadow-2xl z-[70] flex flex-col"
+            className="fixed right-0 top-0 h-full w-full max-w-xl bg-[var(--bg-secondary)] border-l border-[var(--glass-border)] shadow-2xl z-[110] flex flex-col"
           >
             {/* Header - Compact & Operational */}
             <div className="p-6 border-b border-[var(--glass-border)] bg-[var(--bg-primary)]/50">
@@ -193,13 +194,13 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                            placeholder="Nombre del Servicio" 
                            value={newService.name}
                            onChange={e => setNewService({...newService, name: e.target.value})}
-                           className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal outline-none transition-all font-medium"
+                           className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal outline-none transition-all font-medium text-[var(--text-primary)]"
                         />
                         <textarea 
                            placeholder="Descripción..." 
                            value={newService.description}
                            onChange={e => setNewService({...newService, description: e.target.value})}
-                           className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal outline-none h-16 transition-all font-medium"
+                           className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal outline-none h-16 transition-all font-medium text-[var(--text-primary)]"
                         />
                         <button 
                            onClick={handleAddService}
@@ -233,7 +234,7 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                                <select 
                                   value={newEvaluation.status}
                                   onChange={e => setNewEvaluation({...newEvaluation, status: e.target.value as any})}
-                                  className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer"
+                                  className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer text-[var(--text-primary)]"
                                >
                                   <option value="Stable">Stable</option>
                                   <option value="Growth">Growth</option>
@@ -246,7 +247,7 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                             placeholder="Notas cualitativas..." 
                             value={newEvaluation.qualitative}
                             onChange={e => setNewEvaluation({...newEvaluation, qualitative: e.target.value})}
-                            className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-xs h-24 outline-none focus:ring-2 focus:ring-rc-teal/20"
+                            className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-xs h-24 outline-none focus:ring-2 focus:ring-rc-teal/20 text-[var(--text-primary)]"
                          />
                          <button 
                             onClick={handleAddEvaluation}
@@ -304,7 +305,8 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

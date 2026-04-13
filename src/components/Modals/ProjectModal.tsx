@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Trash2 } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { X, Save } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project } from '../../pages/Dashboard';
 
@@ -50,7 +51,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
     onClose();
   };
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -59,19 +60,19 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 dark:bg-slate-950/60 backdrop-blur-md z-[80]" 
+            className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-[100]" 
           />
           <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 20 }} 
             animate={{ opacity: 1, scale: 1, y: 0 }} 
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-[var(--bg-secondary)] border border-[var(--glass-border)] shadow-2xl z-[90] rounded-[40px] overflow-hidden"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-[var(--bg-secondary)] border border-[var(--glass-border)] shadow-2xl z-[110] rounded-[40px] overflow-hidden"
           >
             <div className="p-8 border-b border-[var(--glass-border)] flex items-center justify-between">
               <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tighter uppercase">
                 {project ? 'Editar Cliente' : 'Nuevo Cliente'}
               </h3>
-              <button onClick={onClose} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors">
+              <button onClick={onClose} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors text-[var(--text-secondary)]">
                 <X size={20} />
               </button>
             </div>
@@ -85,7 +86,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                   value={formData.client}
                   onChange={e => setFormData({...formData, client: e.target.value})}
                   placeholder="Ej: Rc506 Solutions"
-                  className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all"
+                  className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
                 />
               </div>
 
@@ -96,7 +97,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                   required
                   value={formData.startDate}
                   onChange={e => setFormData({...formData, startDate: e.target.value})}
-                  className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all"
+                  className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
                 />
               </div>
 
@@ -119,8 +120,12 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
+};
+
+export default ProjectModal;
 };
 
 export default ProjectModal;
