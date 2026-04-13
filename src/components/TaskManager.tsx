@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Plus, 
   Search, 
@@ -27,89 +28,94 @@ const initialTasks: Task[] = [
 ];
 
 const TaskManager = () => {
+  const { t, i18n } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'High': return 'text-rose-400 bg-rose-400/10';
-      case 'Medium': return 'text-amber-400 bg-amber-400/10';
-      case 'Low': return 'text-emerald-400 bg-emerald-400/10';
-      default: return 'text-slate-400';
+      case 'High': return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
+      case 'Medium': return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
+      case 'Low': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
+      default: return 'text-[var(--text-secondary)]';
     }
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h3 className="text-white font-bold text-2xl flex items-center gap-2">
-           Gestión de Tareas
-          <span className="text-xs font-normal text-slate-500 bg-white/5 px-2 py-1 rounded-full border border-white/5">
-            {tasks.length} Total
-          </span>
-        </h3>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter uppercase">{i18n.language === 'es' ? 'Gestión de Tareas' : 'Task Management'}</h1>
+          <p className="text-[var(--text-secondary)] font-bold text-[10px] uppercase tracking-[0.3em] mt-2">
+            {tasks.length} {i18n.language === 'es' ? 'Asignaciones Activas' : 'Active Assignments'}
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)] group-focus-within:text-rc-teal transition-colors" />
             <input 
-              className="bg-slate-950/50 border border-white/5 rounded-xl py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-cyan-500 transition-all outline-none"
-              placeholder="Buscar tareas..."
+              className="bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl py-3 pl-12 pr-6 text-xs font-medium focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all outline-none md:w-64 w-full"
+              placeholder={i18n.language === 'es' ? 'Buscar tareas...' : 'Search tasks...'}
             />
           </div>
-          <button className="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
-            <Plus size={18} /> Nueva Tarea
+          <button className="bg-rc-teal hover:shadow-xl hover:shadow-rc-teal/20 text-white px-6 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all">
+            <Plus size={18} /> {i18n.language === 'es' ? 'Nueva Tarea' : 'New Task'}
           </button>
         </div>
       </div>
 
-      <div className="glass-card rounded-2xl overflow-hidden border border-white/5">
+      <div className="glass-card rounded-[32px] overflow-hidden border border-[var(--glass-border)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-white/5 border-b border-white/5">
-                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Estado</th>
-                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Tarea / Proyecto</th>
-                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Prioridad</th>
-                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-widest text-center">Vencimiento</th>
-                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-widest text-right">Acciones</th>
+              <tr className="bg-black/5 dark:bg-white/5 border-b border-[var(--glass-border)]">
+                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">STATE</th>
+                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">TASK / PROJECT</th>
+                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">PRIORITY</th>
+                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-center">DUE DATE</th>
+                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-right">ACTIONS</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-[var(--glass-border)]">
               {tasks.map((task, idx) => (
                 <motion.tr 
                   key={task.id}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="hover:bg-white/5 transition-all group"
+                  transition={{ delay: idx * 0.05 }}
+                  className="hover:bg-black/5 dark:hover:bg-white/5 transition-all group cursor-pointer"
                 >
-                  <td className="p-4">
+                  <td className="p-6">
                     {task.status === 'Closed' ? (
-                      <CheckCircle2 size={18} className="text-emerald-500" />
+                      <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500">
+                        <CheckCircle2 size={18} />
+                      </div>
                     ) : (
-                      <Circle size={18} className="text-slate-700" />
+                      <div className="w-10 h-10 bg-black/5 dark:bg-white/5 rounded-xl flex items-center justify-center text-[var(--text-secondary)]">
+                        <Circle size={18} />
+                      </div>
                     )}
                   </td>
-                  <td className="p-4">
-                    <div className="font-semibold text-white text-sm group-hover:text-cyan-400 transition-colors">
+                  <td className="p-6">
+                    <div className="font-black text-[var(--text-primary)] text-sm tracking-tight group-hover:text-rc-teal transition-colors uppercase">
                       {task.title}
                     </div>
-                    <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                      <Tag size={12} /> {task.project}
+                    <div className="text-[10px] font-bold text-[var(--text-secondary)] mt-1 flex items-center gap-1 uppercase tracking-tight">
+                      <Tag size={12} className="text-rc-teal" /> {task.project}
                     </div>
                   </td>
-                  <td className="p-4">
-                    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center w-fit gap-1 ${getPriorityColor(task.priority)}`}>
+                  <td className="p-6">
+                    <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center w-fit gap-2 border ${getPriorityColor(task.priority)} transition-all`}>
                       <Flag size={10} /> {task.priority}
                     </span>
                   </td>
-                  <td className="p-4 text-center">
-                    <div className="flex items-center justify-center gap-2 text-slate-400 text-xs">
-                      <Clock size={14} /> {task.dueDate}
+                  <td className="p-6 text-center">
+                    <div className="flex items-center justify-center gap-2 text-[var(--text-secondary)] text-[11px] font-bold">
+                      <Clock size={14} className="text-rc-teal" /> {task.dueDate}
                     </div>
                   </td>
-                  <td className="p-4 text-right">
-                    <button className="text-slate-600 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-all">
-                      <MoreVertical size={16} />
+                  <td className="p-6 text-right">
+                    <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-3 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-all">
+                      <MoreVertical size={20} />
                     </button>
                   </td>
                 </motion.tr>
@@ -120,6 +126,4 @@ const TaskManager = () => {
       </div>
     </div>
   );
-};
-
 export default TaskManager;

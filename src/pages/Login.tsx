@@ -31,14 +31,14 @@ const Login = () => {
         animate={{ opacity: 1, y: 0 }}
         className="glass-card w-full max-w-md p-8 rounded-2xl relative overflow-hidden"
       >
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-blue-600" />
+        <div className="absolute top-0 left-0 w-full h-1 bg-rc-teal" />
         
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-4 border border-cyan-500/20">
-            <LayoutDashboard className="w-8 h-8 text-cyan-400" />
+          <div className="w-20 h-20 bg-rc-teal/10 rounded-[32px] flex items-center justify-center mb-6 border border-rc-teal/20 shadow-inner">
+             <div className="w-12 h-12 bg-rc-teal rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-rc-teal/20">Rc</div>
           </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Elite Status</h1>
-          <p className="text-slate-400 mt-2">Executive Project Dashboard</p>
+          <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter uppercase">Elite Dashboard</h1>
+          <p className="text-[var(--text-secondary)] mt-2 font-bold text-[10px] uppercase tracking-[0.3em]">Rc506 Solutions</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,9 +89,9 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 group transition-all shadow-lg shadow-cyan-900/20 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+            className="w-full bg-rc-teal hover:shadow-2xl hover:shadow-rc-teal/30 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 group transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-4 uppercase text-[10px] tracking-[0.2em]"
           >
-            {loading ? 'Validando...' : 'Entrar al Tablero'}
+            {loading ? 'Validando...' : 'Entrar al Ecosistema'}
             {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
           </button>
         </form>
