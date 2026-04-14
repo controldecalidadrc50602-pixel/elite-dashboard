@@ -38,13 +38,24 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.client) return;
+    if (!formData.client?.trim()) {
+      alert(t('projects.name_required'));
+      return;
+    }
+
+    // Filter out services with empty names
+    const cleanServices = (formData.services || []).filter(s => s.name?.trim() !== '');
+    
+    if (cleanServices.length === 0 && formData.services && formData.services.length > 0) {
+       alert(t('projects.services_required'));
+       return;
+    }
 
     const finalProject: Project = {
       id: project?.id || Math.random().toString(36).substr(2, 9),
-      client: formData.client!,
+      client: formData.client.trim(),
       startDate: formData.startDate!,
-      services: formData.services || [],
+      services: cleanServices,
       evaluations: formData.evaluations || [],
       status: formData.status as any || 'Óptimo'
     };
@@ -52,6 +63,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
     onSave(finalProject);
     onClose();
   };
+
 
   return createPortal(
     <AnimatePresence>

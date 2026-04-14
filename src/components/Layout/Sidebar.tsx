@@ -47,8 +47,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
     >
       {/* Logo Section */}
       <div className="p-6 flex items-center gap-3 overflow-hidden">
-        <div className="w-10 h-10 min-w-[40px] bg-rc-teal rounded-xl flex items-center justify-center shadow-lg shadow-rc-teal/20">
-          <span className="text-white font-black text-xl">Rc</span>
+        <div className="w-10 h-10 min-w-[40px] bg-gradient-to-br from-rc-teal to-rc-teal/60 rounded-xl flex items-center justify-center shadow-lg shadow-rc-teal/20 border border-white/10 group">
+          <span className="text-white font-black text-xs uppercase tracking-tighter group-hover:scale-110 transition-transform">Rc506</span>
         </div>
         {!isCollapsed && (
           <motion.div 
@@ -56,8 +56,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
             animate={{ opacity: 1 }}
             className="flex flex-col"
           >
-            <span className="text-lg font-black tracking-tighter text-[var(--text-primary)]">Elite Dashboard</span>
-            <span className="text-[10px] font-bold text-rc-teal uppercase tracking-widest">Rc506 Solutions</span>
+            <span className="text-xl font-black tracking-tighter text-[var(--text-primary)] leading-none italic">ELITE</span>
+            <span className="text-[10px] font-bold text-rc-teal uppercase tracking-[0.2em]">Dashboard</span>
           </motion.div>
         )}
       </div>
@@ -96,8 +96,35 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
         ))}
       </nav>
 
-      {/* Footer Actions */}
+      {/* User Information & Settings */}
       <div className="p-4 space-y-2 border-t border-[var(--glass-border)] px-4 py-6">
+        {/* User Identity Section */}
+        <div className={`flex items-center gap-3 p-3 mb-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] transition-all ${isCollapsed ? 'justify-center' : ''}`}>
+           {user?.photoURL ? (
+             <img 
+               src={user.photoURL} 
+               alt={user.displayName || 'User'} 
+               className="w-8 h-8 rounded-full border-2 border-rc-teal/30 object-cover"
+             />
+           ) : (
+             <div className="w-8 h-8 rounded-full bg-rc-teal/20 flex items-center justify-center border-2 border-rc-teal/30">
+                <span className="text-[10px] font-black text-rc-teal">
+                  {(user?.displayName || 'U').charAt(0).toUpperCase()}
+                </span>
+             </div>
+           )}
+           {!isCollapsed && (
+             <div className="flex flex-col min-w-0">
+                <span className="text-[11px] font-black text-[var(--text-primary)] truncate uppercase tracking-tight">
+                  {user?.displayName || 'Elite User'}
+                </span>
+                <span className="text-[9px] font-bold text-rc-teal truncate tracking-widest uppercase opacity-60">
+                  {user?.email?.split('@')[0]}
+                </span>
+             </div>
+           )}
+        </div>
+
         <button 
           onClick={toggleTheme}
           className="w-full flex items-center gap-4 p-3 text-[var(--text-secondary)] hover:text-rc-teal transition-colors rounded-xl hover:bg-black/5 dark:hover:bg-white/5"
@@ -130,6 +157,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
           {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
       </div>
+
     </motion.aside>
   );
 };

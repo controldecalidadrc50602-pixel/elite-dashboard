@@ -432,12 +432,35 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
             </AnimatePresence>
           </motion.div>
 
-          {filteredProjects.length === 0 && (
+          {projects.length === 0 ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="py-20 flex flex-col items-center justify-center text-center space-y-6 glass-card rounded-[40px] border-dashed border-2 border-rc-teal/20"
+            >
+              <div className="w-20 h-20 bg-rc-teal/10 rounded-full flex items-center justify-center text-rc-teal animate-bounce">
+                <Plus size={40} />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tighter uppercase">{t('dashboard.welcome_ready')}</h3>
+                <p className="text-[var(--text-secondary)] font-medium text-sm max-w-xs mx-auto">
+                  {t('dashboard.first_client_desc')}
+                </p>
+              </div>
+              <button 
+                onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
+                className="bg-rc-teal text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-rc-teal/30 hover:scale-110 transition-all flex items-center gap-3"
+              >
+                <Plus size={18} /> {t('projects.newProject')}
+              </button>
+            </motion.div>
+          ) : filteredProjects.length === 0 && (
             <div className="py-20 flex flex-col items-center justify-center space-y-4 opacity-40">
               <Search size={48} className="text-rc-teal" />
-              <p className="font-bold text-sm tracking-widest uppercase">{t('dashboard.no_clients')}</p>
+              <p className="font-bold text-sm tracking-widest uppercase">{t('dashboard.no_results')}</p>
             </div>
           )}
+
         </div>
       )}
 
