@@ -14,16 +14,21 @@ import {
   TrendingUp,
   Bell,
   ArrowRight,
-  ShieldAlert
+  ShieldAlert,
+  Clock,
+  CheckCircle2,
+  Circle,
+  Flag
 } from 'lucide-react';
 import ProjectCard from '../components/ProjectCard';
-import TaskManager from '../components/TaskManager';
+import TaskManager, { Task } from '../components/TaskManager';
 import ProjectDetailsSlideover from '../components/ProjectDetailsSlideover';
 import ProjectModal from '../components/Modals/ProjectModal';
 import StatCard from '../components/common/StatCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { isFirebaseConfigured } from '../lib/firebase';
 import { projectService } from '../services/projectService';
+import { taskService } from '../services/taskService';
 import { initialProjects } from '../lib/mockData';
 
 export interface ClientService {
@@ -70,8 +75,16 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [now, setNow] = useState(new Date());
+
+  // Timer update for tasks
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(interval);
+  }, []);
   
   // Modals / Slideover State
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -82,10 +95,14 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await projectService.getProjects();
-        setProjects(data.length > 0 ? data : initialProjects);
+        const [projectsData, tasksData] = await Promise.all([
+          projectService.getProjects(),
+          taskService.getTasks()
+        ]);
+        setProjects(projectsData.length > 0 ? projectsData : initialProjects);
+        setTasks(tasksData);
       } catch (err) {
-        console.error('Error loading projects:', err);
+        console.error('Error loading data:', err);
       } finally {
         setLoading(false);
       }
@@ -177,6 +194,20 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
      });
      return allAlerts.sort((a, b) => new Date(b.alert.date).getTime() - new Date(a.alert.date).getTime()).slice(0, 3);
   }, [projects]);
+
+  const getElapsedTime = (startTime: string) => {
+    const start = new Date(startTime);
+    const diff = now.getTime() - start.getTime();
+    if (diff < 0) return 'Por iniciar';
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${mins}m`;
+  };
+
+  const isOverdue = (endTime?: string) => {
+    if (!endTime) return false;
+    return new Date(endTime) < now;
+  };
 
   const handleSaveProject = async (project: Project) => {
     let newProjects;
@@ -365,6 +396,75 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                       </div>
                    </div>
                 </div>
+             </div>
+          </div>
+
+          {/* Elite Task Center - NEW SECTION */}
+          <div className="glass-card p-10 rounded-[48px] border border-white/5 relative overflow-hidden">
+             <div className="flex items-center justify-between mb-10 relative z-10">
+                <div className="flex items-center gap-4">
+                   <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal border border-rc-teal/20 shadow-inner">
+                      <Clock size={24} className="animate-pulse" />
+                   </div>
+                   <div>
+                      <h3 className="text-lg font-black text-[var(--text-primary)] uppercase tracking-[0.3em]">Centro de Operaciones</h3>
+                      <p className="text-[10px] font-bold text-rc-teal/60 uppercase tracking-widest leading-none mt-1">Tareas Activas y Responsables</p>
+                   </div>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-2xl border border-white/5">
+                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{tasks.filter(t => t.status !== 'Closed').length} Tareas Pendientes</div>
+                </div>
+             </div>
+
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+                {tasks.filter(t => t.status !== 'Closed').slice(0, 4).map((task, idx) => (
+                   <motion.div 
+                      key={task.id}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="bg-slate-900/40 border border-white/5 p-6 rounded-[32px] hover:bg-slate-900/60 transition-all group"
+                   >
+                      <div className="flex items-center justify-between mb-4">
+                         <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${
+                            task.priority === 'High' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' : 
+                            task.priority === 'Medium' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 
+                            'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                         }`}>
+                            {task.priority}
+                         </span>
+                         <div className={`w-2 h-2 rounded-full ${isOverdue(task.endTime) ? 'bg-rose-500 animate-ping' : 'bg-rc-teal'}`} />
+                      </div>
+                      
+                      <h4 className="text-sm font-black text-white/90 uppercase tracking-tight line-clamp-2 mb-4 group-hover:text-rc-teal transition-colors">
+                         {task.title}
+                      </h4>
+
+                      <div className="space-y-4 mt-auto">
+                         <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-rc-teal/10 border border-rc-teal/20 flex items-center justify-center text-rc-teal text-[10px] font-black">
+                               {task.assignedTo?.split(' ').map(n => n[0]).join('') || '?'}
+                            </div>
+                            <div className="flex flex-col">
+                               <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none">Responsable</span>
+                               <span className="text-[11px] font-bold text-slate-300 leading-tight">{task.assignedTo}</span>
+                            </div>
+                         </div>
+
+                         <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                            <div className="flex flex-col">
+                               <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Tiempo</span>
+                               <span className="text-[11px] font-black text-rc-teal tabular-nums">{getElapsedTime(task.startTime)}</span>
+                            </div>
+                            <div className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${
+                               task.status === 'In Progress' ? 'bg-rc-teal/10 text-rc-teal' : 'bg-white/5 text-slate-400'
+                            }`}>
+                               {task.status}
+                            </div>
+                         </div>
+                      </div>
+                   </motion.div>
+                ))}
              </div>
           </div>
 
