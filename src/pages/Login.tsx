@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Lock, Mail, ArrowRight, ShieldCheck, Chrome } from 'lucide-react';
+import { Lock, Mail, ArrowRight, ShieldCheck, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Login = () => {
@@ -119,7 +119,7 @@ const Login = () => {
           disabled={loading}
           className="w-full bg-white/5 hover:bg-white/10 border border-white/5 text-slate-300 font-black py-4 rounded-2xl flex items-center justify-center gap-3 transition-all text-[10px] uppercase tracking-widest group"
         >
-          <Chrome size={18} className="text-rc-teal group-hover:rotate-12 transition-transform" />
+          <Globe size={18} className="text-rc-teal group-hover:rotate-12 transition-transform" />
           Acceso con Google
         </button>
 
