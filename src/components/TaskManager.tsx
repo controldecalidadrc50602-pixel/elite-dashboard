@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Plus, 
@@ -8,28 +8,91 @@ import {
   CheckCircle2, 
   Circle,
   MoreVertical,
-  Flag
+  Flag,
+  Trash2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { taskService } from '../services/taskService';
+import TaskModal from './Modals/TaskModal';
 
-interface Task {
+export interface SubTask {
   id: string;
   title: string;
-  project: string;
-  status: 'Open' | 'In Progress' | 'Closed';
-  priority: 'High' | 'Medium' | 'Low';
-  dueDate: string;
+  completed: boolean;
 }
 
-const initialTasks: Task[] = [
-  { id: '1', title: 'Auditoría de Seguridad - Fase 1', project: 'Finanzas Globales', status: 'In Progress', priority: 'High', dueDate: '2024-04-15' },
-  { id: '2', title: 'Mantenimiento de Servidores Cloud', project: 'Industrias Norte', status: 'Open', priority: 'Medium', dueDate: '2024-04-20' },
-  { id: '3', title: 'Actualización de Middleware V3', project: 'Finanzas Globales', status: 'Closed', priority: 'Low', dueDate: '2024-04-10' },
-];
+export interface Task {
+  id: string;
+  title: string;
+  projectId: string;
+  projectName: string;
+  status: 'Open' | 'In Progress' | 'Closed';
+  priority: 'High' | 'Medium' | 'Low';
+  assignedTo: string;
+  area: string;
+  startTime: string; // ISO
+  endTime?: string; // ISO (Target)
+  subtasks: SubTask[];
+  createdAt: string;
+}
+
+
+
 
 const TaskManager = () => {
-  const { t, i18n } = useTranslation();
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const { t } = useTranslation();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [search, setSearch] = useState('');
+  const [now, setNow] = useState(new Date());
+
+  // Timer update every minute
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  const loadTasks = async () => {
+    const data = await taskService.getTasks();
+    setTasks(data);
+    setLoading(false);
+  };
+
+  const handleSave = async (task: Task) => {
+    let updated;
+    if (editingTask) {
+      updated = await taskService.updateTask(task, tasks);
+    } else {
+      updated = await taskService.addTask(task, tasks);
+    }
+    setTasks(updated);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm('¿Eliminar esta tarea definitivamente?')) {
+       const updated = await taskService.deleteTask(id, tasks);
+       setTasks(updated);
+    }
+  };
+
+  const toggleSubtask = async (taskId: string, subtaskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    const updatedSubtasks = task.subtasks.map(st => 
+      st.id === subtaskId ? { ...st, completed: !st.completed } : st
+    );
+
+    const updatedTask = { ...task, subtasks: updatedSubtasks };
+    const newTasks = await taskService.updateTask(updatedTask, tasks);
+    setTasks(newTasks);
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -39,6 +102,29 @@ const TaskManager = () => {
       default: return 'text-[var(--text-secondary)]';
     }
   };
+
+  const getElapsedTime = (startTime: string) => {
+    const start = new Date(startTime);
+    const diff = now.getTime() - start.getTime();
+    if (diff < 0) return 'Por iniciar';
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    
+    if (days > 0) return `${days}d ${hours}h`;
+    return `${hours}h transcurridas`;
+  };
+
+  const isOverdue = (endTime?: string) => {
+    if (!endTime) return false;
+    return new Date(endTime) < now;
+  };
+
+  const filteredTasks = tasks.filter(t => 
+    t.title.toLowerCase().includes(search.toLowerCase()) || 
+    t.area.toLowerCase().includes(search.toLowerCase()) ||
+    t.assignedTo.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
@@ -53,11 +139,16 @@ const TaskManager = () => {
           <div className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)] group-focus-within:text-rc-teal transition-colors" />
             <input 
+              value={search}
+              onChange={e => setSearch(e.target.value)}
               className="bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl py-3 pl-12 pr-6 text-xs font-medium focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all outline-none md:w-64 w-full"
               placeholder={t('tasks.search_placeholder')}
             />
           </div>
-          <button className="bg-rc-teal hover:shadow-xl hover:shadow-rc-teal/20 text-white px-6 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all">
+          <button 
+            onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
+            className="bg-rc-teal hover:shadow-xl hover:shadow-rc-teal/20 text-white px-6 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all hover:scale-105"
+          >
             <Plus size={18} /> {t('tasks.new_task')}
           </button>
         </div>
@@ -68,64 +159,117 @@ const TaskManager = () => {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-black/5 dark:bg-white/5 border-b border-[var(--glass-border)]">
-                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('tasks.table_state')}</th>
-                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('tasks.table_task_project')}</th>
-                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('tasks.table_priority')}</th>
-                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-center">{t('tasks.table_due_date')}</th>
-                <th className="p-6 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-right">{t('tasks.table_actions')}</th>
+                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">{t('tasks.table_state')}</th>
+                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">Tarea / Responsable</th>
+                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">Departamento</th>
+                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">Prioridad</th>
+                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] text-center">Tiempo / Progreso</th>
+                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] text-right">{t('tasks.table_actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--glass-border)]">
-              {tasks.map((task, idx) => (
+              {filteredTasks.map((task, idx) => (
                 <motion.tr 
                   key={task.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   className="hover:bg-black/5 dark:hover:bg-white/5 transition-all group cursor-pointer"
                 >
                   <td className="p-6">
-                    {task.status === 'Closed' ? (
-                      <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500">
-                        <CheckCircle2 size={18} />
-                      </div>
-                    ) : (
-                      <div className="w-10 h-10 bg-black/5 dark:bg-white/5 rounded-xl flex items-center justify-center text-[var(--text-secondary)]">
-                        <Circle size={18} />
-                      </div>
-                    )}
+                    <button 
+                      onClick={() => {
+                        const newStatus = task.status === 'Closed' ? 'Open' : 'Closed';
+                        handleSave({ ...task, status: newStatus });
+                      }}
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                        task.status === 'Closed' 
+                          ? 'bg-emerald-500/10 text-emerald-500 ring-1 ring-emerald-500/20' 
+                          : 'bg-black/5 dark:bg-white/5 text-[var(--text-secondary)] hover:bg-rc-teal/10 hover:text-rc-teal transition-colors'
+                      }`}
+                    >
+                      {task.status === 'Closed' ? <CheckCircle2 size={18} /> : <Circle size={18} />}
+                    </button>
                   </td>
                   <td className="p-6">
-                    <div className="font-black text-[var(--text-primary)] text-sm tracking-tight group-hover:text-rc-teal transition-colors uppercase">
+                    <div className="font-black text-[var(--text-primary)] text-sm tracking-tight group-hover:text-rc-teal transition-colors uppercase cursor-pointer" onClick={() => { setEditingTask(task); setIsModalOpen(true); }}>
                       {task.title}
                     </div>
-                    <div className="text-[10px] font-bold text-[var(--text-secondary)] mt-1 flex items-center gap-1 uppercase tracking-tight">
-                      <Tag size={12} className="text-rc-teal" /> {task.project}
+                    <div className="text-[10px] font-bold text-[var(--text-secondary)] mt-1 flex items-center gap-2 uppercase tracking-tight">
+                      <span className="w-4 h-[1px] bg-rc-teal/30" /> {task.assignedTo || 'Sin asignar'}
                     </div>
                   </td>
                   <td className="p-6">
-                    <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center w-fit gap-2 border ${getPriorityColor(task.priority)} transition-all`}>
-                      <Flag size={10} /> {t(`tasks.priority_${task.priority.toLowerCase()}`)}
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] font-black text-rc-teal uppercase tracking-widest">{task.area}</span>
+                      <span className="text-[9px] font-bold text-[var(--text-secondary)] tracking-tight opacity-60 uppercase">{task.projectName}</span>
+                    </div>
+                  </td>
+                  <td className="p-6">
+                    <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center w-fit gap-2 border ${getPriorityColor(task.priority)}`}>
+                      <Flag size={10} /> {task.priority}
                     </span>
                   </td>
-                  <td className="p-6 text-center">
-                    <div className="flex items-center justify-center gap-2 text-[var(--text-secondary)] text-[11px] font-bold">
-                      <Clock size={14} className="text-rc-teal" /> {task.dueDate}
+                  <td className="p-6">
+                    <div className="flex flex-col items-center gap-2">
+                       {task.status !== 'Closed' ? (
+                         <div className={`px-4 py-1.5 rounded-2xl flex items-center gap-2 ${isOverdue(task.endTime) ? 'bg-rose-500/10 text-rose-500 animate-pulse' : 'bg-rc-teal/10 text-rc-teal'}`}>
+                            <Clock size={12} />
+                            <span className="text-[10px] font-black tabular-nums">{getElapsedTime(task.startTime)}</span>
+                         </div>
+                       ) : (
+                         <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-4 py-1.5 rounded-2xl uppercase tracking-widest italic">Finalizada</span>
+                       )}
+                       {task.subtasks.length > 0 && (
+                         <div className="w-32 h-1 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-rc-teal transition-all duration-1000" 
+                              style={{ width: `${(task.subtasks.filter(s => s.completed).length / task.subtasks.length) * 100}%` }}
+                            />
+                         </div>
+                       )}
                     </div>
                   </td>
                   <td className="p-6 text-right">
-                    <button className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-3 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-all">
-                      <MoreVertical size={20} />
-                    </button>
+                    <div className="flex justify-end gap-2">
+                      <button 
+                        onClick={() => { setEditingTask(task); setIsModalOpen(true); }}
+                        className="text-[var(--text-secondary)] hover:text-rc-teal p-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+                      >
+                        <Tag size={16} />
+                      </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleDelete(task.id); }}
+                        className="text-rose-500/50 hover:text-rose-500 p-3 rounded-xl hover:bg-rose-500/10 transition-all"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </motion.tr>
               ))}
+              {filteredTasks.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="py-20 text-center opacity-30">
+                     <Search size={40} className="mx-auto mb-4" />
+                     <p className="text-[10px] font-black uppercase tracking-[0.3em]">No se encontraron tareas profesionales</p>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
+
+      <TaskModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSave}
+        task={editingTask}
+      />
     </div>
   );
 };
+
 
 export default TaskManager;

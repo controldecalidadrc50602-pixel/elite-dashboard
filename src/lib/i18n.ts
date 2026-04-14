@@ -46,19 +46,19 @@ const resources = {
         oct: 'Oct', nov: 'Nov', dec: 'Dec', jan: 'Jan', feb: 'Feb', mar: 'Mar'
       },
       tasks: {
-        title: 'Task Management',
-        active_assignments: 'Active Assignments',
-        search_placeholder: 'Search tasks...',
-        new_task: 'New Task',
-        table_state: 'STATE',
-        table_task_project: 'TASK / PROJECT',
-        table_priority: 'PRIORITY',
-        table_due_date: 'DUE DATE',
-        table_actions: 'ACTIONS',
-        notes_placeholder: 'Qualitative notes...',
-        priority_high: 'High',
-        priority_medium: 'Medium',
-        priority_low: 'Low'
+        title: 'Strategic Account Control',
+        active_assignments: 'Active Professional Goals',
+        search_placeholder: 'Filter by area, responsibility or name...',
+        new_task: 'New Professional Task',
+        table_state: 'STATUS',
+        table_task_project: 'GOAL / UNIT',
+        table_priority: 'LEVEL',
+        table_due_date: 'TIMELINE',
+        table_actions: 'CONTROL',
+        notes_placeholder: 'Qualitative insights...',
+        priority_high: 'Critical',
+        priority_medium: 'Strategic',
+        priority_low: 'Tactical'
       },
       projects: {
         title: 'Clients Portfolio',
@@ -157,8 +157,20 @@ const resources = {
         table_status: 'ESTADO',
         no_records: 'Sin registros'
       },
-      months: {
-        oct: 'Oct', nov: 'Nov', dec: 'Dic', jan: 'Ene', feb: 'Feb', mar: 'Mar'
+      tasks: {
+        title: 'Control de Cuentas Estratégicas',
+        active_assignments: 'Objetivos Profesionales Activos',
+        search_placeholder: 'Filtrar por área, responsable o nombre...',
+        new_task: 'Nueva Tarea Profesional',
+        table_state: 'ESTADO',
+        table_task_project: 'OBJETIVO / UNIDAD',
+        table_priority: 'PRIORIDAD',
+        table_due_date: 'CRONOGRAMA',
+        table_actions: 'ACCIONES',
+        notes_placeholder: 'Insights cualitativos...',
+        priority_high: 'Crítico',
+        priority_medium: 'Estratégico',
+        priority_low: 'Táctico'
       },
       projects: {
         title: 'Portafolio de Clientes',
