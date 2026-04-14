@@ -64,15 +64,28 @@ export const brandingService = {
       return () => {};
     }
 
-    const docRef = doc(db, BRANDING_DOC_PATH);
-    return onSnapshot(docRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data() as BrandingConfig;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        callback(data);
-      } else {
-        callback(this.defaultConfig);
-      }
-    });
+    try {
+      const docRef = doc(db, BRANDING_DOC_PATH);
+      return onSnapshot(docRef, 
+        (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data() as BrandingConfig;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            callback(data);
+          } else {
+            callback(this.defaultConfig);
+          }
+        },
+        (error) => {
+          console.error('🔥 Branding Sync Error:', error);
+          // Fallback to local storage if server fails
+          this.getBranding().then(callback);
+        }
+      );
+    } catch (err) {
+      console.error('🔥 Critical Branding Logic Error:', err);
+      this.getBranding().then(callback);
+      return () => {};
+    }
   }
 };
