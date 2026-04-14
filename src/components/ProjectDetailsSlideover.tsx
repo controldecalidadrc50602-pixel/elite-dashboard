@@ -172,10 +172,12 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                      </div>
                   </div>
                   <div className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${
-                     project.evaluations[0]?.status === 'Stable' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
-                     project.evaluations[0]?.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+                     project?.evaluations?.[0]?.status === 'Stable' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
+                     project?.evaluations?.[0]?.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 
+                     project?.evaluations?.[0]?.status === 'Growth' ? 'bg-rc-teal/10 text-rc-teal border-rc-teal/20' :
+                     'bg-rose-500/10 text-rose-500 border-rose-500/20'
                   }`}>
-                     {project.evaluations[0]?.status ? t(`status.${project.evaluations[0].status.toLowerCase().replace(' ', '')}`) : 'N/A'}
+                     {project?.evaluations?.[0]?.status ? t(`status.${project.evaluations[0].status.toLowerCase().replace(' ', '')}`) : 'N/A'}
                   </div>
                </div>
             </div>
@@ -218,7 +220,7 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                   <div className="space-y-6 animate-in fade-in duration-300">
                      <div className="space-y-3">
                         <h4 className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] px-1 flex items-center justify-between">
-                           <span>{t('projects.activeServices')} ({project.services.length})</span>
+                           <span>{t('projects.activeServices')} ({project?.services?.length || 0})</span>
                         </h4>
                         <div className="space-y-3">
                            {project.services.map(service => (

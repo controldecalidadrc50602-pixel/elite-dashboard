@@ -101,14 +101,15 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
   }, [projects, searchQuery]);
 
   const stats = useMemo(() => {
-    const riskCount = projects.filter(p => p.evaluations[0]?.status === 'At Risk' || p.evaluations[0]?.status === 'Critical').length;
+    const riskCount = projects.filter(p => p?.evaluations?.[0]?.status === 'At Risk' || p?.evaluations?.[0]?.status === 'Critical').length;
+    const totalQuantitative = projects.reduce((acc, p) => acc + (p?.evaluations?.[0]?.quantitative || 0), 0);
     const avgScore = projects.length > 0 
-      ? (projects.reduce((acc, p) => acc + (p.evaluations[0]?.quantitative || 0), 0) / projects.length).toFixed(1)
+      ? (totalQuantitative / projects.length).toFixed(1)
       : '0.0';
 
     return {
       total: projects.length,
-      optimos: projects.filter(p => p.status === 'Óptimo').length,
+      optimos: projects.filter(p => p?.status === 'Óptimo').length,
       riesgo: riskCount,
       avgScore
     };
@@ -125,34 +126,35 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
         { name: t('months.mar'), val: 0, count: 0 },
      ];
 
-     // Simple mapping logic for demonstration (assuming evaluations are recent)
-     projects.forEach(p => {
-        p.evaluations.forEach(ev => {
-           // Mapping evaluations to dummy months based on index for chart visual
-           const idx = ev.month % 6; 
-           months[idx].val += ev.quantitative;
-           months[idx].count += 1;
+     if (projects.length > 0) {
+        projects.forEach(p => {
+           p.evaluations?.forEach(ev => {
+              const idx = (ev.month || 0) % 6; 
+              months[idx].val += ev.quantitative || 0;
+              months[idx].count += 1;
+           });
         });
-     });
+     }
 
      const points = months.map((m, i) => {
-        const avg = m.count > 0 ? m.val / m.count : 3; // default base line
+        const avg = m.count > 0 ? m.val / m.count : 3; 
         const x = (i / 5) * 400;
-        const y = 120 - (avg * 20); // Scale 0-5 to 0-120
+        const y = 120 - (avg * 20); 
         return `${x},${y}`;
      });
 
      return {
         path: `M${points.join(' L')}`,
-        points: months
+        points: months,
+        lastY: points[points.length - 1]?.split(',')[1] || 60
      };
   }, [projects, t]);
 
   const urgencyStats = useMemo(() => {
      const total = projects.length || 1;
-     const optimized = projects.filter(p => p.evaluations[0]?.status === 'Stable' || p.evaluations[0]?.status === 'Growth').length;
-     const attention = projects.filter(p => p.evaluations[0]?.status === 'At Risk').length;
-     const critical = projects.filter(p => p.evaluations[0]?.status === 'Critical').length;
+     const optimized = projects.filter(p => p?.evaluations?.[0]?.status === 'Stable' || p?.evaluations?.[0]?.status === 'Growth').length;
+     const attention = projects.filter(p => p?.evaluations?.[0]?.status === 'At Risk').length;
+     const critical = projects.filter(p => p?.evaluations?.[0]?.status === 'Critical').length;
 
      return {
         optimized: Math.round((optimized / total) * 100),
@@ -285,7 +287,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                         strokeWidth="3" 
                         strokeLinecap="round" 
                       />
-                      <circle cx="400" cy={chartData.path.split(' ').pop()?.split(',')[1] || 25} r="4" fill="#3BC7AA" className="animate-pulse" />
+                      <circle cx="400" cy={chartData.lastY} r="4" fill="#3BC7AA" className="animate-pulse" />
                    </svg>
                    <div className="flex justify-between mt-4 text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest">
                       {chartData.points.map((m, i) => <span key={i}>{m.name}</span>)}

@@ -27,7 +27,7 @@ const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({
       onClick={onOpenDetail}
     >
       {/* Background Accent */}
-      <div className={`absolute -top-12 -right-12 w-24 h-24 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity ${statusStyle.split(' ')[1]}`} />
+      <div className={`absolute -top-12 -right-12 w-24 h-24 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity ${statusStyle?.split(' ')?.[1] || 'bg-slate-500/10'}`} />
 
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1 min-w-0">
@@ -62,7 +62,7 @@ const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({
                 <Layers size={16} />
             </div>
             <div>
-                <div className="text-[10px] font-black text-[var(--text-primary)] leading-none">{project.services.length}</div>
+                <div className="text-[10px] font-black text-[var(--text-primary)] leading-none">{project?.services?.length || 0}</div>
                 <div className="text-[8px] font-bold text-[var(--text-secondary)] uppercase tracking-tighter">{t('projects.activeServices')}</div>
             </div>
         </div>
