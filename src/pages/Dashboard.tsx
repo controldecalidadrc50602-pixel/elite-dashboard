@@ -540,17 +540,28 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
              </div>
           </div>
 
+          {/* TABLE HEADER - FOR CASCADE VIEW */}
+          <div className="px-11 py-3 flex items-center gap-4 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] opacity-40 border-b border-white/5">
+             <div className="w-1.5 h-1.5" /> {/* Spacer for dot */}
+             <div className="w-1/3">Cliente</div>
+             <div className="w-1/4 hidden md:block">Proyecto ID</div>
+             <div className="flex-1 hidden sm:block">Operaciones</div>
+             <div className="flex items-center gap-6 shrink-0 w-[120px] justify-end">
+                <span>Estado</span>
+             </div>
+          </div>
+
           <motion.div 
             layout
-            className="flex flex-col space-y-4"
+            className="flex flex-col"
           >
             <AnimatePresence mode="popLayout">
               {filteredProjects.map((project, idx) => (
                 <motion.div
                   key={project.id}
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
+                  transition={{ delay: idx * 0.03 }}
                   layout
                 >
                   <ProjectAccordion 
