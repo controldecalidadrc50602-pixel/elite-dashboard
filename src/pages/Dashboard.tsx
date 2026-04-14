@@ -594,15 +594,16 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                 <Plus size={18} /> {t('projects.newProject')}
               </button>
             </motion.div>
-          ) : filteredProjects.length === 0 && (
+          ) : filteredProjects.length === 0 ? (
             <div className="py-20 flex flex-col items-center justify-center space-y-4 opacity-40">
               <Search size={48} className="text-rc-teal" />
               <p className="font-bold text-sm tracking-widest uppercase">{t('dashboard.no_results')}</p>
             </div>
-          )}
-
+          ) : null}
         </div>
-         {/* VIEW: AUDIT VIEW (TABLE) */}
+      )}
+
+      {/* VIEW: AUDIT VIEW (TABLE) */}
       {activeTab === 'status' && (
         <div className="animate-in fade-in slide-in-from-right-4 duration-500">
            <div className="glass-card p-6 md:p-8 rounded-[32px] border border-[var(--glass-border)]">
