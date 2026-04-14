@@ -95,7 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loginWithGoogle,
       logout, 
       isAuthenticated: !!user,
-      isAdmin: user?.email === 'admin@admin.com' || user?.email?.endsWith('@rc506.com')
+      isAdmin: !!(user?.email === 'admin@admin.com' || user?.email?.endsWith('@rc506.com'))
     }}>
 
       {!loading && children}

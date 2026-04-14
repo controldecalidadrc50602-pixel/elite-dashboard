@@ -597,6 +597,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
          project={editingProject}
       />
     </div>
+    </div>
   );
 };
 
