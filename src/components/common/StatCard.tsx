@@ -33,11 +33,11 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, trend })
         <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">{title}</span>
         <div className="flex items-baseline gap-2">
            <h4 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter leading-none">{value}</h4>
-           {trend && (
-             <span className="text-[9px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/10">
-               {trend}
-             </span>
-           )}
+            {trend && (
+              <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/20 shadow-sm">
+                {trend}
+              </span>
+            )}
         </div>
       </div>
       

@@ -299,7 +299,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                             <stop offset="100%" stopColor="#3BC7AA" stopOpacity="1" />
                          </linearGradient>
                       </defs>
-                      <path d="M0,80 Q50,75 100,50 T200,60 T300,30 T400,45" fill="none" stroke="var(--text-secondary)" strokeWidth="1" strokeDasharray="6 6" opacity="0.2" />
+                      <path d="M0,80 Q50,75 100,50 T200,60 T300,30 T400,45" fill="none" stroke="var(--text-secondary)" strokeWidth="1" strokeDasharray="6 6" opacity="0.4" />
                       <motion.path 
                         initial={{ pathLength: 0, opacity: 0 }}
                         animate={{ pathLength: 1, opacity: 1 }}
@@ -318,7 +318,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                       />
                       <circle cx="400" cy={chartData.lastY} r="12" fill="#3BC7AA" opacity="0.1" className="animate-ping" />
                    </svg>
-                   <div className="flex justify-between mt-8 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                   <div className="flex justify-between mt-8 text-[9px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-[0.3em]">
                       {chartData.points.map((m, i) => <span key={i} className="hover:text-rc-teal transition-colors cursor-default">{m.name}</span>)}
                    </div>
                 </div>
@@ -417,14 +417,14 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                                {task.assignedTo?.split(' ').map(n => n[0]).join('') || '?'}
                             </div>
                             <div className="flex flex-col">
-                               <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none">Responsable</span>
-                               <span className="text-[11px] font-bold text-slate-300 leading-tight">{task.assignedTo}</span>
+                               <span className="text-[9px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest leading-none">Responsable</span>
+                               <span className="text-[11px] font-black text-slate-800 dark:text-slate-100 leading-tight">{task.assignedTo}</span>
                             </div>
                          </div>
 
                          <div className="pt-4 border-t border-white/5 flex items-center justify-between">
                             <div className="flex flex-col">
-                               <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Tiempo</span>
+                               <span className="text-[9px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">Tiempo</span>
                                <span className="text-[11px] font-black text-rc-teal tabular-nums">{getElapsedTime(task.startTime)}</span>
                             </div>
                             <div className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${

@@ -14,12 +14,12 @@
 }
 
 :root {
-  --bg-primary: #f8fafc;
+  --bg-primary: #f1f5f9;
   --bg-secondary: #ffffff;
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(0, 0, 0, 0.05);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(0, 0, 0, 0.1);
   --text-primary: #0f172a;
-  --text-secondary: #64748b;
+  --text-secondary: #475569;
   --accent-cyan: #3BC7AA;
   --sidebar-bg: #ffffff;
 }
@@ -43,7 +43,7 @@ body {
 }
 
 .glass-card {
-  @apply bg-[var(--card-bg)] backdrop-blur-xl border border-[var(--glass-border)] shadow-sm hover:shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)];
+  @apply bg-[var(--card-bg)] backdrop-blur-xl border border-[var(--glass-border)] shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)];
 }
 
 .glass-panel {
