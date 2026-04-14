@@ -602,9 +602,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
           )}
 
         </div>
-      )}
-
-      {/* VIEW: AUDIT VIEW (TABLE) */}
+         {/* VIEW: AUDIT VIEW (TABLE) */}
       {activeTab === 'status' && (
         <div className="animate-in fade-in slide-in-from-right-4 duration-500">
            <div className="glass-card p-6 md:p-8 rounded-[32px] border border-[var(--glass-border)]">
@@ -616,6 +614,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                     <div>
                        <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tighter">{t('projects.individualTitle')}</h3>
                        <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">{t('dashboard.audit_execution')}</p>
+                    </div>
                  </div>
               </div>
 
@@ -658,14 +657,15 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                                    {t(`status.${(p.evaluations[0]?.status || 'stable').toLowerCase().replace(' ', '')}`)}
                                 </span>
                              </td>
-                          </tr>
-                       ))}
-                    </tbody>
+                           </tr>
+                        ))}
+                     </tbody>
                  </table>
               </div>
            </div>
         </div>
       )}
+
 
       {activeTab === 'tasks' && <TaskManager />}
 
