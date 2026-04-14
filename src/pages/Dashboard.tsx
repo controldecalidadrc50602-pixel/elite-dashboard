@@ -22,7 +22,7 @@ import ProjectDetailsSlideover from '../components/ProjectDetailsSlideover';
 import ProjectModal from '../components/Modals/ProjectModal';
 import StatCard from '../components/common/StatCard';
 import { motion, AnimatePresence } from 'framer-motion';
-import { isSupabaseConfigured } from '../lib/supabase';
+import { isFirebaseConfigured } from '../lib/firebase';
 import { projectService } from '../services/projectService';
 import { initialProjects } from '../lib/mockData';
 
@@ -224,7 +224,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
   return (
     <div className="space-y-6">
       {/* Demo Banner */}
-      {!isSupabaseConfigured && (
+      {!isFirebaseConfigured && (
          <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
