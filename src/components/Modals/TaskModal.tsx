@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Task, SubTask } from '../TaskManager';
 import { projectService } from '../../services/projectService';
-import { Project } from '../../pages/Dashboard';
+import { Project } from '../../types/project';
 
 interface Props {
   isOpen: boolean;

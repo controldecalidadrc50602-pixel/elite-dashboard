@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { X, Save, Trash2, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Project } from '../../pages/Dashboard';
+import { Project, ClientService } from '../../types/project';
 
 interface Props {
   isOpen: boolean;
@@ -44,7 +44,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
     }
 
     // Filter out services with empty names
-    const cleanServices = (formData.services || []).filter(s => s.name?.trim() !== '');
+    const cleanServices = (formData.services || []).filter((s: ClientService) => s.name?.trim() !== '');
     
     if (cleanServices.length === 0 && formData.services && formData.services.length > 0) {
        alert(t('projects.services_required'));
@@ -156,7 +156,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                   </div>
 
                   <div className="space-y-3">
-                    {formData.services?.map((service, index) => (
+                    {formData.services?.map((service: ClientService, index: number) => (
                       <motion.div 
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -167,7 +167,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                           type="button"
                           onClick={() => setFormData({
                             ...formData,
-                            services: formData.services?.filter(s => s.id !== service.id)
+                            services: formData.services?.filter((s: ClientService) => s.id !== service.id)
                           })}
                           className="absolute top-4 right-4 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-rose-500/10 rounded-lg"
                         >
