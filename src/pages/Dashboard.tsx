@@ -20,7 +20,8 @@ import {
   Circle,
   Flag
 } from 'lucide-react';
-import ProjectCard from '../components/ProjectCard';
+import ProjectCard from '../components/ProjectCard'; // Keep it if needed elsewhere, but we will use Accordion here
+import ProjectAccordion from '../components/ProjectAccordion';
 import TaskManager, { Task } from '../components/TaskManager';
 import ProjectDetailsSlideover from '../components/ProjectDetailsSlideover';
 import ProjectModal from '../components/Modals/ProjectModal';
@@ -540,16 +541,23 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
           </div>
 
           <motion.div 
-             layout
-             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            layout
+            className="flex flex-col space-y-4"
           >
             <AnimatePresence mode="popLayout">
-              {filteredProjects.map(project => (
-                <ProjectCard 
-                  key={project.id} 
-                  project={project} 
-                  onOpenDetail={() => openProjectDetail(project)}
-                />
+              {filteredProjects.map((project, idx) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  layout
+                >
+                  <ProjectAccordion 
+                    project={project} 
+                    onOpenDetail={() => openProjectDetail(project)}
+                  />
+                </motion.div>
               ))}
             </AnimatePresence>
           </motion.div>
