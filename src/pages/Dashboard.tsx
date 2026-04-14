@@ -31,41 +31,12 @@ import { projectService } from '../services/projectService';
 import { taskService } from '../services/taskService';
 import { initialProjects } from '../lib/mockData';
 
-export interface ClientService {
-  id: string;
-  name: string;
-  description: string;
-  startDate: string;
-  score: number;
-}
-
-export interface Evaluation {
-  date?: string; // Fecha exacta de la evaluación
-  month: number;
-  year: number;
-  quantitative: number;
-  qualitative: string;
-  status: 'Stable' | 'At Risk' | 'Critical' | 'Growth';
-}
-
-export interface Alert {
-  id: string;
-  date: string;
-  type: 'Technical' | 'Operational' | 'Strategic';
-  severity: 'Low' | 'Medium' | 'High';
-  description: string;
-  status: 'Open' | 'Resolved';
-}
-
-export interface Project {
-  id: string;
-  client: string;
-  startDate: string;
-  services: ClientService[];
-  evaluations: Evaluation[];
-  alerts?: Alert[]; // Incidencias o situaciones críticas
-  status: 'Óptimo' | 'Aceptable' | 'Mejorable' | 'Deficiente';
-}
+import { 
+  Project, 
+  ClientService, 
+  Evaluation, 
+  Alert 
+} from '../types/project';
 
 interface DashboardProps {
   activeTab: 'overview' | 'clients' | 'status' | 'tasks';

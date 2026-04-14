@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Project } from '../pages/Dashboard';
+import { Project } from '../types/project';
 import { Calendar, Layers, Star, AlertTriangle, ShieldCheck, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 

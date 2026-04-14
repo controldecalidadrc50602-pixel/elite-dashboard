@@ -9,7 +9,7 @@ import {
   getDoc,
   writeBatch
 } from 'firebase/firestore';
-import { Project } from '../pages/Dashboard';
+import { Project } from '../types/project';
 
 const STORAGE_KEY = 'elite_projects';
 const PROJECTS_COLLECTION = 'projects';

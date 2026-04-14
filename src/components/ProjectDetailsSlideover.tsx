@@ -16,7 +16,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Project, ClientService, Evaluation, Alert } from '../pages/Dashboard';
+import { Project, Evaluation, Alert, ClientService } from '../types/project';
 
 interface Props {
   project: Project | null;
