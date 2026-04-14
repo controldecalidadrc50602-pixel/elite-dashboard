@@ -88,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-4 p-3.5 rounded-2xl transition-all group relative ${
+              className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all group relative ${
                 activeTab === item.id 
                   ? 'bg-rc-teal text-white shadow-lg shadow-rc-teal/20' 
                   : 'text-[var(--text-secondary)] hover:bg-black/5 dark:hover:bg-white/5 hover:text-[var(--text-primary)]'
@@ -130,26 +130,26 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
           )}
 
           {/* User Identity Section */}
-          <div className={`flex items-center gap-3 p-3 mb-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] transition-all ${isCollapsed ? 'justify-center' : ''}`}>
+          <div className={`flex items-center gap-3 p-2.5 mb-2 rounded-xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] transition-all ${isCollapsed ? 'justify-center' : ''}`}>
              {user?.photoURL ? (
                <img 
                  src={user.photoURL} 
                  alt={user.displayName || 'User'} 
-                 className="w-8 h-8 rounded-full border-2 border-rc-teal/30 object-cover"
+                 className="w-7 h-7 rounded-full border border-rc-teal/30 object-cover"
                />
              ) : (
-               <div className="w-8 h-8 rounded-full bg-rc-teal/20 flex items-center justify-center border-2 border-rc-teal/30">
-                  <span className="text-[10px] font-black text-rc-teal">
+               <div className="w-7 h-7 rounded-full bg-rc-teal/20 flex items-center justify-center border border-rc-teal/30">
+                  <span className="text-[9px] font-black text-rc-teal">
                     {(user?.displayName || 'U').charAt(0).toUpperCase()}
                   </span>
                </div>
              )}
              {!isCollapsed && (
                <div className="flex flex-col min-w-0">
-                  <span className="text-[11px] font-black text-[var(--text-primary)] truncate uppercase tracking-tight">
+                  <span className="text-[10px] font-black text-[var(--text-primary)] truncate uppercase tracking-tight leading-none">
                     {user?.displayName || 'Elite User'}
                   </span>
-                  <span className="text-[9px] font-bold text-rc-teal truncate tracking-widest uppercase opacity-60">
+                  <span className="text-[8px] font-bold text-rc-teal truncate tracking-widest uppercase opacity-60 mt-1">
                     {isAdmin ? 'Administrador' : 'Ejecutivo'}
                   </span>
                </div>

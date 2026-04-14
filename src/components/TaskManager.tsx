@@ -161,99 +161,93 @@ const TaskManager = () => {
         </div>
       </div>
 
-      <div className="glass-card rounded-[32px] overflow-hidden border border-[var(--glass-border)]">
+      <div className="glass-card rounded-[24px] overflow-hidden border border-[var(--glass-border)] shadow-xl">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-black/5 dark:bg-white/5 border-b border-[var(--glass-border)]">
-                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">{t('tasks.table_state')}</th>
-                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">Tarea / Responsable</th>
-                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">Departamento</th>
-                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">Prioridad</th>
-                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] text-center">Tiempo / Progreso</th>
-                <th className="p-6 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] text-right">{t('tasks.table_actions')}</th>
+              <tr className="bg-black/10 dark:bg-white/5 border-b border-[var(--glass-border)]">
+                <th className="px-6 py-3 text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] w-[80px]">{t('tasks.table_state')}</th>
+                <th className="px-6 py-3 text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em]">Tarea / Responsable</th>
+                <th className="px-6 py-3 text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em]">Departamento / Proyecto</th>
+                <th className="px-6 py-3 text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] w-[140px]">Prioridad</th>
+                <th className="px-6 py-3 text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] text-center w-[180px]">Tiempo</th>
+                <th className="px-6 py-3 text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] text-right w-[100px]">{t('tasks.table_actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--glass-border)]">
-              {filteredTasks.map((task, idx) => (
-                <motion.tr 
+              {filteredTasks.map((task, idx) => (                <motion.tr 
                   key={task.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="hover:bg-black/5 dark:hover:bg-white/5 transition-all group cursor-pointer"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.02 }}
+                  className="hover:bg-black/5 dark:hover:bg-white/5 transition-all group cursor-pointer elite-accent-line"
+                  onClick={() => { setEditingTask(task); setIsModalOpen(true); }}
                 >
-                  <td className="p-6">
+                  <td className="px-6 py-2.5">
                     <button 
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         const newStatus = task.status === 'Closed' ? 'Open' : 'Closed';
                         handleSave({ ...task, status: newStatus });
                       }}
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
                         task.status === 'Closed' 
-                          ? 'bg-emerald-500/10 text-emerald-500 ring-1 ring-emerald-500/20' 
-                          : 'bg-black/5 dark:bg-white/5 text-[var(--text-secondary)] hover:bg-rc-teal/10 hover:text-rc-teal transition-colors'
+                          ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' 
+                          : 'bg-black/5 dark:bg-white/5 text-[var(--text-secondary)] border border-white/5 group-hover:border-rc-teal/30'
                       }`}
                     >
-                      {task.status === 'Closed' ? <CheckCircle2 size={18} /> : <Circle size={18} />}
+                      {task.status === 'Closed' ? <CheckCircle2 size={14} /> : <Circle size={14} />}
                     </button>
                   </td>
-                  <td className="p-6">
-                    <div className="font-black text-[var(--text-primary)] text-sm tracking-tight group-hover:text-rc-teal transition-colors uppercase cursor-pointer" onClick={() => { setEditingTask(task); setIsModalOpen(true); }}>
+                  <td className="px-6 py-2.5">
+                    <div className="font-black text-[var(--text-primary)] text-[11px] tracking-widest uppercase truncate max-w-[280px] group-hover:text-rc-teal transition-colors">
                       {task.title}
                     </div>
-                    <div className="text-[10px] font-bold text-[var(--text-secondary)] mt-1 flex items-center gap-2 uppercase tracking-tight">
-                      <span className="w-4 h-[1px] bg-rc-teal/30" /> {task.assignedTo || 'Sin asignar'}
+                    <div className="text-[9px] font-bold text-rc-teal mt-0.5 opacity-60 flex items-center gap-2 uppercase tracking-tight">
+                       {task.assignedTo || 'Sin asignar'}
                     </div>
                   </td>
-                  <td className="p-6">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] font-black text-rc-teal uppercase tracking-widest">{task.area}</span>
-                      <span className="text-[9px] font-bold text-[var(--text-secondary)] tracking-tight opacity-60 uppercase">{task.projectName}</span>
+                  <td className="px-6 py-2.5">
+                    <div className="flex flex-col">
+                      <span className="text-[9px] font-black text-[var(--text-primary)] uppercase tracking-widest opacity-80">{task.area}</span>
+                      <span className="text-[8px] font-bold text-[var(--text-secondary)] tracking-tight opacity-40 uppercase truncate max-w-[150px]">{task.projectName}</span>
                     </div>
                   </td>
-                  <td className="p-6">
-                    <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center w-fit gap-2 border ${getPriorityColor(task.priority)}`}>
-                      <Flag size={10} /> {task.priority}
+                  <td className="px-6 py-2.5">
+                    <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-[0.2em] border ${getPriorityColor(task.priority)}`}>
+                      {task.priority}
                     </span>
                   </td>
-                  <td className="p-6">
-                    <div className="flex flex-col items-center gap-2">
+                  <td className="px-6 py-2.5">
+                    <div className="flex flex-col items-center gap-1">
                        {task.status !== 'Closed' ? (
-                         <div className={`px-4 py-1.5 rounded-2xl flex items-center gap-2 ${isOverdue(task.endTime) ? 'bg-rose-500/10 text-rose-500 animate-pulse' : 'bg-rc-teal/10 text-rc-teal'}`}>
-                            <Clock size={12} />
-                            <span className="text-[10px] font-black tabular-nums">{getElapsedTime(task.startTime)}</span>
-                         </div>
+                          <div className={`flex items-center gap-1.5 ${isOverdue(task.endTime) ? 'text-rose-500' : 'text-rc-teal'}`}>
+                             <Clock size={10} />
+                             <span className="text-[10px] font-black tracking-tighter alternate-nums">{getElapsedTime(task.startTime)}</span>
+                          </div>
                        ) : (
-                         <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-4 py-1.5 rounded-2xl uppercase tracking-widest italic">Finalizada</span>
-                       )}
-                       {task.subtasks.length > 0 && (
-                         <div className="w-32 h-1 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-rc-teal transition-all duration-1000" 
-                              style={{ width: `${(task.subtasks.filter(s => s.completed).length / task.subtasks.length) * 100}%` }}
-                            />
-                         </div>
+                          <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest italic opacity-60">Completada</span>
                        )}
                     </div>
                   </td>
-                  <td className="p-6 text-right">
-                    <div className="flex justify-end gap-2">
+                  <td className="px-6 py-2.5 text-right">
+                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
-                        onClick={() => { setEditingTask(task); setIsModalOpen(true); }}
-                        className="text-[var(--text-secondary)] hover:text-rc-teal p-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+                         className="p-1.5 text-[var(--text-secondary)] hover:text-rc-teal"
+                         onClick={(e) => { e.stopPropagation(); setEditingTask(task); setIsModalOpen(true); }}
                       >
-                        <Tag size={16} />
+                        <Tag size={12} />
                       </button>
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleDelete(task.id); }}
-                        className="text-rose-500/50 hover:text-rose-500 p-3 rounded-xl hover:bg-rose-500/10 transition-all"
+                        className="p-1.5 text-rose-500/40 hover:text-rose-500"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={12} />
                       </button>
                     </div>
                   </td>
                 </motion.tr>
+
               ))}
               {filteredTasks.length === 0 && (
                 <tr>

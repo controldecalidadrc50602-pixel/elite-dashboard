@@ -540,15 +540,14 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
              </div>
           </div>
 
-          {/* TABLE HEADER - FOR CASCADE VIEW */}
-          <div className="px-11 py-3 flex items-center gap-4 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] opacity-40 border-b border-white/5">
-             <div className="w-1.5 h-1.5" /> {/* Spacer for dot */}
-             <div className="w-1/3">Cliente</div>
-             <div className="w-1/4 hidden md:block">Proyecto ID</div>
-             <div className="flex-1 hidden sm:block">Operaciones</div>
-             <div className="flex items-center gap-6 shrink-0 w-[120px] justify-end">
-                <span>Estado</span>
-             </div>
+          {/* TACTICAL TABLE HEADER - ZOHO ELITE STYLE */}
+          <div className="technical-grid px-6 py-4 text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] opacity-40 border-b border-white/10 bg-black/5 dark:bg-white/5">
+             <div className="w-1.5 h-1.5" />
+             <div>Cliente</div>
+             <div className="hidden md:block">Proyecto ID</div>
+             <div className="hidden sm:block">Operaciones</div>
+             <div className="text-right pr-4">Estado</div>
+             <div className="text-right">Detalle</div>
           </div>
 
           <motion.div 
@@ -617,31 +616,30 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                     <div>
                        <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tighter">{t('projects.individualTitle')}</h3>
                        <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">{t('dashboard.audit_execution')}</p>
-                    </div>
                  </div>
               </div>
 
               <div className="overflow-x-auto">
                  <table className="w-full text-left">
-                    <thead>
-                       <tr className="border-b border-[var(--glass-border)] text-[var(--text-secondary)] text-[10px] font-black uppercase tracking-widest">
-                          <th className="pb-4">{t('dashboard.table_client')}</th>
-                          <th className="pb-4 text-center">{t('dashboard.table_health')}</th>
-                          <th className="pb-4">{t('dashboard.table_history')}</th>
-                          <th className="pb-4 text-right">{t('dashboard.table_status')}</th>
-                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[var(--glass-border)]">
-                       {projects.map(p => (
-                          <tr 
-                             key={p.id} 
-                             onClick={() => openProjectDetail(p)}
-                             className="group hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
-                          >
-                             <td className="py-5">
-                                <div className="font-black text-[var(--text-primary)] text-sm tracking-tight">{p.client}</div>
-                                <div className="text-[10px] font-bold text-[var(--text-secondary)] mt-0.5">{p.services.length} {t('projects.activeServices')}</div>
-                             </td>
+                     <thead>
+                        <tr className="border-b border-[var(--glass-border)] text-[var(--text-secondary)] text-[8px] font-black uppercase tracking-[0.3em] bg-black/5 dark:bg-white/5">
+                           <th className="px-6 py-3">{t('dashboard.table_client')}</th>
+                           <th className="px-6 py-3 text-center">{t('dashboard.table_health')}</th>
+                           <th className="px-6 py-3">{t('dashboard.table_history')}</th>
+                           <th className="px-6 py-3 text-right">{t('dashboard.table_status')}</th>
+                        </tr>
+                     </thead>
+                     <tbody className="divide-y divide-[var(--glass-border)]">
+                        {projects.map(p => (
+                           <tr 
+                              key={p.id} 
+                              onClick={() => openProjectDetail(p)}
+                              className="group hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer elite-accent-line"
+                           >
+                              <td className="px-6 py-2.5">
+                                 <div className="font-black text-[var(--text-primary)] text-[11px] tracking-widest uppercase">{p.client}</div>
+                                 <div className="text-[9px] font-bold text-rc-teal mt-0.5 opacity-60">ID: {p.id}</div>
+                              </td>
                              <td className="py-5 text-center">
                                 <span className="text-xl font-black text-rc-teal tracking-tighter">{p.evaluations[0]?.quantitative || '-'}</span>
                              </td>

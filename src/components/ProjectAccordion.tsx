@@ -33,71 +33,74 @@ const ProjectAccordion: React.FC<Props> = ({ project, onOpenDetail }) => {
   const statusColor = getStatusColor(latestEval?.status || 'Stable');
 
   return (
-    <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'bg-white/[0.03] dark:bg-white/[0.01] rounded-[24px] mb-2 border border-white/10 shadow-xl' : 'border-b border-white/5 hover:bg-white/[0.05] dark:hover:bg-white/[0.02]'}`}>
-      {/* COMPACT ROW (TABLE STYLE) */}
+    <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'bg-white/[0.03] dark:bg-white/[0.01] rounded-[24px] mb-2 border border-white/10 shadow-xl mt-2' : 'border-b border-white/5 hover:bg-white/[0.05] dark:hover:bg-white/[0.02]'}`}>
+      {/* PRECISION ROW (ZOHO-ELITE STYLE) */}
       <div 
         onClick={() => setIsOpen(!isOpen)}
-        className="px-6 py-4 flex items-center gap-4 cursor-pointer relative group"
+        className="technical-grid compact-row elite-accent-line cursor-pointer group"
       >
         {/* State Indicator Dot */}
         <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusColor.replace('text', 'bg')} shadow-[0_0_8px_currentColor]`} />
         
         {/* Name Column */}
-        <div className="w-1/3 min-w-0">
+        <div className="min-w-0">
           <h4 className="text-[11px] font-black text-[var(--text-primary)] uppercase tracking-widest truncate group-hover:text-rc-teal transition-colors">
             {project.client}
           </h4>
         </div>
 
         {/* ID Column */}
-        <div className="w-1/4 hidden md:flex items-center gap-2">
-           <span className="text-[10px] font-bold text-[var(--text-secondary)] opacity-40 uppercase tracking-widest leading-none">ID: {project.id}</span>
+        <div className="hidden md:flex items-center gap-2">
+           <span className="text-[9px] font-bold text-[var(--text-secondary)] opacity-40 uppercase tracking-[0.2em] leading-none">#{project.id}</span>
         </div>
 
-        {/* Services / Activity Column */}
-        <div className="flex-1 hidden sm:flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <Layers size={10} className="text-rc-teal/60" />
+        {/* Operations Column */}
+        <div className="hidden sm:flex items-center gap-6">
+          <div className="flex items-center gap-2 opacity-60">
+            <Layers size={10} className="text-rc-teal" />
             <span className="text-[10px] font-black text-[var(--text-primary)] leading-none italic">{project.services.length}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Activity size={10} className="text-rc-teal/60" />
+            <Activity size={10} className="text-rc-teal" />
             <span className="text-[10px] font-black text-rc-teal leading-none">{latestEval?.quantitative || 0}/5</span>
           </div>
         </div>
 
-        {/* Status & Arrow */}
-        <div className="flex items-center gap-6 shrink-0">
-          <div className={`text-[9px] font-black uppercase tracking-[0.2em] ${statusColor} hidden xs:block`}>
+        {/* Status Column */}
+        <div className="flex justify-end pr-4">
+          <div className={`text-[9px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-md ${statusColor} bg-black/5 dark:bg-white/5 border border-white/5`}>
              {t(`status.${(latestEval?.status || 'stable').toLowerCase()}`)}
           </div>
-          
+        </div>
+
+        {/* Action Column */}
+        <div className="flex items-center justify-end">
           <motion.div
             animate={{ rotate: isOpen ? 180 : 0 }}
-            className="text-[var(--text-secondary)] opacity-40 group-hover:opacity-100 transition-opacity"
+            className="text-[var(--text-secondary)] opacity-20 group-hover:opacity-100 transition-opacity"
           >
             <ChevronDown size={14} />
           </motion.div>
         </div>
       </div>
 
-      {/* EXPANDABLE CONTENT */}
+      {/* EXPANDABLE SECTION */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
           >
             <div className="px-10 pb-8 pt-4 grid grid-cols-1 md:grid-cols-12 gap-8 border-t border-white/5 bg-black/[0.1] dark:bg-slate-900/40">
               
               <div className="md:col-span-8">
                  <div className="flex items-center gap-3 mb-4">
                     <Calendar size={12} className="text-rc-teal" />
-                    <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Inicio: {project.startDate}</span>
+                    <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.3em]">Auditoría: {project.startDate}</span>
                  </div>
-                 <div className="bg-white/5 p-5 rounded-3xl border border-white/5 shadow-inner">
+                 <div className="bg-white/5 p-5 rounded-3xl border border-white/5 shadow-inner backdrop-blur-md">
                     <p className="text-sm text-[var(--text-primary)] font-medium italic leading-relaxed opacity-80">
                        "{latestEval?.qualitative || 'Sin evaluación estratégica registrada.'}"
                     </p>
@@ -107,9 +110,9 @@ const ProjectAccordion: React.FC<Props> = ({ project, onOpenDetail }) => {
               <div className="md:col-span-4 flex flex-col justify-end">
                 <button 
                   onClick={(e) => { e.stopPropagation(); onOpenDetail(); }}
-                  className="w-full bg-rc-teal/10 hover:bg-rc-teal text-rc-teal hover:text-white border border-rc-teal/20 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3"
+                  className="w-full bg-rc-teal/10 hover:bg-rc-teal text-rc-teal hover:text-white border border-rc-teal/20 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-lg shadow-rc-teal/10"
                 >
-                  <ExternalLink size={16} /> Gestionar Detalles
+                  <ExternalLink size={16} /> Gestionar Detalles Tácticos
                 </button>
               </div>
             </div>

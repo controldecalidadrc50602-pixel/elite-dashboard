@@ -76,3 +76,39 @@ body {
 ::-webkit-scrollbar-thumb {
   @apply bg-slate-400/20 dark:bg-slate-500/20 rounded-full hover:bg-slate-400/40 transition-all;
 }
+
+/* --- ZOHO-ELITE PROFESSIONAL UTILITIES --- */
+@utility technical-grid {
+  display: grid;
+  grid-template-columns: 24px 2fr 1fr 1.5fr 120px 80px;
+  align-items: center;
+  gap: 1rem;
+}
+
+@utility technical-grid-tasks {
+  display: grid;
+  grid-template-columns: 48px 3fr 1.5fr 1.2fr 1.5fr 80px;
+  align-items: center;
+  gap: 1rem;
+}
+
+@utility technical-font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  letter-spacing: -0.05em;
+}
+
+.compact-row {
+  @apply py-2.5 px-6 transition-all duration-200;
+  min-height: 48px;
+}
+
+.elite-accent-line {
+  @apply relative overflow-hidden;
+  &::before {
+    content: '';
+    @apply absolute left-0 top-0 bottom-0 w-0 bg-rc-teal transition-all duration-300;
+  }
+  &:hover::before {
+    @apply w-1;
+  }
+}
