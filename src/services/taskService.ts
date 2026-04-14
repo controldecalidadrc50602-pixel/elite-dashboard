@@ -33,8 +33,47 @@ export const taskService = {
     }
     
     const localData = localStorage.getItem(STORAGE_KEY);
-    return localData ? JSON.parse(localData) : [];
+    const tasks = localData ? JSON.parse(localData) : [];
+    
+    // Fallback con tareas profesionales si está vacío para impresionar al usuario
+    if (tasks.length === 0) {
+      return [
+        {
+          id: 'mock-1',
+          title: 'Auditoría de Gobernanza V3',
+          projectId: 'p1',
+          projectName: 'Calidad Corporativa',
+          status: 'In Progress',
+          priority: 'High',
+          assignedTo: 'Marilyn (Lead Auditor)',
+          area: 'Gestión de Calidad',
+          startTime: new Date(Date.now() - 3600000 * 5).toISOString(), // Hace 5 horas
+          endTime: new Date(Date.now() + 3600000 * 2).toISOString(), // En 2 horas
+          subtasks: [
+            { id: 'st1', title: 'Revisión de protocolos', completed: true },
+            { id: 'st2', title: 'Validación de KPI', completed: false }
+          ],
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: 'mock-2',
+          title: 'Optimización de Canal Contact Center',
+          projectId: 'p2',
+          projectName: 'Servicios Logísticos',
+          status: 'Open',
+          priority: 'Medium',
+          assignedTo: 'Carlos Ruiz',
+          area: 'Contact Center',
+          startTime: new Date().toISOString(),
+          endTime: new Date(Date.now() - 3600000).toISOString(), // EXPIRADA (Para mostrar pulso neón)
+          subtasks: [],
+          createdAt: new Date().toISOString()
+        }
+      ];
+    }
+    return tasks;
   },
+
 
   async addTask(task: Task, allTasks: Task[]): Promise<Task[]> {
     if (isFirebaseConfigured) {

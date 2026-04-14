@@ -59,10 +59,16 @@ const TaskManager = () => {
   }, []);
 
   const loadTasks = async () => {
-    const data = await taskService.getTasks();
-    setTasks(data);
-    setLoading(false);
+    try {
+      const data = await taskService.getTasks();
+      setTasks(data);
+    } catch (err) {
+      console.error('Error loading tasks:', err);
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   const handleSave = async (task: Task) => {
     let updated;
@@ -121,10 +127,11 @@ const TaskManager = () => {
   };
 
   const filteredTasks = tasks.filter(t => 
-    t.title.toLowerCase().includes(search.toLowerCase()) || 
-    t.area.toLowerCase().includes(search.toLowerCase()) ||
-    t.assignedTo.toLowerCase().includes(search.toLowerCase())
+    (t.title?.toLowerCase() || '').includes(search.toLowerCase()) || 
+    (t.area?.toLowerCase() || '').includes(search.toLowerCase()) ||
+    (t.assignedTo?.toLowerCase() || '').includes(search.toLowerCase())
   );
+
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
