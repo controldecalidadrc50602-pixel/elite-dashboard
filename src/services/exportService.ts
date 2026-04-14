@@ -68,14 +68,9 @@ export const exportService = {
       pdf.setFillColor(15, 23, 42); // Navy/Black (Deep primary)
       pdf.rect(0, 0, pageWidth, 40, 'F');
       
-      // Draw dynamic curve
+      // Draw dynamic curve using an ellipse (simpler & compatible)
       pdf.setFillColor(255, 255, 255);
-      pdf.beginPath();
-      pdf.moveTo(0, 40);
-      pdf.quadraticCurveTo(pageWidth / 2, 25, pageWidth, 40);
-      pdf.lineTo(pageWidth, 40);
-      pdf.lineTo(0, 40);
-      pdf.fill();
+      pdf.ellipse(pageWidth / 2, 45, pageWidth * 0.8, 15, 'F');
 
       // Logo Text (RC506 Style)
       pdf.setTextColor(255, 255, 255);
@@ -110,7 +105,9 @@ export const exportService = {
     doc.text('ESTADO ESTRATÉGICO DE CUENTAS & OPERACIONES', 20, 68);
 
     // Score Summary Boxes
-    const avgScore = (projects.reduce((acc, p) => acc + (p.evaluations[0]?.quantitative || 0), 0) / projects.length).toFixed(1);
+    const avgScore = projects.length > 0 
+      ? (projects.reduce((acc, p) => acc + (p.evaluations[0]?.quantitative || 0), 0) / projects.length).toFixed(1)
+      : '0.0';
     
     autoTable(doc, {
       startY: 85,
@@ -122,7 +119,7 @@ export const exportService = {
         ['Tareas de Alta Prioridad Pendientes', tasks.filter(t => t.priority === 'High' && t.status !== 'Closed').length.toString()]
       ],
       theme: 'grid',
-      headStyles: { fillStyle: 'F', fillColor: [59, 199, 170], textColor: [255, 255, 255], fontStyle: 'bold' },
+      headStyles: { fillColor: [59, 199, 170], textColor: [255, 255, 255], fontStyle: 'bold' },
       styles: { fontSize: 9, cellPadding: 4 }
     });
 
@@ -196,8 +193,7 @@ export const exportService = {
       pdf.setFillColor(15, 23, 42);
       pdf.rect(0, 0, pageWidth, 40, 'F');
       pdf.setFillColor(255, 255, 255);
-      pdf.beginPath(); pdf.moveTo(0, 40); pdf.quadraticCurveTo(pageWidth / 2, 25, pageWidth, 40);
-      pdf.lineTo(pageWidth, 40); pdf.lineTo(0, 40); pdf.fill();
+      pdf.ellipse(pageWidth / 2, 45, pageWidth * 0.8, 15, 'F');
       pdf.setFillColor(15, 23, 42); pdf.rect(0, pageHeight - 15, pageWidth, 15, 'F');
       pdf.setTextColor(255, 255, 255); pdf.setFontSize(8);
       pdf.text(`Elite Report: ${project.client}`, 10, pageHeight - 6);
@@ -230,13 +226,14 @@ export const exportService = {
     });
 
     // History Table
+    const finalY = (doc as any).lastAutoTable.finalY || 140;
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(15, 23, 42);
-    doc.text('HISTORIAL DE AUDITORÍAS', 20, doc.lastAutoTable.finalY + 20);
+    doc.text('HISTORIAL DE AUDITORÍAS', 20, finalY + 20);
 
     autoTable(doc, {
-      startY: doc.lastAutoTable.finalY + 25,
+      startY: finalY + 25,
       head: [['Fecha', 'Score', 'Estatus', 'Análisis Cualitativo']],
       body: project.evaluations.map(e => [
         `${e.month}/${e.year}`,
