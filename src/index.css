@@ -92,6 +92,13 @@ body {
   gap: 1rem;
 }
 
+@utility technical-grid-audit {
+  display: grid;
+  grid-template-columns: 1.5fr 80px 2fr 120px;
+  align-items: center;
+  gap: 2rem;
+}
+
 @utility technical-font-mono {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   letter-spacing: -0.05em;

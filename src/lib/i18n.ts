@@ -64,6 +64,7 @@ const resources = {
       },
       projects: {
         title: 'Clients Portfolio',
+        individualTitle: 'Individual Account Analysis',
         newProject: 'New Project',
         name_required: 'Client name is required',
         services_required: 'At least one service with a valid name is required',
@@ -178,6 +179,7 @@ const resources = {
       },
       projects: {
         title: 'Portafolio de Clientes',
+        individualTitle: 'Análisis Individual de Cuentas',
         newProject: 'Nuevo Cliente',
         name_required: 'El nombre del cliente es obligatorio',
         services_required: 'Debes añadir al menos un servicio con nombre válido',

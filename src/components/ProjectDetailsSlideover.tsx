@@ -13,10 +13,12 @@ import {
   Save,
   Bell,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project, Evaluation, Alert, ClientService } from '../types/project';
+import { exportService } from '../services/exportService';
 
 interface Props {
   project: Project | null;
@@ -145,6 +147,13 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
                         className="p-2.5 bg-black/5 dark:bg-white/5 hover:bg-rose-500/10 hover:text-rose-500 rounded-xl transition-all text-[var(--text-secondary)]"
                      >
                         <Trash2 size={18} />
+                     </button>
+                     <button 
+                        onClick={() => exportService.exportIndividualPDF(project, t)}
+                        className="p-2.5 bg-black/5 dark:bg-white/5 hover:bg-rc-teal/10 hover:text-rc-teal rounded-xl transition-all text-[var(--text-secondary)]"
+                        title="Exportar PDF Individual"
+                     >
+                        <FileText size={18} />
                      </button>
                      <div className="w-px h-6 bg-[var(--glass-border)] mx-1" />
                      <button 

@@ -18,8 +18,13 @@ import {
   Clock,
   CheckCircle2,
   Circle,
-  Flag
+  Flag,
+  Download,
+  FileSpreadsheet,
+  FileText,
+  ChevronDown
 } from 'lucide-react';
+import { exportService } from '../services/exportService';
 import ProjectCard from '../components/ProjectCard'; // Keep it if needed elsewhere, but we will use Accordion here
 import ProjectAccordion from '../components/ProjectAccordion';
 import TaskManager, { Task } from '../components/TaskManager';
@@ -50,6 +55,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [now, setNow] = useState(new Date());
 
   // Timer update for tasks
@@ -531,6 +537,39 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                       className="bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl py-2.5 pl-12 pr-6 text-sm font-medium focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all outline-none w-full md:w-64"
                    />
                 </div>
+                <div className="relative">
+                   <button 
+                     onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
+                     className="bg-slate-900 border border-white/10 hover:bg-slate-800 text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
+                   >
+                      <Download size={16} /> Exportar <ChevronDown size={14} className={`transition-transform ${isExportMenuOpen ? 'rotate-180' : ''}`} />
+                   </button>
+                   
+                   <AnimatePresence>
+                      {isExportMenuOpen && (
+                         <motion.div 
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            className="absolute right-0 mt-3 w-48 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-[100] overflow-hidden"
+                         >
+                            <button 
+                               onClick={() => { exportService.exportToPDF(projects, tasks, t); setIsExportMenuOpen(false); }}
+                               className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-colors text-[10px] font-black uppercase tracking-widest text-slate-300 text-left"
+                            >
+                               <FileText size={16} className="text-rose-400" /> PDF Ejecutivo
+                            </button>
+                            <button 
+                               onClick={() => { exportService.exportToExcel(projects, tasks); setIsExportMenuOpen(false); }}
+                               className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-colors text-[10px] font-black uppercase tracking-widest text-slate-300 text-left"
+                            >
+                               <FileSpreadsheet size={16} className="text-emerald-400" /> Excel (XLSX)
+                            </button>
+                         </motion.div>
+                      )}
+                   </AnimatePresence>
+                </div>
+
                 <button 
                   onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
                   className="bg-rc-teal hover:shadow-xl hover:shadow-rc-teal/20 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shrink-0"
@@ -620,48 +659,54 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
               </div>
 
               <div className="overflow-x-auto">
-                 <table className="w-full text-left">
-                     <thead>
-                        <tr className="border-b border-[var(--glass-border)] text-[var(--text-secondary)] text-[8px] font-black uppercase tracking-[0.3em] bg-black/5 dark:bg-white/5">
-                           <th className="px-6 py-3">{t('dashboard.table_client')}</th>
-                           <th className="px-6 py-3 text-center">{t('dashboard.table_health')}</th>
-                           <th className="px-6 py-3">{t('dashboard.table_history')}</th>
-                           <th className="px-6 py-3 text-right">{t('dashboard.table_status')}</th>
-                        </tr>
-                     </thead>
-                     <tbody className="divide-y divide-[var(--glass-border)]">
-                        {projects.map(p => (
-                           <tr 
-                              key={p.id} 
-                              onClick={() => openProjectDetail(p)}
-                              className="group hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer elite-accent-line"
-                           >
-                              <td className="px-6 py-2.5">
-                                 <div className="font-black text-[var(--text-primary)] text-[11px] tracking-widest uppercase">{p.client}</div>
-                                 <div className="text-[9px] font-bold text-rc-teal mt-0.5 opacity-60">ID: {p.id}</div>
-                              </td>
-                             <td className="py-5 text-center">
-                                <span className="text-xl font-black text-rc-teal tracking-tighter">{p.evaluations[0]?.quantitative || '-'}</span>
-                             </td>
-                             <td className="py-5 max-w-sm">
-                                <p className="text-[11px] text-[var(--text-secondary)] font-medium italic line-clamp-1 pr-4">
-                                   "{p.evaluations[0]?.qualitative || t('dashboard.no_records')}"
-                                </p>
-                             </td>
-                             <td className="py-5 text-right">
-                                <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${
-                                   p.evaluations[0]?.status === 'Stable' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
-                                   p.evaluations[0]?.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                                   p.evaluations[0]?.status === 'Growth' ? 'bg-rc-teal/10 text-rc-teal border-rc-teal/10' :
-                                   'bg-rose-500/10 text-rose-500 border-rose-500/20'
-                                }`}>
-                                   {t(`status.${(p.evaluations[0]?.status || 'stable').toLowerCase().replace(' ', '')}`)}
-                                </span>
-                             </td>
-                           </tr>
-                        ))}
-                     </tbody>
-                 </table>
+                 {/* HEADER GRID */}
+                 <div className="technical-grid-audit px-8 py-4 border-b border-[var(--glass-border)] text-[var(--text-secondary)] text-[8px] font-black uppercase tracking-[0.4em] bg-black/5 dark:bg-white/5">
+                    <div>{t('dashboard.table_client')}</div>
+                    <div className="text-center">{t('dashboard.table_health')}</div>
+                    <div>{t('dashboard.table_history')}</div>
+                    <div className="text-right">{t('dashboard.table_status')}</div>
+                 </div>
+
+                 {/* BODY GRID */}
+                 <div className="flex flex-col divide-y divide-[var(--glass-border)]">
+                    {projects.map(p => (
+                       <div 
+                          key={p.id} 
+                          onClick={() => openProjectDetail(p)}
+                          className="technical-grid-audit px-8 py-5 group hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer elite-accent-line"
+                       >
+                          {/* CLIENT */}
+                          <div>
+                             <div className="font-black text-[var(--text-primary)] text-[11px] tracking-widest uppercase">{p.client}</div>
+                             <div className="text-[9px] font-bold text-rc-teal mt-0.5 opacity-60">ID: {p.id}</div>
+                          </div>
+
+                          {/* HEALTH - PERFECT SYMMETRY */}
+                          <div className="text-center">
+                             <div className="text-2xl font-black text-rc-teal tracking-tighter tabular-nums">{p.evaluations[0]?.quantitative || '-'}</div>
+                          </div>
+
+                          {/* HISTORY */}
+                          <div className="max-w-md">
+                             <p className="text-[11px] text-[var(--text-secondary)] font-medium italic line-clamp-1 pr-4">
+                                "{p.evaluations[0]?.qualitative || t('dashboard.no_records')}"
+                             </p>
+                          </div>
+
+                          {/* STATUS */}
+                          <div className="text-right">
+                             <span className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${
+                                p.evaluations[0]?.status === 'Stable' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
+                                p.evaluations[0]?.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                p.evaluations[0]?.status === 'Growth' ? 'bg-rc-teal/10 text-rc-teal border-rc-teal/10' :
+                                'bg-rose-500/10 text-rose-500 border-rose-500/20'
+                             }`}>
+                                {t(`status.${(p.evaluations[0]?.status || 'stable').toLowerCase().replace(' ', '')}`)}
+                             </span>
+                          </div>
+                       </div>
+                    ))}
+                 </div>
               </div>
            </div>
         </div>
