@@ -22,73 +22,71 @@ const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({
 
   return (
     <motion.div 
-      whileHover={{ y: -4, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' }}
-      className="glass-card p-5 rounded-[32px] border border-[var(--glass-border)] relative overflow-hidden group cursor-pointer"
+      whileHover={{ y: -5, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.2)' }}
+      className="glass-card p-6 rounded-[40px] border border-white/5 relative overflow-hidden group cursor-pointer h-full flex flex-col"
       onClick={onOpenDetail}
     >
       {/* Background Accent */}
-      <div className={`absolute -top-12 -right-12 w-24 h-24 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity ${statusStyle?.split(' ')?.[1] || 'bg-slate-500/10'}`} />
+      <div className={`absolute -top-16 -right-16 w-32 h-32 rounded-full blur-[60px] opacity-10 group-hover:opacity-20 transition-opacity ${statusStyle?.split(' ')?.[1] || 'bg-slate-500/10'}`} />
 
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-6">
         <div className="flex-1 min-w-0">
-          <h4 className="text-[var(--text-primary)] font-black text-lg leading-tight group-hover:text-rc-teal transition-colors truncate uppercase tracking-tighter">
+          <h4 className="text-[var(--text-primary)] font-black text-xl leading-tight group-hover:text-rc-teal transition-colors truncate uppercase tracking-tighter">
              {project.client}
           </h4>
-          <div className="flex items-center gap-2 text-[var(--text-secondary)] text-[10px] font-bold mt-0.5 uppercase tracking-widest">
-            <Calendar size={10} className="text-rc-teal" /> {project.startDate}
+          <div className="flex items-center gap-2 text-[var(--text-secondary)] text-[10px] font-black mt-1 uppercase tracking-widest opacity-60">
+            <Calendar size={12} className="text-rc-teal" /> {project.startDate}
           </div>
         </div>
-        <div className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest border shrink-0 ${statusStyle}`}>
+        <div className={`flex items-center gap-1.5 px-4 py-1.5 rounded-2xl text-[9px] font-black uppercase tracking-widest border shrink-0 shadow-sm ${statusStyle}`}>
           {latestEval?.status === 'At Risk' || latestEval?.status === 'Critical' ? (
-             <AlertTriangle size={10} />
+             <AlertTriangle size={12} strokeWidth={2.5} />
           ) : (
-             <ShieldCheck size={10} />
+             <ShieldCheck size={12} strokeWidth={2.5} />
           )}
           {t(`status.${(latestEval?.status || 'stable').toLowerCase()}`)}
         </div>
       </div>
 
-      {/* Snapshot Qualitativo Compacto */}
-      <div className="bg-black/5 dark:bg-white/5 p-3 rounded-2xl border border-[var(--glass-border)] mb-4 h-14 flex items-center">
-         <p className="text-[10px] text-[var(--text-secondary)] font-medium italic line-clamp-2 leading-tight">
-            "{latestEval?.qualitative || 'Sin evaluación registrada.'}"
+      {/* Strategic Insight Snapshot */}
+      <div className="bg-black/5 dark:bg-white/5 p-4 rounded-3xl border border-white/5 mb-6 flex-1 flex items-center">
+         <p className="text-[11px] text-[var(--text-secondary)] font-bold italic line-clamp-3 leading-relaxed">
+            "{latestEval?.qualitative || 'Sin evaluación estratégica registrada.'}"
          </p>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 mt-auto">
         {/* Services Count */}
-        <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-rc-teal/10 flex items-center justify-center text-rc-teal">
-                <Layers size={16} />
+        <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-rc-teal/10 flex items-center justify-center text-rc-teal border border-rc-teal/10">
+                <Layers size={20} />
             </div>
             <div>
-                <div className="text-[10px] font-black text-[var(--text-primary)] leading-none">{project?.services?.length || 0}</div>
-                <div className="text-[8px] font-bold text-[var(--text-secondary)] uppercase tracking-tighter">{t('projects.activeServices')}</div>
+                <div className="text-sm font-black text-[var(--text-primary)] leading-none">{project?.services?.length || 0}</div>
+                <div className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest opacity-60">{t('projects.activeServices')}</div>
             </div>
         </div>
 
-        {/* Health Score */}
-        <div className="flex flex-col items-end gap-1 flex-1 max-w-[100px]">
-           <div className="flex items-center gap-1">
-              <span className="text-[9px] text-[var(--text-secondary)] font-black uppercase tracking-widest">{t('projects.strategicHealth')}</span>
+        {/* Health Score Pillar */}
+        <div className="flex flex-col items-end gap-1.5 flex-1 max-w-[120px]">
+           <div className="flex items-center justify-between w-full">
+              <span className="text-[8px] text-[var(--text-secondary)] font-black uppercase tracking-widest">{t('projects.strategicHealth')}</span>
               <span className="text-xs font-black text-rc-teal">{latestEval?.quantitative || 0}/5</span>
            </div>
-           <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+           <div className="w-full h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
               <motion.div 
                  initial={{ width: 0 }}
                  animate={{ width: `${(latestEval?.quantitative || 0) * 20}%` }}
-                 className="h-full bg-rc-teal" 
+                 transition={{ duration: 1, ease: 'easeOut' }}
+                 className="h-full bg-gradient-to-r from-rc-teal/60 to-rc-teal" 
               />
            </div>
         </div>
       </div>
 
-      {/* Action Hover Overlay - Apple Style */}
-      <div className="absolute inset-0 bg-rc-teal/0 group-hover:bg-rc-teal/[0.02] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all pointer-events-none">
-         <div className="bg-rc-teal text-white p-2 rounded-full shadow-lg scale-50 group-hover:scale-100 transition-transform">
-            <ChevronRight size={16} />
-         </div>
-      </div>
+      {/* Apple-style Interactive Overlay */}
+      <div className="absolute inset-0 bg-rc-teal/[0.01] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+
     </motion.div>
   );
 };

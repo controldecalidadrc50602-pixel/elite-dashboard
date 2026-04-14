@@ -9,8 +9,10 @@ const resources = {
         clients: 'Client Portfolio',
         projects: 'Account Audit',
         tasks: 'Task Manager',
-        logout: 'Sign Out'
+        logout: 'Sign Out',
+        branding: 'Visual Identity'
       },
+
       stats: {
         total: 'Total Clients',
         optimal: 'Optimal Health',
@@ -114,8 +116,10 @@ const resources = {
         clients: 'Portafolio Clientes',
         projects: 'Auditoría de Cuentas',
         tasks: 'Gestor de Tareas',
-        logout: 'Cerrar Sesión'
+        logout: 'Cerrar Sesión',
+        branding: 'Identidad Visual'
       },
+
       common: {
         save: 'Guardar Cambios',
         create: 'Crear Proyecto',

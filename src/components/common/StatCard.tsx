@@ -22,19 +22,19 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, trend })
 
   return (
     <motion.div 
-      whileHover={{ y: -4 }}
-      className="glass-card p-5 rounded-[28px] relative overflow-hidden group transition-all flex items-center gap-4"
+      whileHover={{ y: -5, transition: { duration: 0.2 } }}
+      className="glass-card p-6 rounded-[32px] relative overflow-hidden group transition-all flex items-center gap-5 border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
     >
-      <div className={`w-12 h-12 rounded-2xl ${style.bg} ${style.text} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
-        {React.cloneElement(icon, { size: 22 } as any)}
+      <div className={`w-14 h-14 rounded-[1.25rem] ${style.bg} ${style.text} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-inner`}>
+        {React.cloneElement(icon, { size: 26, strokeWidth: 2.5 } as any)}
       </div>
       
-      <div className="flex flex-col gap-0.5">
-        <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{title}</span>
+      <div className="flex flex-col gap-1">
+        <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">{title}</span>
         <div className="flex items-baseline gap-2">
-           <h4 className="text-2xl font-black text-[var(--text-primary)] tracking-tighter">{value}</h4>
+           <h4 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter leading-none">{value}</h4>
            {trend && (
-             <span className="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-lg">
+             <span className="text-[9px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/10">
                {trend}
              </span>
            )}
@@ -42,8 +42,9 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, trend })
       </div>
       
       {/* Sutil gradiente de fondo en hover */}
-      <div className={`absolute -right-2 -bottom-2 w-16 h-16 ${style.bg} rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+      <div className={`absolute -right-4 -bottom-4 w-24 h-24 ${style.bg} rounded-full blur-[40px] opacity-0 group-hover:opacity-40 transition-opacity duration-700`} />
     </motion.div>
+
   );
 };
 

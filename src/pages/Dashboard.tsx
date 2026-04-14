@@ -243,145 +243,196 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
          </motion.div>
       )}
 
+    <div className="space-y-10 pb-12">
       {/* VIEW: EXECUTIVE OVERVIEW */}
       {activeTab === 'overview' && (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="flex items-center gap-4">
-             <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal">
-                <BarChart3 size={24} />
+        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700 ease-out">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4 border-b border-white/5">
+             <div className="flex items-center gap-5">
+                <div className="w-16 h-16 bg-rc-teal/10 rounded-[2rem] flex items-center justify-center text-rc-teal shadow-inner border border-rc-teal/10 group">
+                   <BarChart3 size={32} className="group-hover:scale-110 transition-transform" />
+                </div>
+                <div>
+                   <h1 className="text-4xl font-black tracking-tighter text-[var(--text-primary)] leading-none italic uppercase">{t('nav.dashboard')}</h1>
+                   <p className="text-[var(--text-secondary)] font-black text-[10px] uppercase tracking-[0.4em] mt-2 opacity-60">{t('stats.trends')}</p>
+                </div>
              </div>
-             <div>
-                <h1 className="text-2xl font-black tracking-tighter text-[var(--text-primary)] leading-tight">{t('nav.dashboard')}</h1>
-                <p className="text-[var(--text-secondary)] font-bold text-[10px] uppercase tracking-widest">{t('stats.trends')}</p>
+             
+             <div className="flex items-center gap-3">
+                <div className="px-4 py-2 bg-white/5 rounded-2xl border border-white/5 flex items-center gap-2">
+                   <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sincronizado</span>
+                </div>
              </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <StatCard title={t('stats.total')} value={stats.total} icon={<Users />} color="rc-teal" trend="+2.4%" />
             <StatCard title={t('stats.optimal')} value={stats.optimos} icon={<TrendingUp />} color="emerald" trend="+12%" />
             <StatCard title={t('stats.risk')} value={stats.riesgo} icon={<AlertCircle />} color="rose" trend="-5%" />
             <StatCard title={t('stats.avgScore')} value={stats.avgScore} icon={<Star />} color="amber" trend="+0.2" />
           </div>
 
-          {/* Executive Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-             <div className="glass-card p-8 rounded-[32px] min-h-[300px] flex flex-col">
-                <div className="flex items-center justify-between mb-8">
-                   <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest">{t('dashboard.audit_pulse')}</h3>
-                   <div className="flex gap-2 text-[8px] font-bold uppercase tracking-widest">
-                      <span className="flex items-center gap-1"><div className="w-1.5 h-1.5 bg-rc-teal rounded-full"></div> {t('dashboard.target')}</span>
-                      <span className="flex items-center gap-1 text-[var(--text-secondary)]"><div className="w-1.5 h-1.5 bg-[var(--text-secondary)] rounded-full"></div> {t('dashboard.actual')}</span>
+          {/* Executive Charts Row - Premium Glassmorphism */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+             <div className="glass-card p-10 rounded-[48px] min-h-[360px] flex flex-col border border-white/5 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-rc-teal/5 blur-[100px] -mr-32 -mt-32 rounded-full" />
+                
+                <div className="flex items-center justify-between mb-12 relative z-10">
+                   <div className="flex flex-col">
+                      <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-[0.3em]">{t('dashboard.audit_pulse')}</h3>
+                      <span className="text-[9px] font-bold text-rc-teal uppercase tracking-widest opacity-60">Consultoría Estratégica</span>
+                   </div>
+                   <div className="flex gap-4 text-[9px] font-black uppercase tracking-widest">
+                      <span className="flex items-center gap-2"><div className="w-2 h-2 bg-rc-teal rounded-full shadow-[0_0_10px_rgba(59,199,170,0.5)]"></div> {t('dashboard.target')}</span>
+                      <span className="flex items-center gap-2 text-[var(--text-secondary)]"><div className="w-2 h-2 bg-slate-600 rounded-full"></div> {t('dashboard.actual')}</span>
                    </div>
                 </div>
                 
-                <div className="flex-1 w-full mt-auto">
-                   <svg viewBox="0 0 400 120" className="w-full h-32 overflow-visible">
-                      <path d="M0,80 Q50,75 100,50 T200,60 T300,30 T400,45" fill="none" stroke="var(--text-secondary)" strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
+                <div className="flex-1 w-full mt-auto relative z-10">
+                   <svg viewBox="0 0 400 120" className="w-full h-40 overflow-visible">
+                      <defs>
+                         <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#3BC7AA" stopOpacity="0.2" />
+                            <stop offset="100%" stopColor="#3BC7AA" stopOpacity="1" />
+                         </linearGradient>
+                      </defs>
+                      <path d="M0,80 Q50,75 100,50 T200,60 T300,30 T400,45" fill="none" stroke="var(--text-secondary)" strokeWidth="1" strokeDasharray="6 6" opacity="0.2" />
                       <motion.path 
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 1 }}
-                        transition={{ duration: 2, ease: "easeInOut" }}
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{ pathLength: 1, opacity: 1 }}
+                        transition={{ duration: 2.5, ease: "easeInOut" }}
                         d={chartData.path}
                         fill="none" 
-                        stroke="#3BC7AA" 
-                        strokeWidth="3" 
+                        stroke="url(#lineGradient)" 
+                        strokeWidth="4" 
                         strokeLinecap="round" 
                       />
-                      <circle cx="400" cy={chartData.lastY} r="4" fill="#3BC7AA" className="animate-pulse" />
+                      <motion.circle 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 2.5 }}
+                        cx="400" cy={chartData.lastY} r="6" fill="#3BC7AA" className="shadow-xl" 
+                      />
+                      <circle cx="400" cy={chartData.lastY} r="12" fill="#3BC7AA" opacity="0.1" className="animate-ping" />
                    </svg>
-                   <div className="flex justify-between mt-4 text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest">
-                      {chartData.points.map((m, i) => <span key={i}>{m.name}</span>)}
+                   <div className="flex justify-between mt-8 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                      {chartData.points.map((m, i) => <span key={i} className="hover:text-rc-teal transition-colors cursor-default">{m.name}</span>)}
                    </div>
                 </div>
              </div>
 
-             <div className="glass-card p-8 rounded-[32px] min-h-[300px] flex flex-col">
-                <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest mb-8">{t('dashboard.urgency_matrix')}</h3>
-                <div className="flex-1 flex items-center justify-center gap-12">
-                   <div className="relative w-32 h-32">
+             <div className="glass-card p-10 rounded-[48px] min-h-[360px] flex flex-col border border-white/5 relative overflow-hidden group">
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 blur-[100px] -ml-32 -mb-32 rounded-full" />
+                
+                <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-[0.3em] mb-12 relative z-10">{t('dashboard.urgency_matrix')}</h3>
+                
+                <div className="flex-1 flex items-center justify-around gap-12 relative z-10">
+                   <div className="relative w-40 h-40 group-hover:scale-105 transition-transform duration-500">
                       <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="3" className="text-emerald-500/20" />
-                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray={`${urgencyStats.optimized} ${100 - urgencyStats.optimized}`} className="text-emerald-500" />
-                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray={`${urgencyStats.attention} ${100 - urgencyStats.attention}`} strokeDashoffset={-urgencyStats.optimized} className="text-amber-500" />
-                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray={`${urgencyStats.critical} ${100 - urgencyStats.critical}`} strokeDashoffset={-(urgencyStats.optimized + urgencyStats.attention)} className="text-rose-500" />
+                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white/5" />
+                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray={`${urgencyStats.optimized} ${100 - urgencyStats.optimized}`} className="text-emerald-500 transition-all duration-1000" />
+                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray={`${urgencyStats.attention} ${100 - urgencyStats.attention}`} strokeDashoffset={-urgencyStats.optimized} className="text-amber-500 transition-all duration-1000" />
+                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray={`${urgencyStats.critical} ${100 - urgencyStats.critical}`} strokeDashoffset={-(urgencyStats.optimized + urgencyStats.attention)} className="text-rose-500 transition-all duration-1000" />
                       </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
-                         <span className="text-2xl font-black text-[var(--text-primary)]">{stats.total}</span>
-                         <span className="text-[8px] font-bold text-[var(--text-secondary)] uppercase">{t('dashboard.total_cl')}</span>
+                         <span className="text-4xl font-black text-[var(--text-primary)] tracking-tighter">{stats.total}</span>
+                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{t('dashboard.total_cl')}</span>
                       </div>
                    </div>
-                   <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                         <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-emerald-500" />
-                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.optimized')} <span className="text-[var(--text-primary)] ml-1">{urgencyStats.optimized}%</span></span>
+                   
+                   <div className="space-y-6">
+                      <div className="flex items-center gap-4 group/item">
+                         <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.4)] group-hover/item:scale-125 transition-transform" />
+                         <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t('dashboard.optimized')}</span>
+                            <span className="text-lg font-black text-[var(--text-primary)] leading-none">{urgencyStats.optimized}%</span>
+                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                         <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-amber-500" />
-                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.attention')} <span className="text-[var(--text-primary)] ml-1">{urgencyStats.attention}%</span></span>
+                      <div className="flex items-center gap-4 group/item">
+                         <div className="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.4)] group-hover/item:scale-125 transition-transform" />
+                         <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t('dashboard.attention')}</span>
+                            <span className="text-lg font-black text-[var(--text-primary)] leading-none">{urgencyStats.attention}%</span>
+                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                         <div className="w-2.5 h-2.5 rounded hover:scale-125 transition-transform bg-rose-500" />
-                         <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-secondary)]">{t('dashboard.critical')} <span className="text-[var(--text-primary)] ml-1">{urgencyStats.critical}%</span></span>
+                      <div className="flex items-center gap-4 group/item">
+                         <div className="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.4)] group-hover/item:scale-125 transition-transform" />
+                         <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t('dashboard.critical')}</span>
+                            <span className="text-lg font-black text-[var(--text-primary)] leading-none">{urgencyStats.critical}%</span>
+                         </div>
                       </div>
                    </div>
                 </div>
              </div>
           </div>
 
-          {/* Quick Alerts Feed */}
-          <div className="glass-card p-8 rounded-[32px] border border-[var(--glass-border)]">
-             <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 bg-rose-500/10 rounded-xl flex items-center justify-center text-rose-500">
-                      <ShieldAlert size={20} />
+          {/* Quick Alerts Feed - Redesigned */}
+          <div className="glass-card p-10 rounded-[48px] border border-white/5 relative overflow-hidden shadow-2xl">
+             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-rose-500/50 to-transparent" />
+             
+             <div className="flex items-center justify-between mb-10 relative z-10">
+                <div className="flex items-center gap-4">
+                   <div className="w-12 h-12 bg-rose-500/10 rounded-2xl flex items-center justify-center text-rose-500 border border-rose-500/20 shadow-inner">
+                      <ShieldAlert size={24} />
                    </div>
-                   <h3 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest">{t('projects.recent_alerts')}</h3>
+                   <div>
+                      <h3 className="text-lg font-black text-[var(--text-primary)] uppercase tracking-[0.3em]">{t('projects.recent_alerts')}</h3>
+                      <p className="text-[10px] font-bold text-rose-500/60 uppercase tracking-widest leading-none mt-1">Monitoreo de Infraestructura</p>
+                   </div>
                 </div>
                 {recentAlerts.length > 0 && (
-                   <div className="flex items-center gap-1 text-rose-500 animate-pulse">
-                      <div className="w-1.5 h-1.5 bg-rose-500 rounded-full"></div>
-                      <span className="text-[8px] font-black uppercase tracking-widest">{recentAlerts.length} Active</span>
-                   </div>
+                   <motion.div 
+                     animate={{ opacity: [0.4, 1, 0.4] }}
+                     transition={{ duration: 2, repeat: Infinity }}
+                     className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 rounded-2xl border border-rose-500/20"
+                   >
+                      <div className="w-2 h-2 bg-rose-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.6)]"></div>
+                      <span className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em]">{recentAlerts.length} Eventos Críticos</span>
+                   </motion.div>
                 )}
              </div>
              
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                 {recentAlerts.map(({ project, alert }, idx) => (
                    <motion.div 
                       key={alert.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="bg-[var(--bg-secondary)] border border-[var(--glass-border)] p-4 rounded-2xl relative overflow-hidden flex flex-col"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.15 }}
+                      whileHover={{ scale: 1.02, y: -4 }}
+                      className="bg-slate-900/40 border border-white/5 p-6 rounded-[32px] relative overflow-hidden flex flex-col min-h-[180px] shadow-lg hover:shadow-rose-500/5 transition-all"
                    >
-                      <div className="flex items-center justify-between mb-2">
-                         <span className="text-[8px] font-black text-rc-teal uppercase tracking-widest">{project}</span>
-                         <span className="text-[8px] font-bold text-[var(--text-secondary)]">{new Date(alert.date).toLocaleDateString()}</span>
+                      <div className="flex items-center justify-between mb-4">
+                         <span className="text-[10px] font-black text-rc-teal uppercase tracking-[0.3em]">{project}</span>
+                         <span className="text-[9px] font-bold text-slate-500 uppercase">{new Date(alert.date).toLocaleDateString()}</span>
                       </div>
-                      <p className="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-tight line-clamp-2 mb-3">
+                      <p className="text-sm font-bold text-white/90 leading-relaxed mb-6 flex-1">
                          {alert.description}
                       </p>
-                      <div className="mt-auto flex items-center justify-between">
-                         <span className={`px-2 py-0.5 rounded text-[7px] font-black uppercase tracking-widest border ${
+                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
+                         <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${
                             alert.severity === 'High' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
                          }`}>
                             {t(`projects.severity_${alert.severity.toLowerCase()}`)}
                          </span>
-                         <button className="text-[var(--text-secondary)] hover:text-rc-teal transition-all">
-                            <ArrowRight size={14} />
+                         <button className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all">
+                            <ArrowRight size={16} />
                          </button>
                       </div>
                    </motion.div>
                 ))}
                 {recentAlerts.length === 0 && (
-                   <div className="col-span-3 py-4 text-center">
-                      <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest opacity-50">{t('dashboard.no_records')}</p>
+                   <div className="col-span-3 py-12 text-center">
+                      <p className="text-xs font-black text-slate-600 uppercase tracking-[0.6em] opacity-40">{t('dashboard.no_records')}</p>
                    </div>
                 )}
              </div>
           </div>
         </div>
       )}
+
 
       {/* VIEW: CLIENT MANAGEMENT (OPERATIONAL) */}
       {activeTab === 'clients' && (
