@@ -29,6 +29,7 @@ export interface Alert {
 export interface Project {
   id: string;
   client: string;
+  logoUrl?: string;
   startDate: string;
   services: ClientService[];
   evaluations: Evaluation[];

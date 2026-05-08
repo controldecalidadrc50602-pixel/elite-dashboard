@@ -30,12 +30,21 @@ const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({
       <div className={`absolute -top-16 -right-16 w-32 h-32 rounded-full blur-[60px] opacity-10 group-hover:opacity-20 transition-opacity ${statusStyle?.split(' ')?.[1] || 'bg-slate-500/10'}`} />
 
       <div className="flex justify-between items-start mb-6">
-        <div className="flex-1 min-w-0">
-          <h4 className="text-[var(--text-primary)] font-black text-xl leading-tight group-hover:text-rc-teal transition-colors truncate uppercase tracking-tighter">
-             {project.client}
-          </h4>
-          <div className="flex items-center gap-2 text-[var(--text-secondary)] text-[10px] font-black mt-1 uppercase tracking-widest opacity-60">
-            <Calendar size={12} className="text-rc-teal" /> {project.startDate}
+        <div className="flex items-center gap-4 flex-1 min-w-0">
+          <div className="w-12 h-12 rounded-[18px] bg-black/20 border border-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:border-rc-teal/30 transition-all">
+             {project.logoUrl ? (
+               <img src={project.logoUrl} alt={project.client} className="w-8 h-8 object-contain" />
+             ) : (
+               <span className="text-sm font-black text-rc-teal uppercase">{project.client.charAt(0)}</span>
+             )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="text-[var(--text-primary)] font-black text-xl leading-tight group-hover:text-rc-teal transition-colors truncate uppercase tracking-tighter">
+               {project.client}
+            </h4>
+            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-[10px] font-black mt-1 uppercase tracking-widest opacity-60">
+              <Calendar size={12} className="text-rc-teal" /> {project.startDate}
+            </div>
           </div>
         </div>
         <div className={`flex items-center gap-1.5 px-4 py-1.5 rounded-2xl text-[9px] font-black uppercase tracking-widest border shrink-0 shadow-sm ${statusStyle}`}>

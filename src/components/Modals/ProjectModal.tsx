@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, Trash2, Plus } from 'lucide-react';
+import { X, Save, Trash2, Plus, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project, ClientService } from '../../types/project';
@@ -36,6 +36,21 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
     }
   }, [project, isOpen]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 800000) {
+        alert('El logo es muy pesado. Intenta con uno menor a 800KB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, logoUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.client?.trim()) {
@@ -54,6 +69,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
     const finalProject: Project = {
       id: project?.id || Math.random().toString(36).substr(2, 9),
       client: formData.client.trim(),
+      logoUrl: formData.logoUrl,
       startDate: formData.startDate!,
       services: cleanServices,
       evaluations: formData.evaluations || [],
@@ -93,6 +109,41 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
 
             <form onSubmit={handleSubmit} className="flex flex-col h-full max-h-[85vh]">
               <div className="p-8 space-y-8 overflow-y-auto custom-scrollbar flex-1">
+                {/* Logo Upload Section */}
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] ml-1">Logo del Cliente</label>
+                  <div className="flex items-center gap-6 bg-[var(--bg-primary)] p-6 rounded-[32px] border border-[var(--glass-border)]">
+                    <div className="w-24 h-24 bg-black/20 rounded-[24px] border-2 border-dashed border-white/10 flex items-center justify-center overflow-hidden relative group shrink-0">
+                      {formData.logoUrl ? (
+                        <img src={formData.logoUrl} alt="Preview" className="w-full h-full object-contain p-3" />
+                      ) : (
+                        <div className="text-center p-2">
+                          <Upload size={20} className="mx-auto mb-1 text-slate-500" />
+                          <span className="text-[7px] font-bold text-slate-500 uppercase">Sin Logo</span>
+                        </div>
+                      )}
+                      {formData.logoUrl && (
+                        <button 
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, logoUrl: '' }))}
+                          className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-rose-500 transition-opacity"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex-1 space-y-3">
+                      <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed italic opacity-70">
+                        Sube una imagen cuadrada (PNG/SVG) con fondo transparente para mejor visualización.
+                      </p>
+                      <label className="inline-flex items-center gap-2 px-5 py-2.5 bg-rc-teal/10 text-rc-teal rounded-xl cursor-pointer hover:bg-rc-teal/20 transition-all font-black text-[9px] uppercase tracking-widest border border-rc-teal/20">
+                        <Upload size={14} /> Seleccionar Logo
+                        <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Datos Básicos */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-1.5">

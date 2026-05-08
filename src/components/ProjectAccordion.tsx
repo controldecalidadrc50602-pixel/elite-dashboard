@@ -43,7 +43,16 @@ const ProjectAccordion: React.FC<Props> = ({ project, onOpenDetail }) => {
         <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusColor.replace('text', 'bg')} shadow-[0_0_8px_currentColor]`} />
         
         {/* Name Column */}
-        <div className="min-w-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-8 h-8 rounded-lg bg-black/20 border border-white/5 flex items-center justify-center overflow-hidden shrink-0">
+            {project.logoUrl ? (
+              <img src={project.logoUrl} alt={project.client} className="w-6 h-6 object-contain" />
+            ) : (
+              <span className="text-[10px] font-black text-rc-teal uppercase">
+                {project.client.charAt(0)}
+              </span>
+            )}
+          </div>
           <h4 className="text-[11px] font-black text-[var(--text-primary)] uppercase tracking-widest truncate group-hover:text-rc-teal transition-colors">
             {project.client}
           </h4>

@@ -123,8 +123,12 @@ const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, on
             <div className="p-6 border-b border-[var(--glass-border)] bg-[var(--bg-primary)]/50">
                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                     <div className="w-10 h-10 bg-rc-teal/10 rounded-xl flex items-center justify-center text-rc-teal">
-                        <ShieldCheck size={22} />
+                     <div className="w-12 h-12 bg-black/20 rounded-2xl flex items-center justify-center text-rc-teal border border-white/5 overflow-hidden shrink-0">
+                        {project.logoUrl ? (
+                           <img src={project.logoUrl} alt={project.client} className="w-8 h-8 object-contain" />
+                        ) : (
+                           <ShieldCheck size={22} />
+                        )}
                      </div>
                      <div>
                         <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tighter uppercase truncate max-w-[280px]">

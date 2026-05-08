@@ -676,9 +676,18 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                           className="technical-grid-audit px-8 py-5 group hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer elite-accent-line"
                        >
                           {/* CLIENT */}
-                          <div>
-                             <div className="font-black text-[var(--text-primary)] text-[11px] tracking-widest uppercase">{p.client}</div>
-                             <div className="text-[9px] font-bold text-rc-teal mt-0.5 opacity-60">ID: {p.id}</div>
+                          <div className="flex items-center gap-4">
+                             <div className="w-10 h-10 rounded-xl bg-black/20 border border-white/5 flex items-center justify-center overflow-hidden shrink-0">
+                                {p.logoUrl ? (
+                                   <img src={p.logoUrl} alt={p.client} className="w-8 h-8 object-contain" />
+                                ) : (
+                                   <span className="text-xs font-black text-rc-teal uppercase">{p.client.charAt(0)}</span>
+                                )}
+                             </div>
+                             <div>
+                                <div className="font-black text-[var(--text-primary)] text-[11px] tracking-widest uppercase">{p.client}</div>
+                                <div className="text-[9px] font-bold text-rc-teal mt-0.5 opacity-60">ID: {p.id}</div>
+                             </div>
                           </div>
 
                           {/* HEALTH - PERFECT SYMMETRY */}
