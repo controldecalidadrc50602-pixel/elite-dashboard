@@ -36,10 +36,12 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
     status: 'Open',
     priority: 'Medium',
     assignedTo: '',
+    responsibleEmail: '',
     area: AREAS[0],
-    startTime: new Date().toISOString().split('T')[0],
+    startTime: new Date().toISOString().slice(0, 16),
     endTime: '',
     subtasks: [],
+    progress: 0,
     createdAt: new Date().toISOString()
   });
 
@@ -107,10 +109,14 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
       status: formData.status as any || 'Open',
       priority: formData.priority as any || 'Medium',
       assignedTo: formData.assignedTo || '',
+      responsibleEmail: formData.responsibleEmail || '',
       area: useCustomArea ? customArea : (formData.area || AREAS[0]),
       startTime: formData.startTime || new Date().toISOString(),
       endTime: formData.endTime || '',
       subtasks: (formData.subtasks || []).filter(st => st.title.trim() !== ''),
+      progress: (formData.subtasks || []).length > 0 
+        ? Math.round(((formData.subtasks || []).filter(st => st.completed).length / (formData.subtasks || []).length) * 100)
+        : 0,
       createdAt: formData.createdAt || new Date().toISOString()
     };
 
@@ -183,16 +189,39 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
                     <option value="Low">🟢 Baja</option>
                   </select>
                 </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-rc-teal uppercase tracking-widest ml-1">Valor Operativo (Peso 1-10)</label>
+                  <input 
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={formData.operationalValue}
+                    onChange={e => setFormData({...formData, operationalValue: parseInt(e.target.value) || 1})}
+                    className="w-full bg-[var(--bg-primary)] border border-rc-teal/30 rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
+                  />
+                </div>
               </div>
 
               {/* Asignación y Áreas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Responsable</label>
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Responsable Directo</label>
                   <input 
                     value={formData.assignedTo}
                     onChange={e => setFormData({...formData, assignedTo: e.target.value})}
                     placeholder="Nombre del encargado"
+                    className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Email del Responsable (Notificaciones)</label>
+                  <input 
+                    type="email"
+                    value={formData.responsibleEmail}
+                    onChange={e => setFormData({...formData, responsibleEmail: e.target.value})}
+                    placeholder="ejemplo@rc506.com"
                     className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
                   />
                 </div>
@@ -236,21 +265,21 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
               {/* Tiempos */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Fecha de Inicio</label>
+                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">T-Inicio (Apertura)</label>
                   <input 
-                    type="date"
+                    type="datetime-local"
                     value={formData.startTime}
                     onChange={e => setFormData({...formData, startTime: e.target.value})}
                     className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Fecha Límite (Deadline)</label>
+                  <label className="text-[10px] font-black text-rose-500 uppercase tracking-widest ml-1">T-Fin (Límite SLA)</label>
                   <input 
-                    type="date"
+                    type="datetime-local"
                     value={formData.endTime}
                     onChange={e => setFormData({...formData, endTime: e.target.value})}
-                    className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
+                    className="w-full bg-[var(--bg-primary)] border border-rose-500/30 rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-[var(--text-primary)]"
                   />
                 </div>
               </div>

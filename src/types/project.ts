@@ -1,11 +1,35 @@
 import { Task } from '../components/TaskManager';
 
+export interface ServiceLog {
+  id: string;
+  date: string;
+  user: string;
+  action: string;
+  observation: string;
+}
+
 export interface ClientService {
   id: string;
   name: string;
   description: string;
   startDate: string;
   score: number;
+  
+  // Platform / Bot Data
+  botType?: string;
+  purpose?: string;
+  lastAccess?: string;
+  lastUpdate?: string;
+
+  // Contact Center Data
+  mgmtType?: 'Ventas' | 'Servicio';
+  responsible?: string;
+  collaborator?: string;
+  positionsCount?: number;
+  shiftMatrix?: string; // e.g. "L-V 8:00-17:00"
+
+  // Bitácora
+  logs?: ServiceLog[];
 }
 
 export interface Evaluation {

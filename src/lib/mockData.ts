@@ -5,7 +5,28 @@ export const initialProjects: Project[] = [
     id: '50600',
     client: 'RC506',
     startDate: '2024-01-01',
-    services: [],
+    services: [
+      {
+        id: 'S-001',
+        name: 'Ventas Automotriz',
+        description: 'Gestión de leads y cierre de ventas para sector automotriz.',
+        startDate: '2024-01-01',
+        score: 4.8,
+        botType: 'WhatsApp AI',
+        purpose: 'Lead Qualification',
+        lastAccess: '2024-05-08 08:30',
+        lastUpdate: '2024-05-08 10:15',
+        mgmtType: 'Ventas',
+        responsible: 'Juan Pérez',
+        collaborator: 'María García',
+        positionsCount: 15,
+        shiftMatrix: 'L-V 08:00 - 18:00',
+        logs: [
+          { id: 'L-001', date: '2024-05-01', user: 'Admin', action: 'Update', observation: 'Se ajustaron los parámetros del bot para mejorar la conversión.' },
+          { id: 'L-002', date: '2024-05-05', user: 'Juan Pérez', action: 'Audit', observation: 'Revisión de calidad mensual completada con 95%.' }
+        ]
+      }
+    ],
     evaluations: [{ month: 3, year: 2024, quantitative: 5.0, qualitative: 'Líder de Estrategia', status: 'Stable' }],
     healthFlag: 'Verde',
     opsPulse: { hcContracted: 10, hcReal: 10, backupStatus: 'Disponible' },

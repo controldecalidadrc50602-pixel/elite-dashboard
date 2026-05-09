@@ -14,6 +14,7 @@ import {
 import { motion } from 'framer-motion';
 import { taskService } from '../services/taskService';
 import TaskModal from './Modals/TaskModal';
+import SlaTimer from './common/SlaTimer';
 
 export interface SubTask {
   id: string;
@@ -29,17 +30,33 @@ export interface Task {
   status: 'Open' | 'In Progress' | 'Closed';
   priority: 'High' | 'Medium' | 'Low';
   assignedTo: string;
+  responsibleEmail?: string;
   area: string;
+  operationalValue: number; // Peso/Valor de la tarea (1-10)
   startTime: string; // ISO
-  endTime?: string; // ISO (Target)
+  endTime: string; // ISO (Target)
+  firstResponseTime?: string; // ISO (When status changed to In Progress)
+  completionTime?: string; // ISO (When status changed to Closed)
   subtasks: SubTask[];
+  progress: number; // 0-100
+  effectivenessScore?: number; // 0-100 (Calculated on completion)
   createdAt: string;
+  slaNotified?: {
+    p33?: boolean;
+    p50?: boolean;
+    p75?: boolean;
+    m30?: boolean;
+  };
 }
 
 
 
 
-const TaskManager = () => {
+interface TaskManagerProps {
+  projectId?: string;
+}
+
+const TaskManager: React.FC<TaskManagerProps> = ({ projectId }) => {
   const { t } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,7 +112,18 @@ const TaskManager = () => {
       st.id === subtaskId ? { ...st, completed: !st.completed } : st
     );
 
-    const updatedTask = { ...task, subtasks: updatedSubtasks };
+    const completedCount = updatedSubtasks.filter(st => st.completed).length;
+    const progress = updatedSubtasks.length > 0 
+      ? Math.round((completedCount / updatedSubtasks.length) * 100) 
+      : 0;
+
+    const updatedTask: Task = { 
+      ...task, 
+      subtasks: updatedSubtasks, 
+      progress,
+      status: progress === 100 ? 'Closed' : task.status
+    };
+    
     const newTasks = await taskService.updateTask(updatedTask, tasks);
     setTasks(newTasks);
   };
@@ -126,11 +154,16 @@ const TaskManager = () => {
     return new Date(endTime) < now;
   };
 
-  const filteredTasks = tasks.filter(t => 
-    (t.title?.toLowerCase() || '').includes(search.toLowerCase()) || 
-    (t.area?.toLowerCase() || '').includes(search.toLowerCase()) ||
-    (t.assignedTo?.toLowerCase() || '').includes(search.toLowerCase())
-  );
+  const filteredTasks = tasks.filter(t => {
+    const matchesSearch = (t.title?.toLowerCase() || '').includes(search.toLowerCase()) || 
+                          (t.area?.toLowerCase() || '').includes(search.toLowerCase()) ||
+                          (t.assignedTo?.toLowerCase() || '').includes(search.toLowerCase());
+    
+    if (projectId) {
+      return matchesSearch && t.projectId === projectId;
+    }
+    return matchesSearch;
+  });
 
 
   return (
@@ -220,13 +253,15 @@ const TaskManager = () => {
                   </td>
                   <td className="px-6 py-2.5">
                     <div className="flex flex-col items-center gap-1">
-                       {task.status !== 'Closed' ? (
-                          <div className={`flex items-center gap-1.5 ${isOverdue(task.endTime) ? 'text-rose-500' : 'text-rc-teal'}`}>
-                             <Clock size={10} />
-                             <span className="text-[10px] font-black tracking-tighter alternate-nums">{getElapsedTime(task.startTime)}</span>
-                          </div>
-                       ) : (
-                          <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest italic opacity-60">Completada</span>
+                       <SlaTimer 
+                          startTime={task.startTime} 
+                          endTime={task.endTime} 
+                          status={task.status} 
+                       />
+                       {task.status !== 'Closed' && task.subtasks.length > 0 && (
+                          <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+                             Progreso: {task.progress}%
+                          </span>
                        )}
                     </div>
                   </td>

@@ -28,7 +28,7 @@ import { exportService } from '../services/exportService';
 import ProjectCard from '../components/ProjectCard'; // Keep it if needed elsewhere, but we will use Accordion here
 import ProjectAccordion from '../components/ProjectAccordion';
 import TaskManager, { Task } from '../components/TaskManager';
-import ProjectDetailsSlideover from '../components/ProjectDetailsSlideover';
+import ProjectDetailsModal from '../components/ProjectDetailsModal';
 import ProjectModal from '../components/Modals/ProjectModal';
 import StatCard from '../components/common/StatCard';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -724,7 +724,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
 
       {activeTab === 'tasks' && <TaskManager />}
 
-      <ProjectDetailsSlideover 
+      <ProjectDetailsModal 
          project={selectedProject}
          isOpen={isSlideoverOpen}
          onClose={() => setIsSlideoverOpen(false)}
