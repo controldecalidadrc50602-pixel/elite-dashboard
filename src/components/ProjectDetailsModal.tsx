@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { 
   X, Plus, Trash2, Calendar, Star, ShieldCheck, Edit3, AlertCircle, Save, Bell, 
   CheckCircle, AlertTriangle, FileText, Activity, Globe, Headphones, Cpu, Zap, Wifi, Layers,
-  ChevronDown, MessageSquare, User, Users, Clock, History, Phone
+  ChevronDown, MessageSquare, User, Users, Clock, History, Phone, ShieldAlert
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project, Evaluation, Alert, ClientService, ServiceLog } from '../types/project';

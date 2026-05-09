@@ -38,6 +38,7 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
     assignedTo: '',
     responsibleEmail: '',
     area: AREAS[0],
+    operationalValue: 1,
     startTime: new Date().toISOString().slice(0, 16),
     endTime: '',
     subtasks: [],
@@ -64,10 +65,13 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
         status: 'Open',
         priority: 'Medium',
         assignedTo: '',
+        responsibleEmail: '',
         area: AREAS[0],
-        startTime: new Date().toISOString().split('T')[0],
+        operationalValue: 1,
+        startTime: new Date().toISOString().slice(0, 16),
         endTime: '',
         subtasks: [],
+        progress: 0,
         createdAt: new Date().toISOString()
       });
       setUseCustomArea(false);
@@ -111,6 +115,7 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
       assignedTo: formData.assignedTo || '',
       responsibleEmail: formData.responsibleEmail || '',
       area: useCustomArea ? customArea : (formData.area || AREAS[0]),
+      operationalValue: formData.operationalValue || 1,
       startTime: formData.startTime || new Date().toISOString(),
       endTime: formData.endTime || '',
       subtasks: (formData.subtasks || []).filter(st => st.title.trim() !== ''),

@@ -47,12 +47,14 @@ export const taskService = {
           priority: 'High',
           assignedTo: 'Marilyn (Lead Auditor)',
           area: 'Gestión de Calidad',
+          operationalValue: 8,
           startTime: new Date(Date.now() - 3600000 * 5).toISOString(), // Hace 5 horas
           endTime: new Date(Date.now() + 3600000 * 2).toISOString(), // En 2 horas
           subtasks: [
             { id: 'st1', title: 'Revisión de protocolos', completed: true },
             { id: 'st2', title: 'Validación de KPI', completed: false }
           ],
+          progress: 50,
           createdAt: new Date().toISOString()
         },
         {
@@ -64,9 +66,11 @@ export const taskService = {
           priority: 'Medium',
           assignedTo: 'Carlos Ruiz',
           area: 'Contact Center',
+          operationalValue: 6,
           startTime: new Date().toISOString(),
-          endTime: new Date(Date.now() - 3600000).toISOString(), // EXPIRADA (Para mostrar pulso neón)
+          endTime: new Date(Date.now() - 3600000).toISOString(), // EXPIRADA
           subtasks: [],
+          progress: 0,
           createdAt: new Date().toISOString()
         }
       ];
