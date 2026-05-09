@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { X, Save, Trash2, Plus, Upload, Activity, Globe, Layers, Headphones, Settings, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Project, ClientService, OperationPulse, TechDNA, HardwareAsset } from '../../types/project';
+import { Project, ClientService, OperationPulse, TechDNA, HardwareAsset, StrategySLA } from '../../types/project';
 
 interface Props {
   isOpen: boolean;
@@ -843,7 +843,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                      <button 
                                        type="button"
                                        onClick={() => {
-                                          const t = formData.strategy?.recurringTasks?.filter((_, i) => i !== idx);
+                                          const t = (formData.strategy?.recurringTasks || []).filter((_, i) => i !== idx);
                                           setFormData({...formData, strategy: { ...formData.strategy!, recurringTasks: t }});
                                        }}
                                        className="p-2 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"

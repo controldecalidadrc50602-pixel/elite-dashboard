@@ -12,9 +12,9 @@ export const initialProjects: Project[] = [
         description: 'Gestión de leads y cierre de ventas para sector automotriz.',
         startDate: '2024-01-01',
         score: 4.8,
-        botType: 'WhatsApp AI',
-        purpose: 'Lead Qualification',
-        lastAccess: '2024-05-08 08:30',
+        botType: 'IA Generativa',
+        purpose: 'Generar Leads',
+        lastAdminAccess: '2024-05-08 08:30',
         lastUpdate: '2024-05-08 10:15',
         mgmtType: 'Ventas',
         responsible: 'Juan Pérez',
@@ -29,7 +29,7 @@ export const initialProjects: Project[] = [
     ],
     evaluations: [{ month: 3, year: 2024, quantitative: 5.0, qualitative: 'Líder de Estrategia', status: 'Stable' }],
     healthFlag: 'Verde',
-    opsPulse: { hcContracted: 10, hcReal: 10, backupStatus: 'Disponible' },
+    opsPulse: { hcContracted: 10, hcReal: 10, backupStatus: 'Disponible', operationType: 'Ventas' },
     techDNA: { operationMode: 'REMOTE', isp: 'Liberty', phoneLine: 'Sip Trunk' },
     assets: []
   },
@@ -40,7 +40,7 @@ export const initialProjects: Project[] = [
     services: [],
     evaluations: [{ month: 3, year: 2024, quantitative: 4.8, qualitative: 'Servicio en cumplimiento', status: 'Stable' }],
     healthFlag: 'Verde',
-    opsPulse: { hcContracted: 5, hcReal: 5, backupStatus: 'Disponible' },
+    opsPulse: { hcContracted: 5, hcReal: 5, backupStatus: 'Disponible', operationType: 'Servicio al Cliente' },
     techDNA: { operationMode: 'REMOTE', isp: 'Telecable', phoneLine: 'Cloud' },
     assets: []
   },
@@ -51,7 +51,7 @@ export const initialProjects: Project[] = [
     services: [],
     evaluations: [{ month: 3, year: 2024, quantitative: 4.5, qualitative: 'Operación estable', status: 'Stable' }],
     healthFlag: 'Amarilla',
-    opsPulse: { hcContracted: 4, hcReal: 3, backupStatus: 'Disponible' },
+    opsPulse: { hcContracted: 4, hcReal: 3, backupStatus: 'Disponible', operationType: 'Servicio al Cliente' },
     techDNA: { operationMode: 'WIP', isp: 'Liberty', phoneLine: 'Analog' },
     assets: []
   },
@@ -62,7 +62,7 @@ export const initialProjects: Project[] = [
     services: [],
     evaluations: [{ month: 3, year: 2024, quantitative: 4.7, qualitative: 'Gestión efectiva', status: 'Stable' }],
     healthFlag: 'Verde',
-    opsPulse: { hcContracted: 8, hcReal: 8, backupStatus: 'Disponible' },
+    opsPulse: { hcContracted: 8, hcReal: 8, backupStatus: 'Disponible', operationType: 'Servicio al Cliente' },
     techDNA: { operationMode: 'REMOTE', isp: 'ICE', phoneLine: 'Cloud' },
     assets: []
   },
@@ -73,7 +73,7 @@ export const initialProjects: Project[] = [
     services: [],
     evaluations: [{ month: 3, year: 2024, quantitative: 4.2, qualitative: 'Procesos en revisión', status: 'Stable' }],
     healthFlag: 'Amarilla',
-    opsPulse: { hcContracted: 12, hcReal: 10, backupStatus: 'En Uso' },
+    opsPulse: { hcContracted: 12, hcReal: 10, backupStatus: 'En Uso', operationType: 'Ventas' },
     techDNA: { operationMode: 'HÍBRIDO', isp: 'Telecable', phoneLine: 'Sip Trunk' },
     assets: []
   },
@@ -84,7 +84,7 @@ export const initialProjects: Project[] = [
     services: [],
     evaluations: [{ month: 3, year: 2024, quantitative: 4.9, qualitative: 'Excelente desempeño', status: 'Growth' }],
     healthFlag: 'Verde',
-    opsPulse: { hcContracted: 15, hcReal: 15, backupStatus: 'Disponible' },
+    opsPulse: { hcContracted: 15, hcReal: 15, backupStatus: 'Disponible', operationType: 'Ventas' },
     techDNA: { operationMode: 'REMOTE', isp: 'Liberty', phoneLine: 'Cloud' },
     assets: []
   },
@@ -95,7 +95,7 @@ export const initialProjects: Project[] = [
     services: [],
     evaluations: [{ month: 3, year: 2024, quantitative: 4.4, qualitative: 'Operativo', status: 'Stable' }],
     healthFlag: 'Amarilla',
-    opsPulse: { hcContracted: 6, hcReal: 6, backupStatus: 'Disponible' },
+    opsPulse: { hcContracted: 6, hcReal: 6, backupStatus: 'Disponible', operationType: 'Servicio al Cliente' },
     techDNA: { operationMode: 'WIP', isp: 'Liberty', phoneLine: 'Cloud' },
     assets: []
   },
@@ -106,7 +106,7 @@ export const initialProjects: Project[] = [
     services: [],
     evaluations: [{ month: 3, year: 2024, quantitative: 4.6, qualitative: 'Continuidad asegurada', status: 'Stable' }],
     healthFlag: 'Verde',
-    opsPulse: { hcContracted: 20, hcReal: 18, backupStatus: 'Disponible' },
+    opsPulse: { hcContracted: 20, hcReal: 18, backupStatus: 'Disponible', operationType: 'Servicio al Cliente' },
     techDNA: { operationMode: 'HÍBRIDO', isp: 'Telecable', phoneLine: 'Cloud' },
     assets: []
   }

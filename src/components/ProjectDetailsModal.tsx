@@ -322,7 +322,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                                                       {[
                                                          { label: 'Tipo de Bot', value: service.botType, icon: Cpu },
                                                          { label: 'Propósito', value: service.purpose, icon: Star },
-                                                         { label: 'Último Acceso', value: service.lastAccess, icon: Clock },
+                                                         { label: 'Último Acceso', value: service.lastAdminAccess, icon: Clock },
                                                          { label: 'Actualización', value: service.lastUpdate, icon: History },
                                                       ].map((item, i) => (
                                                          <div key={i} className="flex items-center justify-between p-4 bg-black/40 rounded-2xl border border-white/5">

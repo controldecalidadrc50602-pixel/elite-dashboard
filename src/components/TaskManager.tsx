@@ -9,7 +9,8 @@ import {
   Circle,
   MoreVertical,
   Flag,
-  Trash2
+  Trash2,
+  CheckSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { taskService } from '../services/taskService';

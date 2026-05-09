@@ -508,9 +508,11 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
              </div>
           </div>
       </div>
-
+       )}
 
       {/* VIEW: CLIENT MANAGEMENT (OPERATIONAL) */}
+
+
       {activeTab === 'clients' && (
         <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 pb-4">
