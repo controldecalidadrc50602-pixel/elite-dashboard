@@ -343,9 +343,9 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
               </button>
               <button 
                 onClick={handleSubmit}
-                className="flex-[2] bg-rc-teal text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-rc-teal/20 hover:scale-[1.05] transition-all flex items-center justify-center gap-2"
+                className="flex-[2] bg-[var(--rc-turquoise)] text-[var(--bg-primary)] py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-[var(--rc-turquoise)]/20 hover:scale-[1.05] transition-all flex items-center justify-center gap-2"
               >
-                <Save size={18} /> {task ? 'Guardar Cambios' : 'Crear Tarea'}
+                <Save size={18} /> Cerrar Panel
               </button>
             </div>
           </motion.div>

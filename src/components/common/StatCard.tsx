@@ -10,42 +10,44 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, trend }) => {
-  // Mapeo robusto de colores para evitar problemas con clases dinámicas de Tailwind
-  const colorMap: Record<string, { bg: string, text: string, ring: string }> = {
-    'rc-teal': { bg: 'bg-[#3BC7AA]/10', text: 'text-[#3BC7AA]', ring: 'border-[#3BC7AA]/20' },
-    'emerald': { bg: 'bg-emerald-500/10', text: 'text-emerald-500', ring: 'border-emerald-500/20' },
-    'rose': { bg: 'bg-rose-500/10', text: 'text-rose-500', ring: 'border-rose-500/20' },
-    'amber': { bg: 'bg-amber-500/10', text: 'text-amber-500', ring: 'border-amber-500/20' },
+  // Mapeo de colores refinado
+  const colorMap: Record<string, { bg: string, text: string }> = {
+    'rc-teal': { bg: 'bg-[#3BBCA9]/10', text: 'text-[#3BBCA9]' },
+    'emerald': { bg: 'bg-emerald-500/10', text: 'text-emerald-500' },
+    'rose': { bg: 'bg-rose-500/10', text: 'text-rose-500' },
+    'amber': { bg: 'bg-amber-500/10', text: 'text-amber-500' },
   };
 
   const style = colorMap[color] || colorMap['rc-teal'];
 
   return (
     <motion.div 
-      whileHover={{ y: -5, transition: { duration: 0.2 } }}
-      className="glass-card p-6 rounded-[32px] relative overflow-hidden group transition-all flex items-center gap-5 border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
+      whileHover={{ y: -2, transition: { duration: 0.2 } }}
+      className="glass-card p-8 rounded-[32px] relative overflow-hidden group border border-[var(--glass-border)]"
     >
-      <div className={`w-14 h-14 rounded-[1.25rem] ${style.bg} ${style.text} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-inner`}>
-        {React.cloneElement(icon, { size: 26, strokeWidth: 2.5 } as any)}
-      </div>
-      
-      <div className="flex flex-col gap-1">
-        <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">{title}</span>
-        <div className="flex items-baseline gap-2">
-           <h4 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter leading-none">{value}</h4>
-            {trend && (
-              <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/20 shadow-sm">
-                {trend}
-              </span>
-            )}
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <div className={`w-12 h-12 rounded-2xl ${style.bg} ${style.text} flex items-center justify-center shrink-0`}>
+            {React.cloneElement(icon, { size: 24, strokeWidth: 1.5 } as any)}
+          </div>
+          {trend && (
+            <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full">
+              {trend}
+            </span>
+          )}
+        </div>
+        
+        <div className="flex flex-col gap-1">
+          <span className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.1em]">{title}</span>
+          <h4 className="large-value text-[var(--text-primary)]">{value}</h4>
         </div>
       </div>
       
       {/* Sutil gradiente de fondo en hover */}
       <div className={`absolute -right-4 -bottom-4 w-24 h-24 ${style.bg} rounded-full blur-[40px] opacity-0 group-hover:opacity-40 transition-opacity duration-700`} />
     </motion.div>
-
   );
 };
+
 
 export default StatCard;

@@ -16,17 +16,21 @@ export interface ClientService {
   score: number;
   
   // Platform / Bot Data
-  botType?: string;
-  purpose?: string;
-  lastAccess?: string;
+  type?: 'Platform' | 'Telephony' | 'Other';
+  botType?: 'IA Generativa' | 'Flujos' | 'Híbrido';
+  purpose?: 'Generar Leads' | 'Resolver dudas' | 'Autogestión';
   lastUpdate?: string;
+
+  // Telephony Data
+  trunkId?: string;
+  lastAdminAccess?: string;
 
   // Contact Center Data
   mgmtType?: 'Ventas' | 'Servicio';
   responsible?: string;
   collaborator?: string;
   positionsCount?: number;
-  shiftMatrix?: string; // e.g. "L-V 8:00-17:00"
+  shiftMatrix?: string;
 
   // Bitácora
   logs?: ServiceLog[];
@@ -50,19 +54,27 @@ export interface Alert {
   status: 'Open' | 'Resolved';
 }
 
+export interface Shift {
+  id: string;
+  name: string; // e.g. "Turno A"
+  timeRange: string; // e.g. "08:00 - 17:00"
+  peopleCount: number;
+}
+
 export interface OperationPulse {
   hcContracted: number;
   hcReal: number;
   backupStatus: 'Disponible' | 'En Uso' | 'Crítico';
-  shifts?: {
-    slot: string; // e.g. "06:00 - 14:00"
-    count: number;
-  }[];
+  operationType: 'Servicio al Cliente' | 'Ventas' | 'Cobranza' | 'Soporte Técnico';
+  shifts?: Shift[];
 }
 
 export interface TechDNA {
   operationMode: 'REMOTE' | 'WIP' | 'HÍBRIDO';
   isp: string;
+  internetSpeed?: string;
+  connectivityType?: 'Fibra Óptica' | 'Radiofrecuencia' | 'Cobre';
+  redundancy?: boolean;
   phoneLine: string;
 }
 
@@ -71,19 +83,32 @@ export interface HardwareAsset {
   model: string;
   quantity: number;
   purchaseDate: string;
+  assignedPosition?: string; // Asociación a posición del Contact Center
+}
+
+export interface StrategySLA {
+  recurringTasks: string[];
+  defaultTaskWeight: number; // 1-10
+  responseSla: number; // Horas/Días
 }
 
 export interface Project {
   id: string;
   client: string;
   logoUrl?: string;
-  startDate: string; // Onboarding Date
+  startDate: string;
+  accountManager?: string;
+  partnerLiaison?: {
+    name: string;
+    email: string;
+  };
+  strategicObjective?: string;
   services: ClientService[];
   evaluations: Evaluation[];
   alerts?: Alert[];
-  // V3.5 Core Data
   healthFlag: 'Verde' | 'Amarilla' | 'Roja' | 'Negra';
   opsPulse?: OperationPulse;
   techDNA?: TechDNA;
   assets?: HardwareAsset[];
+  strategy?: StrategySLA;
 }

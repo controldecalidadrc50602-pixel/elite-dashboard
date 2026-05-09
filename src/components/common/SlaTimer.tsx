@@ -11,7 +11,7 @@ interface Props {
 const SlaTimer: React.FC<Props> = ({ startTime, endTime, status }) => {
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [percentage, setPercentage] = useState<number>(0);
-  const [color, setColor] = useState<string>('text-emerald-500');
+  const [color, setColor] = useState<string>('text-[var(--rc-turquoise)]');
 
   useEffect(() => {
     const calculate = () => {
@@ -37,7 +37,7 @@ const SlaTimer: React.FC<Props> = ({ startTime, endTime, status }) => {
       } else if (pct > 33) {
         setColor('text-yellow-400');
       } else {
-        setColor('text-emerald-500');
+        setColor('text-[var(--rc-turquoise)]');
       }
     };
 
@@ -67,13 +67,13 @@ const SlaTimer: React.FC<Props> = ({ startTime, endTime, status }) => {
     // Simple heuristic: If time spent > 50% but progress is low, or time is almost up
     if (timePct > 80) return { label: 'CRÍTICO', color: 'text-rose-600' };
     if (timePct > 50) return { label: 'ALTO', color: 'text-rose-400' };
-    return { label: 'BAJO', color: 'text-emerald-500' };
+    return { label: 'BAJO', color: 'text-[var(--rc-turquoise)]' };
   };
 
   const risk = getRiskLevel();
 
   if (status === 'Closed') {
-    return <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest opacity-60">Finalizado</span>;
+    return <span className="text-[10px] font-black text-[var(--rc-turquoise)] uppercase tracking-widest opacity-60">Finalizado</span>;
   }
 
   return (

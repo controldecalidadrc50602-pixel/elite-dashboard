@@ -1,8 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
   --color-rc-teal: #3BC7AA;
   --color-rc-gray: #606060;
+  
+  /* Premium Gray Scale */
+  --color-slate-premium: #1E293B;
+  --color-charcoal: #121212;
+  --color-silver: #C0C0C0;
   
   --color-status-optimo: #10b981;
   --color-status-aceptable: #0ea5e9;
@@ -14,40 +20,71 @@
 }
 
 :root {
-  --bg-primary: #f1f5f9;
-  --bg-secondary: #ffffff;
-  --card-bg: rgba(255, 255, 255, 0.95);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --accent-cyan: #3BC7AA;
-  --sidebar-bg: #ffffff;
+  --rc-turquoise: #3BBCA9;
+  --rc-slate: #6D6E71;
+  --bg-primary: #0a0a0b; 
+  --bg-secondary: #121214;
+  --card-bg: rgba(18, 18, 20, 0.7);
+  --glass-border: rgba(109, 110, 113, 0.15);
+  --text-primary: #f5f5f7;
+  --text-secondary: #6D6E71;
+  --accent-color: #3BBCA9;
+  --sidebar-bg: rgba(10, 10, 11, 0.8);
 }
 
-.dark {
-  --bg-primary: #020617;
-  --bg-secondary: #0f172a;
-  --card-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --sidebar-bg: #0f172a;
+@theme {
+  --color-rc-teal: var(--rc-turquoise);
+  --color-rc-gray: var(--rc-slate);
+  --color-premium-bg: var(--bg-primary);
+  --color-premium-card: var(--card-bg);
 }
 
 body {
-  @apply bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen font-sans transition-colors duration-500 antialiased;
-  background-image: 
-    radial-gradient(at 0% 0%, var(--bg-secondary) 0, transparent 40%),
-    radial-gradient(at 100% 0%, var(--bg-primary) 0, transparent 40%),
-    radial-gradient(at 50% 100%, var(--bg-secondary) 0, transparent 40%);
+  @apply text-[var(--text-primary)] min-h-screen transition-colors duration-500 antialiased;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: radial-gradient(circle at top right, #0d2b27 0%, #0a0a0b 45%, #0a0a0b 100%);
+  background-attachment: fixed;
+}
+
+/* Premium Inputs */
+input, select, textarea {
+  @apply bg-slate-900/40 border border-white/5 rounded-2xl px-6 py-4 text-sm transition-all outline-none text-white;
+}
+
+input:focus, select:focus, textarea:focus {
+  @apply border-[var(--rc-turquoise)]/50 ring-4 ring-[var(--rc-turquoise)]/10 bg-slate-900/60 shadow-[0_0_20px_rgba(59,188,169,0.1)];
+}
+
+/* Premium Typography */
+.section-title {
+  @apply text-3xl font-light text-white uppercase tracking-[0.4em] mb-4;
+  font-family: 'Inter', sans-serif;
 }
 
 .glass-card {
-  @apply bg-[var(--card-bg)] backdrop-blur-xl border border-[var(--glass-border)] shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)];
+  @apply backdrop-blur-[15px] bg-[var(--card-bg)] border border-[var(--glass-border)] shadow-2xl hover:border-[var(--rc-turquoise)]/20 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)];
 }
 
 .glass-panel {
-  @apply bg-[var(--sidebar-bg)] backdrop-blur-2xl border-r border-[var(--glass-border)];
+  @apply backdrop-blur-[10px] bg-black/50 border-r border-white/5;
+}
+
+/* Premium Buttons */
+.btn-premium {
+  @apply bg-gradient-to-br from-[var(--rc-turquoise)] to-[#2a8a7c] text-[var(--bg-primary)] font-black uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(59,188,169,0.2)] hover:shadow-[0_15px_40px_rgba(59,188,169,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all;
+}
+
+/* Typography Overrides */
+h1, h2, h3, h4, h5, h6 {
+  @apply tracking-tight font-light;
+}
+
+.section-title {
+  @apply text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--rc-slate)] mb-6;
+}
+
+.large-value {
+  @apply text-5xl font-extralight tracking-tighter text-[var(--rc-turquoise)];
 }
 
 /* Custom Utilities */
@@ -82,14 +119,14 @@ body {
   display: grid;
   grid-template-columns: 24px 2fr 1fr 1.5fr 120px 80px;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 @utility technical-grid-tasks {
   display: grid;
   grid-template-columns: 48px 3fr 1.5fr 1.2fr 1.5fr 80px;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 @utility technical-grid-audit {
@@ -99,14 +136,8 @@ body {
   gap: 2rem;
 }
 
-@utility technical-font-mono {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  letter-spacing: -0.05em;
-}
-
 .compact-row {
-  @apply py-2.5 px-6 transition-all duration-200;
-  min-height: 48px;
+  @apply py-4 px-6 transition-all duration-200 border-b border-[var(--glass-border)];
 }
 
 .elite-accent-line {
@@ -119,3 +150,4 @@ body {
     @apply w-1;
   }
 }
+

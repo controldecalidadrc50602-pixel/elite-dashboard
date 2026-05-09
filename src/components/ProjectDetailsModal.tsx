@@ -34,7 +34,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
       case 'Amarilla': return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
       case 'Roja': return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
       case 'Negra': return 'text-slate-900 bg-slate-950/20 border-slate-900/30';
-      default: return 'text-rc-teal bg-rc-teal/10 border-rc-teal/20';
+      default: return 'text-rc-teal bg-[var(--rc-turquoise)]/10 border-rc-teal/20';
     }
   };
 
@@ -88,10 +88,10 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                   </div>
 
                   <div className="flex items-center gap-3">
-                     <button onClick={() => onEditRequest && onEditRequest(project)} className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-rc-teal/10 hover:text-rc-teal rounded-2xl transition-all text-[10px] font-black uppercase tracking-widest border border-white/5">
+                     <button onClick={() => onEditRequest && onEditRequest(project)} className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-[var(--rc-turquoise)]/10 hover:text-rc-teal rounded-2xl transition-all text-[10px] font-black uppercase tracking-widest border border-white/5">
                         <Edit3 size={16} /> {t('common.edit')}
                      </button>
-                     <button onClick={() => exportService.exportIndividualPDF(project, t)} className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-rc-teal/10 hover:text-rc-teal rounded-2xl transition-all text-[10px] font-black uppercase tracking-widest border border-white/5">
+                     <button onClick={() => exportService.exportIndividualPDF(project, t)} className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-[var(--rc-turquoise)]/10 hover:text-rc-teal rounded-2xl transition-all text-[10px] font-black uppercase tracking-widest border border-white/5">
                         <FileText size={16} /> {t('common.export')}
                      </button>
                      <button onClick={onClose} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all text-[var(--text-secondary)] border border-white/5">
@@ -122,7 +122,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                        {activeTab === tab.id && (
                          <motion.div 
                            layoutId="modal-tab-active" 
-                           className="absolute bottom-0 left-0 right-0 h-1 bg-rc-teal rounded-t-full" 
+                           className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--rc-turquoise)] rounded-t-full" 
                          />
                        )}
                     </button>
@@ -150,7 +150,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                                  <motion.div 
                                     initial={{ width: 0 }}
                                     animate={{ width: `${(project.evaluations?.[0]?.quantitative || 0) * 20}%` }}
-                                    className="h-full bg-rc-teal shadow-[0_0_15px_rgba(59,199,170,0.5)]" 
+                                    className="h-full bg-[var(--rc-turquoise)] shadow-[0_0_15px_rgba(59,199,170,0.5)]" 
                                  />
                               </div>
                            </div>
@@ -162,7 +162,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Contratado</span>
                                     <span className="text-xl font-black text-white">{project.opsPulse?.hcContracted || 0}</span>
                                  </div>
-                                 <div className="flex justify-between items-center p-4 bg-rc-teal/10 border border-rc-teal/20 rounded-2xl">
+                                 <div className="flex justify-between items-center p-4 bg-[var(--rc-turquoise)]/10 border border-rc-teal/20 rounded-2xl">
                                     <span className="text-[10px] font-bold text-rc-teal uppercase tracking-widest">Real Asignado</span>
                                     <span className="text-xl font-black text-rc-teal">{project.opsPulse?.hcReal || 0}</span>
                                  </div>
@@ -173,7 +173,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                                     </div>
                                     <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                                        <div 
-                                          className="h-full bg-rc-teal" 
+                                          className="h-full bg-[var(--rc-turquoise)]" 
                                           style={{ width: `${Math.min(100, ((project.opsPulse?.hcReal || 0) / (project.opsPulse?.hcContracted || 1)) * 100)}%` }} 
                                        />
                                     </div>
@@ -187,7 +187,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                            {/* Tech DNA DNA */}
                            <div className="glass-card p-10 rounded-[48px] border border-white/5 space-y-8">
                               <div className="flex items-center gap-4">
-                                 <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal">
+                                 <div className="w-12 h-12 bg-[var(--rc-turquoise)]/10 rounded-2xl flex items-center justify-center text-rc-teal">
                                     <Globe size={24} />
                                  </div>
                                  <div>
@@ -216,7 +216,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                            <div className="glass-card p-10 rounded-[48px] border border-white/5">
                               <div className="flex items-center justify-between mb-8">
                                  <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal">
+                                    <div className="w-12 h-12 bg-[var(--rc-turquoise)]/10 rounded-2xl flex items-center justify-center text-rc-teal">
                                        <Headphones size={24} />
                                     </div>
                                     <div>
@@ -263,21 +263,21 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                               <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Ecosistema de Servicios</h3>
                               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gestión de Soluciones y Bitácora Táctica</p>
                            </div>
-                           <button className="flex items-center gap-2 px-6 py-3 bg-rc-teal text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-rc-teal/20 hover:scale-105 transition-all">
+                           <button className="flex items-center gap-2 px-6 py-3 bg-[var(--rc-turquoise)] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-rc-teal/20 hover:scale-105 transition-all">
                               <Plus size={16} /> Agregar Servicio
                            </button>
                         </div>
 
                         <div className="grid grid-cols-1 gap-6">
                            {project.services.map(service => (
-                              <div key={service.id} className={`glass-card overflow-hidden transition-all duration-500 border ${expandedService === service.id ? 'border-rc-teal/30 ring-1 ring-rc-teal/20 bg-rc-teal/[0.02]' : 'border-white/5 bg-black/20'}`}>
+                              <div key={service.id} className={`glass-card overflow-hidden transition-all duration-500 border ${expandedService === service.id ? 'border-rc-teal/30 ring-1 ring-rc-teal/20 bg-[var(--rc-turquoise)]/[0.02]' : 'border-white/5 bg-black/20'}`}>
                                  {/* Summary Row */}
                                  <div 
                                     onClick={() => setExpandedService(expandedService === service.id ? null : service.id)}
                                     className="p-8 flex items-center justify-between cursor-pointer group"
                                  >
                                     <div className="flex items-center gap-6">
-                                       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${expandedService === service.id ? 'bg-rc-teal text-white' : 'bg-black/40 text-rc-teal border border-white/5'}`}>
+                                       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${expandedService === service.id ? 'bg-[var(--rc-turquoise)] text-white' : 'bg-black/40 text-rc-teal border border-white/5'}`}>
                                           <Layers size={28} />
                                        </div>
                                        <div>
@@ -356,7 +356,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                                                             <span className="text-[11px] font-black text-white uppercase">{item.value || 'N/A'}</span>
                                                          </div>
                                                       ))}
-                                                      <div className="p-4 bg-rc-teal/5 border border-rc-teal/20 rounded-2xl">
+                                                      <div className="p-4 bg-[var(--rc-turquoise)]/5 border border-rc-teal/20 rounded-2xl">
                                                          <p className="text-[9px] font-black text-rc-teal uppercase tracking-widest mb-1">Matriz de Turnos</p>
                                                          <p className="text-sm font-black text-white">{service.shiftMatrix || 'No definida'}</p>
                                                       </div>
@@ -376,7 +376,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                                                 <div className="space-y-4 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
                                                    {service.logs?.map((log, lIdx) => (
                                                       <div key={log.id} className="relative pl-6 pb-6 border-l border-white/5 last:pb-0">
-                                                         <div className="absolute left-[-5px] top-0 w-[10px] h-[10px] rounded-full bg-rc-teal" />
+                                                         <div className="absolute left-[-5px] top-0 w-[10px] h-[10px] rounded-full bg-[var(--rc-turquoise)]" />
                                                          <div className="p-6 bg-white/5 rounded-[32px] border border-white/5 space-y-3">
                                                             <div className="flex items-center justify-between">
                                                                <div className="flex items-center gap-3">
@@ -446,7 +446,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                                        <div>
                                           <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
                                              evalItem.status === 'Stable' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
-                                             evalItem.status === 'Growth' ? 'bg-rc-teal/10 text-rc-teal border-rc-teal/10' :
+                                             evalItem.status === 'Growth' ? 'bg-[var(--rc-turquoise)]/10 text-rc-teal border-rc-teal/10' :
                                              'bg-rose-500/10 text-rose-500 border-rose-500/20'
                                           }`}>
                                              {evalItem.status}
@@ -521,7 +521,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                   {activeTab === 'intelligence' && (
                      <div className="animate-in fade-in duration-500 space-y-10">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                           <div className="glass-card p-8 rounded-[40px] border border-white/5 bg-rc-teal/5">
+                           <div className="glass-card p-8 rounded-[40px] border border-white/5 bg-[var(--rc-turquoise)]/5">
                               <h4 className="text-[10px] font-black text-rc-teal uppercase tracking-[0.3em] mb-4">IQ Operativo</h4>
                               <p className="text-4xl font-black text-white">84.2 <span className="text-sm text-rc-teal/50">pts</span></p>
                               <p className="text-[9px] font-bold text-slate-500 uppercase mt-2">Basado en efectividad de tareas</p>
@@ -568,7 +568,7 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                                           initial={{ width: 0 }}
                                           animate={{ width: `${item.score}%` }}
                                           transition={{ delay: idx * 0.1, duration: 1 }}
-                                          className={`h-full ${item.status === 'Critical' ? 'bg-rose-500' : 'bg-rc-teal shadow-[0_0_15px_rgba(59,199,170,0.5)]'}`}
+                                          className={`h-full ${item.status === 'Critical' ? 'bg-rose-500' : 'bg-[var(--rc-turquoise)] shadow-[0_0_15px_rgba(59,199,170,0.5)]'}`}
                                        />
                                     </div>
                                  </div>
@@ -655,9 +655,9 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                </div>
                <button 
                   onClick={onClose}
-                  className="px-12 py-5 rounded-3xl bg-rc-teal text-white text-xs font-black uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(59,199,170,0.3)] hover:scale-105 active:scale-95 transition-all"
+                  className="px-12 py-5 rounded-3xl bg-[var(--rc-turquoise)] text-[var(--bg-primary)] text-xs font-black uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(59,188,169,0.3)] hover:scale-105 active:scale-95 transition-all"
                >
-                  Finalizar Revisión
+                  Cerrar Panel
                </button>
             </div>
           </motion.div>

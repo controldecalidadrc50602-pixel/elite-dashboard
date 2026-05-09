@@ -23,7 +23,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, activeTab, setActiveT
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="p-4 md:p-8"
+          className="p-6 md:p-12"
         >
           {children}
         </motion.div>
