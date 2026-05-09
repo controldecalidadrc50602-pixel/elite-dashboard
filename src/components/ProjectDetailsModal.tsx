@@ -576,16 +576,56 @@ const ProjectDetailsModal: React.FC<Props> = ({ project, isOpen, onClose, onUpda
                            </div>
                         </div>
 
-                        {/* Bottleneck Warning */}
-                        <div className="p-8 bg-rose-500/10 border border-rose-500/20 rounded-[40px] flex items-center gap-6">
-                           <div className="w-16 h-16 bg-rose-500 text-white rounded-3xl flex items-center justify-center shrink-0 shadow-2xl shadow-rose-500/20">
-                              <AlertTriangle size={32} />
+                        {/* Top Performers Ranking */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                           <div className="glass-card p-10 rounded-[48px] border border-white/5 bg-black/20">
+                              <h4 className="text-[10px] font-black text-rc-teal uppercase tracking-[0.3em] mb-8 flex items-center gap-2">
+                                 <Star size={14} /> Top Performers (Rc506 Elite)
+                              </h4>
+                              <div className="space-y-6">
+                                 {[
+                                    { name: 'Marilyn (Lead)', score: 98, tasks: 42, color: 'text-rc-teal' },
+                                    { name: 'Carlos Ruiz', score: 94, tasks: 28, color: 'text-amber-500' },
+                                    { name: 'Elena Solís', score: 91, tasks: 35, color: 'text-slate-400' },
+                                 ].map((user, idx) => (
+                                    <div key={idx} className="flex items-center justify-between p-4 bg-white/5 rounded-3xl border border-white/5 hover:border-rc-teal/30 transition-all group">
+                                       <div className="flex items-center gap-4">
+                                          <div className={`w-10 h-10 rounded-full bg-black/40 flex items-center justify-center font-black ${user.color}`}>
+                                             #{idx + 1}
+                                          </div>
+                                          <div>
+                                             <p className="text-[11px] font-black text-white uppercase">{user.name}</p>
+                                             <p className="text-[8px] font-bold text-slate-500 uppercase">{user.tasks} Tareas Ejecutadas</p>
+                                          </div>
+                                       </div>
+                                       <div className="text-right">
+                                          <p className="text-lg font-black text-white">{user.score}</p>
+                                          <p className="text-[7px] font-black text-rc-teal uppercase tracking-widest">Global IQ</p>
+                                       </div>
+                                    </div>
+                                 ))}
+                              </div>
                            </div>
-                           <div>
-                              <h5 className="text-sm font-black text-rose-500 uppercase tracking-widest mb-1">PROTOCOLO DE EMERGENCIA: ÁREA CRÍTICA</h5>
-                              <p className="text-xs text-white/70 font-medium leading-relaxed">
-                                 El área de <span className="text-white font-bold">Contact Center</span> presenta una efectividad del <span className="text-rose-500 font-bold">64%</span> para este cliente. Se ha disparado una <span className="text-rose-500 font-bold underline">Bandera Roja</span> en el Dashboard Global del Auditor.
-                              </p>
+
+                           {/* Bottleneck Warning */}
+                           <div className="flex flex-col justify-center gap-6">
+                              <div className="p-10 bg-rose-500/10 border border-rose-500/20 rounded-[48px] flex flex-col gap-6 relative overflow-hidden group">
+                                 <div className="absolute -right-4 -top-4 opacity-5 group-hover:scale-110 transition-transform">
+                                    <AlertTriangle size={120} className="text-rose-500" />
+                                 </div>
+                                 <div className="w-16 h-16 bg-rose-500 text-white rounded-3xl flex items-center justify-center shrink-0 shadow-2xl shadow-rose-500/20">
+                                    <AlertTriangle size={32} />
+                                 </div>
+                                 <div>
+                                    <h5 className="text-sm font-black text-rose-500 uppercase tracking-widest mb-2">SISTEMA DE ALERTA TEMPRANA</h5>
+                                    <p className="text-xs text-white/70 font-medium leading-relaxed">
+                                       Se ha detectado un <span className="text-white font-bold">Cuello de Botella</span> en el área de <span className="text-white font-bold">Contact Center</span>. La efectividad proyectada es del <span className="text-rose-500 font-bold">64%</span>, lo que compromete el cumplimiento del SLA global para <span className="text-white font-bold">{project.client}</span>.
+                                    </p>
+                                 </div>
+                                 <button className="w-full py-4 bg-rose-500 text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all">
+                                    Activar Protocolo de Mitigación
+                                 </button>
+                              </div>
                            </div>
                         </div>
                      </div>

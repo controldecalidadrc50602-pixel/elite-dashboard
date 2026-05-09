@@ -55,6 +55,23 @@ const SlaTimer: React.FC<Props> = ({ startTime, endTime, status }) => {
     return `${h > 0 ? h + 'h ' : ''}${m}m ${s}s`;
   };
 
+  const getRiskLevel = () => {
+    if (status === 'Closed') return null;
+    const now = new Date().getTime();
+    const start = new Date(startTime).getTime();
+    const end = new Date(endTime).getTime();
+    const elapsed = now - start;
+    const total = end - start;
+    const timePct = (elapsed / total) * 100;
+
+    // Simple heuristic: If time spent > 50% but progress is low, or time is almost up
+    if (timePct > 80) return { label: 'CRÍTICO', color: 'text-rose-600' };
+    if (timePct > 50) return { label: 'ALTO', color: 'text-rose-400' };
+    return { label: 'BAJO', color: 'text-emerald-500' };
+  };
+
+  const risk = getRiskLevel();
+
   if (status === 'Closed') {
     return <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest opacity-60">Finalizado</span>;
   }
@@ -72,13 +89,21 @@ const SlaTimer: React.FC<Props> = ({ startTime, endTime, status }) => {
           {formatTime(timeLeft)}
         </span>
       </div>
-      <div className="w-24 h-1 bg-white/5 rounded-full overflow-hidden">
-        <motion.div 
-          className={`h-full ${color.replace('text-', 'bg-')} transition-all duration-1000`}
-          initial={{ width: 0 }}
-          animate={{ width: `${percentage}%` }}
-        />
-      </div>
+      
+      {risk && (
+        <div className="flex flex-col items-center gap-1">
+          <div className="w-24 h-1 bg-white/5 rounded-full overflow-hidden">
+            <motion.div 
+              className={`h-full ${color.replace('text-', 'bg-')} transition-all duration-1000`}
+              initial={{ width: 0 }}
+              animate={{ width: `${percentage}%` }}
+            />
+          </div>
+          <span className={`text-[7px] font-black uppercase tracking-widest ${risk.color}`}>
+            Riesgo: {risk.label}
+          </span>
+        </div>
+      )}
     </div>
   );
 };
