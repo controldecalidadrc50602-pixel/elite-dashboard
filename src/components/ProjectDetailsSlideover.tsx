@@ -2,19 +2,8 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { 
-  X, 
-  Plus, 
-  Trash2, 
-  Calendar, 
-  Star, 
-  ShieldCheck, 
-  Edit3, 
-  AlertCircle, 
-  Save,
-  Bell,
-  CheckCircle,
-  AlertTriangle,
-  FileText
+  X, Plus, Trash2, Calendar, Star, ShieldCheck, Edit3, AlertCircle, Save, Bell, 
+  CheckCircle, AlertTriangle, FileText, Activity, Globe, Headphones, Cpu, Zap, Wifi
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project, Evaluation, Alert, ClientService } from '../types/project';
@@ -32,498 +21,312 @@ interface Props {
 const ProjectDetailsSlideover: React.FC<Props> = ({ project, isOpen, onClose, onUpdate, onDelete, onEditRequest }) => {
   const { t } = useTranslation();
   
-  const [activeTab, setActiveTab] = useState<'services' | 'evaluations' | 'alerts'>('services');
-  const [newService, setNewService] = useState({ name: '', description: '', score: 5 });
-  const [newEvaluation, setNewEvaluation] = useState<Evaluation>({
-    date: new Date().toISOString().split('T')[0],
-    month: new Date().getMonth() + 1,
-    year: new Date().getFullYear(),
-    quantitative: 5,
-    qualitative: '',
-    status: 'Stable'
-  });
+  const [activeTab, setActiveTab] = useState<'pulse' | 'services' | 'evaluations' | 'alerts'>('pulse');
   
-  const [newAlert, setNewAlert] = useState<Alert>({
-    id: '',
-    date: new Date().toISOString().split('T')[0],
-    type: 'Operational',
-    severity: 'Medium',
-    description: '',
-    status: 'Open'
-  });
-
   if (!project) return null;
 
-  const handleAddService = () => {
-    if (!newService.name) return;
-    const service: ClientService = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: newService.name,
-      description: newService.description,
-      startDate: new Date().toISOString().split('T')[0],
-      score: newService.score
-    };
-    onUpdate({ ...project, services: [...project.services, service] });
-    setNewService({ name: '', description: '', score: 5 });
-  };
-
-  const handleAddEvaluation = () => {
-    // Sincronizar mes/año con la fecha elegida si es necesario
-    const evalDate = new Date(newEvaluation.date || '');
-    const updatedEval = {
-       ...newEvaluation,
-       month: evalDate.getMonth() + 1,
-       year: evalDate.getFullYear()
-    };
-    onUpdate({ ...project, evaluations: [updatedEval, ...project.evaluations] });
-    setNewEvaluation({ ...newEvaluation, qualitative: '', date: new Date().toISOString().split('T')[0] });
-  };
-
-  const handleAddAlert = () => {
-    if (!newAlert.description) return;
-    const alertToAdd: Alert = {
-      ...newAlert,
-      id: Math.random().toString(36).substr(2, 9)
-    };
-    onUpdate({ ...project, alerts: [alertToAdd, ...(project.alerts || [])] });
-    setNewAlert({ ...newAlert, description: '', id: '' });
-  };
-
-  const handleDeleteService = (serviceId: string) => {
-     onUpdate({ ...project, services: project.services.filter(s => s.id !== serviceId) });
-  };
-
-  const getSeverityStyles = (severity: string) => {
-    switch(severity) {
-      case 'High': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
-      case 'Medium': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
-      default: return 'bg-rc-teal/10 text-rc-teal border-rc-teal/20';
+  const getFlagColor = (flag: string) => {
+    switch(flag) {
+      case 'Verde': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
+      case 'Amarilla': return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
+      case 'Roja': return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
+      case 'Negra': return 'text-slate-900 bg-slate-950/20 border-slate-900/30';
+      default: return 'text-rc-teal bg-rc-teal/10 border-rc-teal/20';
     }
   };
+
+  const flagStyles = getFlagColor(project.healthFlag || 'Verde');
 
   return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
           <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-[100]" 
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-[100]" 
           />
           <motion.div 
-            initial={{ x: '100%' }} 
-            animate={{ x: 0 }} 
-            exit={{ x: '100%' }}
+            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full max-w-xl bg-[var(--bg-secondary)] border-l border-[var(--glass-border)] shadow-2xl z-[110] flex flex-col"
+            className="fixed right-0 top-0 h-full w-full max-w-xl bg-[var(--bg-secondary)] border-l border-white/5 shadow-2xl z-[110] flex flex-col"
           >
             {/* Header */}
-            <div className="p-6 border-b border-[var(--glass-border)] bg-[var(--bg-primary)]/50">
-               <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                     <div className="w-12 h-12 bg-black/20 rounded-2xl flex items-center justify-center text-rc-teal border border-white/5 overflow-hidden shrink-0">
+            <div className="p-8 border-b border-white/5 bg-[var(--bg-primary)]/50 relative overflow-hidden">
+               {/* Background Glow */}
+               <div className={`absolute top-0 right-0 w-64 h-64 blur-[100px] opacity-10 rounded-full ${flagStyles.split(' ')[1]}`} />
+
+               <div className="flex items-center justify-between mb-6 relative z-10">
+                  <div className="flex items-center gap-4">
+                     <div className="w-16 h-16 bg-black/30 rounded-[24px] flex items-center justify-center text-rc-teal border border-white/10 overflow-hidden shrink-0 shadow-2xl">
                         {project.logoUrl ? (
-                           <img src={project.logoUrl} alt={project.client} className="w-8 h-8 object-contain" />
+                           <img src={project.logoUrl} alt={project.client} className="w-10 h-10 object-contain" />
                         ) : (
-                           <ShieldCheck size={22} />
+                           <ShieldCheck size={32} />
                         )}
                      </div>
                      <div>
-                        <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tighter uppercase truncate max-w-[280px]">
+                        <h3 className="text-2xl font-black text-[var(--text-primary)] tracking-tighter uppercase truncate max-w-[280px] leading-tight">
                            {project.client}
                         </h3>
-                        <p className="text-[9px] text-[var(--text-secondary)] font-bold uppercase tracking-widest flex items-center gap-1">
-                           <Calendar size={10} className="text-rc-teal" /> {t('projects.since')} {project.startDate}
-                        </p>
+                        <div className="flex items-center gap-3 mt-1">
+                           <p className="text-[10px] text-[var(--text-secondary)] font-black uppercase tracking-widest flex items-center gap-1 opacity-60">
+                              <Calendar size={12} className="text-rc-teal" /> Onboarding: {project.startDate}
+                           </p>
+                           <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-tighter border ${flagStyles}`}>
+                              Bandera {project.healthFlag}
+                           </div>
+                        </div>
                      </div>
                   </div>
                   <div className="flex items-center gap-2">
-                     <button 
-                        onClick={() => onEditRequest && onEditRequest(project)}
-                        className="p-2.5 bg-black/5 dark:bg-white/5 hover:bg-rc-teal/10 hover:text-rc-teal rounded-xl transition-all text-[var(--text-secondary)]"
-                     >
+                     <button onClick={() => onEditRequest && onEditRequest(project)} className="p-3 bg-white/5 hover:bg-rc-teal/10 hover:text-rc-teal rounded-2xl transition-all text-[var(--text-secondary)] border border-white/5">
                         <Edit3 size={18} />
                      </button>
-                     <button 
-                        onClick={() => onDelete && onDelete(project.id)}
-                        className="p-2.5 bg-black/5 dark:bg-white/5 hover:bg-rose-500/10 hover:text-rose-500 rounded-xl transition-all text-[var(--text-secondary)]"
-                     >
-                        <Trash2 size={18} />
-                     </button>
-                     <button 
-                        onClick={() => exportService.exportIndividualPDF(project, t)}
-                        className="p-2.5 bg-black/5 dark:bg-white/5 hover:bg-rc-teal/10 hover:text-rc-teal rounded-xl transition-all text-[var(--text-secondary)]"
-                        title="Exportar PDF Individual"
-                     >
+                     <button onClick={() => exportService.exportIndividualPDF(project, t)} className="p-3 bg-white/5 hover:bg-rc-teal/10 hover:text-rc-teal rounded-2xl transition-all text-[var(--text-secondary)] border border-white/5">
                         <FileText size={18} />
                      </button>
-                     <div className="w-px h-6 bg-[var(--glass-border)] mx-1" />
-                     <button 
-                        onClick={onClose} 
-                        className="p-2.5 bg-black/5 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-all text-[var(--text-secondary)]"
-                     >
+                     <button onClick={onClose} className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all text-[var(--text-secondary)] border border-white/5">
                         <X size={18} />
                      </button>
                   </div>
                </div>
 
-               {/* Health Snapshot */}
-               <div className="flex items-center gap-4 bg-[var(--bg-secondary)] border border-[var(--glass-border)] p-3 rounded-2xl">
-                  <div className="flex-1">
-                     <div className="flex items-center justify-between mb-1.5 px-1">
-                        <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{t('projects.strategicHealth')}</span>
-                        <span className="text-xs font-black text-rc-teal">{project.evaluations[0]?.quantitative || 0}/5</span>
-                     </div>
-                     <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                        <motion.div 
-                           initial={{ width: 0 }}
-                           animate={{ width: `${(project.evaluations[0]?.quantitative || 0) * 20}%` }}
-                           className="h-full bg-rc-teal" 
-                        />
-                     </div>
+               {/* Health Summary Bar */}
+               <div className="bg-black/20 border border-white/5 p-4 rounded-3xl relative z-10">
+                  <div className="flex items-center justify-between mb-2 px-1">
+                     <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">Salud Estratégica</span>
+                     <span className="text-sm font-black text-rc-teal">{(project.evaluations?.[0]?.quantitative || 0).toFixed(1)}/5.0</span>
                   </div>
-                  <div className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${
-                     project?.evaluations?.[0]?.status === 'Stable' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
-                     project?.evaluations?.[0]?.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 
-                     project?.evaluations?.[0]?.status === 'Growth' ? 'bg-rc-teal/10 text-rc-teal border-rc-teal/20' :
-                     'bg-rose-500/10 text-rose-500 border-rose-500/20'
-                  }`}>
-                     {project?.evaluations?.[0]?.status ? t(`status.${project.evaluations[0].status.toLowerCase().replace(' ', '')}`) : 'N/A'}
+                  <div className="h-2 w-full bg-black/20 rounded-full overflow-hidden">
+                     <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(project.evaluations?.[0]?.quantitative || 0) * 20}%` }}
+                        className="h-full bg-gradient-to-r from-rc-teal/50 to-rc-teal" 
+                     />
                   </div>
                </div>
             </div>
 
             {/* Tabs Navigation */}
-            <div className="flex px-6 gap-4 border-b border-[var(--glass-border)] bg-[var(--bg-primary)]/30">
-               <button 
-                  onClick={() => setActiveTab('services')}
-                  className={`py-4 text-[9px] font-black uppercase tracking-widest transition-all relative ${
-                     activeTab === 'services' ? 'text-rc-teal' : 'text-[var(--text-secondary)]'
-                  }`}
-               >
-                  {t('projects.service_details')}
-                  {activeTab === 'services' && <motion.div layoutId="tab-active" className="absolute bottom-0 left-0 right-0 h-0.5 bg-rc-teal" />}
-               </button>
-               <button 
-                  onClick={() => setActiveTab('evaluations')}
-                  className={`py-4 text-[9px] font-black uppercase tracking-widest transition-all relative ${
-                     activeTab === 'evaluations' ? 'text-rc-teal' : 'text-[var(--text-secondary)]'
-                  }`}
-               >
-                  {t('projects.audit_history')}
-                  {activeTab === 'evaluations' && <motion.div layoutId="tab-active" className="absolute bottom-0 left-0 right-0 h-0.5 bg-rc-teal" />}
-               </button>
-               <button 
-                  onClick={() => setActiveTab('alerts')}
-                  className={`py-4 text-[9px] font-black uppercase tracking-widest transition-all relative flex items-center gap-2 ${
-                     activeTab === 'alerts' ? 'text-rose-500' : 'text-[var(--text-secondary)]'
-                  }`}
-               >
-                  <Bell size={12} className={project.alerts?.some(a => a.status === 'Open') ? 'animate-bounce text-rose-500' : ''} />
-                  {t('projects.audit_cases')}
-                  {activeTab === 'alerts' && <motion.div layoutId="tab-active" className="absolute bottom-0 left-0 right-0 h-0.5 bg-rose-500" />}
-               </button>
+            <div className="flex px-8 gap-6 border-b border-white/5 bg-[var(--bg-primary)]/30">
+               {[
+                 { id: 'pulse', label: 'Pulso', icon: Activity },
+                 { id: 'services', label: 'Servicios', icon: Layers },
+                 { id: 'evaluations', label: 'Auditoría', icon: Cpu },
+                 { id: 'alerts', label: 'Matriz', icon: ShieldCheck },
+               ].map(tab => (
+                 <button 
+                   key={tab.id}
+                   onClick={() => setActiveTab(tab.id as any)}
+                   className={`py-5 text-[10px] font-black uppercase tracking-widest transition-all relative flex items-center gap-2 ${
+                      activeTab === tab.id ? 'text-rc-teal' : 'text-[var(--text-secondary)] opacity-50 hover:opacity-100'
+                   }`}
+                 >
+                    <tab.icon size={14} />
+                    {tab.label}
+                    {activeTab === tab.id && <motion.div layoutId="tab-active-line" className="absolute bottom-0 left-0 right-0 h-0.5 bg-rc-teal" />}
+                 </button>
+               ))}
             </div>
 
             {/* Content area */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
-               {activeTab === 'services' && (
-                  <div className="space-y-6 animate-in fade-in duration-300">
-                     <div className="space-y-3">
-                        <h4 className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] px-1 flex items-center justify-between">
-                           <span>{t('projects.activeServices')} ({project?.services?.length || 0})</span>
-                        </h4>
-                        <div className="space-y-3">
-                           {project.services.map(service => (
-                              <motion.div 
-                                 key={service.id} 
-                                 layout
-                                 className="group p-5 bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-[24px] hover:border-rc-teal/30 transition-all relative overflow-hidden"
-                              >
-                                 <div className="flex items-start justify-between relative z-10">
-                                    <div className="flex-1 min-w-0">
-                                       <h4 className="text-[11px] font-black text-[var(--text-primary)] uppercase tracking-tight mb-1 truncate">{service.name}</h4>
-                                       <p className="text-[10px] font-medium text-[var(--text-secondary)] leading-relaxed opacity-70">
-                                          {service.description || t('dashboard.no_records')}
-                                       </p>
-                                    </div>
-                                    <div className="flex items-center gap-4 ml-4">
-                                       <div className="flex items-center gap-0.5">
-                                          {[...Array(5)].map((_, i) => (
-                                             <Star key={i} size={10} className={i < service.score ? 'text-rc-teal fill-rc-teal' : 'text-slate-200 dark:text-slate-800'} />
-                                          ))}
-                                       </div>
-                                       <button 
-                                          onClick={() => handleDeleteService(service.id)}
-                                          className="p-1.5 text-[var(--text-secondary)] hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
-                                       >
-                                          <Trash2 size={14} />
-                                       </button>
-                                    </div>
-                                 </div>
-                                 <div className="absolute right-0 bottom-0 w-24 h-24 bg-rc-teal/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                              </motion.div>
-                           ))}
-                        </div>
-                     </div>
-
-                     {/* New Service Quick Form */}
-                     <div className="bg-rc-teal/5 rounded-[24px] p-6 border border-rc-teal/10 space-y-4">
-                        <div className="flex items-center gap-2 mb-2">
-                           <div className="w-1.5 h-1.5 bg-rc-teal rounded-full" />
-                           <h4 className="text-[10px] font-black text-rc-teal uppercase tracking-widest">{t('projects.add_service')}</h4>
-                        </div>
-                        <div className="grid grid-cols-1 gap-3">
-                           <input 
-                              placeholder={t('projects.service_name')}
-                              value={newService.name}
-                              onChange={e => setNewService({...newService, name: e.target.value})}
-                              className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-[11px] font-medium outline-none focus:ring-1 focus:ring-rc-teal/30 focus:border-rc-teal transition-all text-[var(--text-primary)]"
-                           />
-                           <textarea 
-                              placeholder={t('projects.description')}
-                              value={newService.description}
-                              onChange={e => setNewService({...newService, description: e.target.value})}
-                              className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-[11px] font-medium outline-none focus:ring-1 focus:ring-rc-teal/30 focus:border-rc-teal transition-all text-[var(--text-primary)] h-16"
-                           />
-                           <div className="flex items-center gap-4 px-2">
-                              <span className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest shrink-0">{t('projects.quality_score')} ({newService.score})</span>
-                              <input 
-                                 type="range" min="1" max="5" step="1"
-                                 value={newService.score}
-                                 onChange={e => setNewService({...newService, score: parseInt(e.target.value)})}
-                                 className="flex-1 accent-rc-teal"
-                              />
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8">
+               {activeTab === 'pulse' && (
+                  <div className="space-y-8 animate-in fade-in duration-500">
+                     {/* Contact Center Pulse */}
+                     <section className="space-y-4">
+                        <div className="flex items-center justify-between">
+                           <h4 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] flex items-center gap-2">
+                              <Zap size={14} className="text-rc-teal" /> Operaciones: Contact Center
+                           </h4>
+                           <div className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase border ${
+                              project.opsPulse?.backupStatus === 'Disponible' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+                           }`}>
+                              Backup: {project.opsPulse?.backupStatus || 'N/A'}
                            </div>
                         </div>
-                        <button 
-                           onClick={handleAddService}
-                           disabled={!newService.name}
-                           className="w-full bg-rc-teal hover:bg-rc-teal-dark disabled:opacity-50 text-white rounded-xl py-3 text-[9px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2"
-                        >
-                           <Plus size={14} /> {t('projects.add_service')}
-                        </button>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                           <div className="p-6 bg-black/10 border border-white/5 rounded-[32px] space-y-2">
+                              <p className="text-[9px] font-black text-[var(--text-secondary)] uppercase opacity-50">HC Contratado</p>
+                              <p className="text-3xl font-black text-[var(--text-primary)]">{project.opsPulse?.hcContracted || 0}</p>
+                           </div>
+                           <div className="p-6 bg-black/10 border border-white/5 rounded-[32px] space-y-2">
+                              <p className="text-[9px] font-black text-[var(--text-secondary)] uppercase opacity-50">HC Real Asignado</p>
+                              <div className="flex items-baseline gap-2">
+                                 <p className="text-3xl font-black text-rc-teal">{project.opsPulse?.hcReal || 0}</p>
+                                 <span className="text-[10px] font-bold text-[var(--text-secondary)]">
+                                    ({Math.round(((project.opsPulse?.hcReal || 0) / (project.opsPulse?.hcContracted || 1)) * 100)}%)
+                                 </span>
+                              </div>
+                           </div>
+                        </div>
+                     </section>
+
+                     {/* Tech DNA DNA */}
+                     <section className="space-y-4">
+                        <h4 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] flex items-center gap-2">
+                           <Globe size={14} className="text-rc-teal" /> Tech DNA DNA & Conectividad
+                        </h4>
+                        <div className="p-8 bg-black/10 border border-white/5 rounded-[40px] space-y-6">
+                           <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-[var(--text-primary)]">Modalidad</span>
+                              <span className="px-4 py-1.5 bg-rc-teal text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-rc-teal/20">
+                                 {project.techDNA?.operationMode || 'REMOTE'}
+                              </span>
+                           </div>
+                           <div className="grid grid-cols-2 gap-8 border-t border-white/5 pt-6">
+                              <div className="space-y-1">
+                                 <p className="text-[9px] font-black text-[var(--text-secondary)] uppercase opacity-50 flex items-center gap-1">
+                                    <Wifi size={10} /> Proveedor ISP
+                                 </p>
+                                 <p className="text-xs font-black text-[var(--text-primary)] uppercase">{project.techDNA?.isp || 'No registrado'}</p>
+                              </div>
+                              <div className="space-y-1">
+                                 <p className="text-[9px] font-black text-[var(--text-secondary)] uppercase opacity-50 flex items-center gap-1">
+                                    <Globe size={10} /> Línea / Troncal
+                                 </p>
+                                 <p className="text-xs font-black text-[var(--text-primary)] uppercase">{project.techDNA?.phoneLine || 'No registrada'}</p>
+                              </div>
+                           </div>
+                        </div>
+                     </section>
+
+                     {/* Assets */}
+                     <section className="space-y-4">
+                        <h4 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] flex items-center gap-2">
+                           <Headphones size={14} className="text-rc-teal" /> Activos: Hardware Registry
+                        </h4>
+                        <div className="space-y-3">
+                           {project.assets?.map(asset => (
+                              <div key={asset.id} className="flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-2xl">
+                                 <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-black/20 rounded-xl flex items-center justify-center text-rc-teal">
+                                       <Headphones size={20} />
+                                    </div>
+                                    <div>
+                                       <p className="text-xs font-black text-[var(--text-primary)] uppercase tracking-tight">{asset.model}</p>
+                                       <p className="text-[9px] font-bold text-[var(--text-secondary)] uppercase opacity-50">Compra: {asset.purchaseDate}</p>
+                                    </div>
+                                 </div>
+                                 <div className="text-right">
+                                    <p className="text-lg font-black text-rc-teal">{asset.quantity}</p>
+                                    <p className="text-[8px] font-black text-[var(--text-secondary)] uppercase">Unidades</p>
+                                 </div>
+                              </div>
+                           ))}
+                           {(!project.assets || project.assets.length === 0) && (
+                              <div className="py-10 text-center border-2 border-dashed border-white/5 rounded-[32px] opacity-30">
+                                 <p className="text-[10px] font-black uppercase tracking-widest">Sin activos registrados</p>
+                              </div>
+                           )}
+                        </div>
+                     </section>
+                  </div>
+               )}
+
+               {activeTab === 'services' && (
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                     <h4 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em]">Portafolio de Soluciones</h4>
+                     <div className="grid grid-cols-1 gap-4">
+                        {project.services.map(service => (
+                           <div key={service.id} className="p-6 bg-black/10 border border-white/5 rounded-[32px] hover:border-rc-teal/30 transition-all group">
+                              <div className="flex justify-between items-start mb-4">
+                                 <div>
+                                    <h5 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-tight group-hover:text-rc-teal transition-colors">{service.name}</h5>
+                                    <p className="text-[10px] font-medium text-[var(--text-secondary)] mt-1">{service.description || 'Sin descripción adicional.'}</p>
+                                 </div>
+                                 <div className="flex gap-0.5">
+                                    {[...Array(5)].map((_, i) => (
+                                       <Star key={i} size={10} className={i < service.score ? 'text-rc-teal fill-rc-teal' : 'text-white/5'} />
+                                    ))}
+                                 </div>
+                              </div>
+                              <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                                 <span className="text-[9px] font-black text-rc-teal uppercase tracking-widest">Activo</span>
+                                 <span className="text-[9px] font-bold text-[var(--text-secondary)] uppercase opacity-50">Iniciado: {service.startDate}</span>
+                              </div>
+                           </div>
+                        ))}
                      </div>
                   </div>
                )}
 
                {activeTab === 'evaluations' && (
                   <div className="space-y-8 animate-in fade-in duration-300">
-                     {/* New Evaluation Form */}
-                     <div className="p-6 bg-rc-teal/5 border border-rc-teal/10 rounded-[28px] space-y-4">
-                        <div className="flex items-center gap-2 mb-2">
-                           <AlertCircle size={14} className="text-rc-teal" />
-                           <h4 className="text-[10px] font-black text-rc-teal uppercase tracking-widest">{t('projects.quick_audit')}</h4>
-                        </div>
-                        <div className="grid grid-cols-1 gap-3">
-                           <div className="space-y-1">
-                              <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('audit.date')}</label>
-                              <input 
-                                 type="date"
-                                 value={newEvaluation.date}
-                                 onChange={e => setNewEvaluation({...newEvaluation, date: e.target.value})}
-                                 className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-3 py-2 text-[10px] font-bold outline-none text-[var(--text-primary)]"
-                              />
-                           </div>
-                        </div>
-                        <div className="space-y-1">
-                           <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('dashboard.table_history')}</label>
-                           <textarea 
-                              value={newEvaluation.qualitative}
-                              onChange={e => setNewEvaluation({...newEvaluation, qualitative: e.target.value})}
-                              placeholder="Observaciones de este periodo..."
-                              className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-[10px] font-medium min-h-[80px] outline-none focus:ring-1 focus:ring-rc-teal/30 text-[var(--text-primary)]"
-                           />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                           <div className="space-y-1.5">
-                              <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Score ({newEvaluation.quantitative})</label>
-                              <input 
-                                 type="range" min="1" max="5" step="0.5"
-                                 value={newEvaluation.quantitative}
-                                 onChange={e => setNewEvaluation({...newEvaluation, quantitative: parseFloat(e.target.value)})}
-                                 className="w-full accent-rc-teal cursor-pointer"
-                              />
-                           </div>
-                           <div className="space-y-1.5">
-                               <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('dashboard.table_status')}</label>
-                               <select 
-                                 value={newEvaluation.status}
-                                 onChange={e => setNewEvaluation({...newEvaluation, status: e.target.value as any})}
-                                 className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest outline-none text-[var(--text-primary)]"
-                               >
-                                 <option value="Stable">{t('status.stable')}</option>
-                                 <option value="At Risk">{t('status.risk')}</option>
-                                 <option value="Critical">{t('status.critical')}</option>
-                                 <option value="Growth">{t('status.growth')}</option>
-                               </select>
-                           </div>
-                        </div>
-                        <button 
-                           onClick={handleAddEvaluation}
-                           className="w-full bg-rc-teal text-white rounded-xl py-3 text-[9px] font-black uppercase tracking-widest transition-all hover:shadow-lg hover:shadow-rc-teal/20"
-                        >
-                           {t('audit.sign')}
-                        </button>
-                     </div>
-
-                     <div className="space-y-4">
-                        <h4 className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] px-1">{t('projects.audit_history')}</h4>
-                        <div className="space-y-3">
-                           {project.evaluations.map((evalItem, idx) => (
-                              <div key={idx} className="flex gap-4 group">
-                                 <div className="flex flex-col items-center">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border transition-all ${
-                                       idx === 0 ? 'bg-rc-teal text-white border-rc-teal' : 'bg-black/5 dark:bg-white/5 text-[var(--text-secondary)] border-[var(--glass-border)]'
-                                    }`}>
-                                       {evalItem.quantitative}
-                                    </div>
-                                    {idx !== project.evaluations.length - 1 && <div className="w-0.5 flex-1 bg-[var(--glass-border)] my-1" />}
-                                 </div>
-                                 <div className="flex-1 pb-6">
-                                    <div className="flex items-center justify-between mb-1">
-                                       <span className="text-[9px] font-black text-[var(--text-primary)] uppercase tracking-widest">
-                                          {evalItem.date ? new Date(evalItem.date).toLocaleDateString() : `${evalItem.month}/${evalItem.year}`}
-                                       </span>
-                                       <span className={`px-2 py-0.5 rounded-md text-[7px] font-black uppercase tracking-widest border ${
-                                          evalItem.status === 'Stable' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/10' : 
-                                          evalItem.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500 border-amber-500/10' : 
-                                          evalItem.status === 'Growth' ? 'bg-rc-teal/10 text-rc-teal border-rc-teal/10' :
-                                          'bg-rose-500/10 text-rose-500 border-rose-500/10'
-                                       }`}>
-                                          {t(`status.${evalItem.status.toLowerCase().replace(' ', '')}`)}
-                                       </span>
-                                    </div>
-                                    <p className="text-[10px] font-medium text-[var(--text-secondary)] leading-relaxed italic opacity-80">
-                                       "{evalItem.qualitative || t('dashboard.no_records')}"
-                                    </p>
-                                 </div>
+                     <h4 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em]">Historial Estratégico</h4>
+                     <div className="space-y-6">
+                        {project.evaluations.map((evalItem, idx) => (
+                           <div key={idx} className="relative pl-8 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-px before:bg-white/5">
+                              <div className="absolute left-[-4px] top-0 w-2 h-2 rounded-full bg-rc-teal shadow-[0_0_10px_#3BC7AA]" />
+                              <div className="flex items-center justify-between mb-2">
+                                 <span className="text-[10px] font-black text-rc-teal uppercase tracking-widest">
+                                    {evalItem.date ? new Date(evalItem.date).toLocaleDateString() : `${evalItem.month}/${evalItem.year}`}
+                                 </span>
+                                 <span className="text-xs font-black text-[var(--text-primary)]">{evalItem.quantitative.toFixed(1)}/5.0</span>
                               </div>
-                           ))}
-                        </div>
+                              <div className="p-6 bg-black/10 border border-white/5 rounded-3xl">
+                                 <p className="text-[11px] font-medium text-[var(--text-secondary)] leading-relaxed italic opacity-80">"{evalItem.qualitative || 'Sin observaciones registradas.'}"</p>
+                              </div>
+                           </div>
+                        ))}
                      </div>
                   </div>
                )}
 
                {activeTab === 'alerts' && (
-                  <div className="space-y-8 animate-in fade-in duration-300">
-                     {/* New Alert Form */}
-                     <div className="p-6 bg-rose-500/5 border border-rose-500/10 rounded-[28px] space-y-4">
-                        <div className="flex items-center gap-2 mb-2">
-                           <Bell size={14} className="text-rose-500" />
-                           <h4 className="text-[10px] font-black text-rose-500 uppercase tracking-widest">{t('projects.add_alert')}</h4>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                           <div className="space-y-1">
-                              <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('audit.date')}</label>
-                              <input 
-                                 type="date"
-                                 value={newAlert.date}
-                                 onChange={e => setNewAlert({...newAlert, date: e.target.value})}
-                                 className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-3 py-2 text-[10px] font-bold outline-none text-[var(--text-primary)]"
-                              />
-                           </div>
-                           <div className="space-y-1">
-                              <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('projects.alert_severity')}</label>
-                              <select 
-                                 value={newAlert.severity}
-                                 onChange={e => setNewAlert({...newAlert, severity: e.target.value as any})}
-                                 className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-3 py-2 text-[10px] font-bold outline-none text-[var(--text-primary)]"
-                              >
-                                 <option value="Low">{t('projects.severity_low')}</option>
-                                 <option value="Medium">{t('projects.severity_medium')}</option>
-                                 <option value="High">{t('projects.severity_high')}</option>
-                              </select>
-                           </div>
-                        </div>
-                        <div className="space-y-1">
-                           <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('projects.alert_type')}</label>
-                           <select 
-                              value={newAlert.type}
-                              onChange={e => setNewAlert({...newAlert, type: e.target.value as any})}
-                              className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-3 py-2 text-[10px] font-bold outline-none text-[var(--text-primary)]"
-                           >
-                              <option value="Technical">{t('projects.type_technical')}</option>
-                              <option value="Operational">{t('projects.type_operational')}</option>
-                              <option value="Strategic">{t('projects.type_strategic')}</option>
-                           </select>
-                        </div>
-                        <div className="space-y-1">
-                           <label className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">{t('projects.alert_desc')}</label>
-                           <textarea 
-                              value={newAlert.description}
-                              onChange={e => setNewAlert({...newAlert, description: e.target.value})}
-                              placeholder="Ej: Caída de flujo principal en bot..."
-                              className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-[10px] font-medium min-h-[80px] outline-none focus:ring-1 focus:ring-rose-500/30 text-[var(--text-primary)]"
-                           />
-                        </div>
-                        <button 
-                           onClick={handleAddAlert}
-                           disabled={!newAlert.description}
-                           className="w-full bg-rose-500 text-white rounded-xl py-3 text-[9px] font-black uppercase tracking-widest transition-all hover:shadow-lg hover:shadow-rose-500/20 disabled:opacity-50"
-                        >
-                           {t('projects.add_alert')}
-                        </button>
-                     </div>
-
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                     <h4 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em]">Matriz de Casos y Riesgos</h4>
                      <div className="space-y-4">
-                        <h4 className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] px-1">{t('projects.audit_cases')}</h4>
-                        <div className="space-y-3">
-                           {project.alerts?.map((alertItem) => (
-                              <div key={alertItem.id} className="bg-[var(--bg-primary)] border border-[var(--glass-border)] p-4 rounded-2xl relative overflow-hidden group">
-                                 <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                       <div className="flex items-center gap-2 mb-2">
-                                          <span className={`px-2 py-0.5 rounded-md text-[7px] font-black uppercase tracking-widest border ${getSeverityStyles(alertItem.severity)}`}>
-                                             {t(`projects.severity_${alertItem.severity.toLowerCase()}`)}
-                                          </span>
-                                          <span className="text-[8px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">
-                                             {new Date(alertItem.date).toLocaleDateString()}
-                                          </span>
-                                       </div>
-                                       <p className="text-[10px] font-bold text-[var(--text-primary)] leading-tight mb-2 uppercase tracking-tight">
-                                          {alertItem.description}
-                                       </p>
-                                       <div className="flex items-center gap-3">
-                                          <span className="text-[8px] font-black text-rc-teal uppercase">{t(`projects.type_${alertItem.type.toLowerCase()}`)}</span>
-                                          <div className="w-1 h-1 rounded-full bg-[var(--glass-border)]" />
-                                          <span className={`text-[8px] font-black uppercase ${alertItem.status === 'Open' ? 'text-rose-500' : 'text-emerald-500'}`}>
-                                             {t(`projects.status_${alertItem.status.toLowerCase()}`)}
-                                          </span>
-                                       </div>
-                                    </div>
-                                    {alertItem.status === 'Open' ? (
-                                       <AlertTriangle size={20} className="text-rose-500/20 group-hover:text-rose-500 transition-colors" />
-                                    ) : (
-                                       <CheckCircle size={20} className="text-emerald-500/20" />
-                                    )}
+                        {project.alerts?.map(alert => (
+                           <div key={alert.id} className="p-6 bg-black/10 border border-white/5 rounded-[32px] flex items-start gap-4">
+                              <div className={`p-3 rounded-2xl ${
+                                 alert.severity === 'High' ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-500'
+                              }`}>
+                                 <AlertTriangle size={20} />
+                              </div>
+                              <div className="flex-1">
+                                 <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[9px] font-black uppercase tracking-widest opacity-50">{alert.date}</span>
+                                    <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase ${
+                                       alert.status === 'Open' ? 'bg-rose-500 text-white' : 'bg-emerald-500 text-white'
+                                    }`}>
+                                       {alert.status}
+                                    </span>
                                  </div>
+                                 <p className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-tight leading-tight mb-2">{alert.description}</p>
+                                 <span className="text-[9px] font-black text-rc-teal uppercase tracking-[0.2em]">{alert.type}</span>
                               </div>
-                           ))}
-                           {(!project.alerts || project.alerts.length === 0) && (
-                              <div className="text-center py-8">
-                                 <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest opacity-50">{t('dashboard.no_records')}</p>
-                              </div>
-                           )}
-                        </div>
+                           </div>
+                        ))}
+                        {(!project.alerts || project.alerts.length === 0) && (
+                           <div className="py-20 text-center opacity-20">
+                              <ShieldCheck size={48} className="mx-auto mb-4" />
+                              <p className="text-xs font-black uppercase tracking-widest">Sin alertas críticas</p>
+                           </div>
+                        )}
                      </div>
                   </div>
                )}
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-[var(--glass-border)] bg-[var(--bg-primary)] flex items-center justify-between">
-               <div className="flex items-center gap-2 text-rc-teal">
-                  <AlertCircle size={14} />
-                  <span className="text-[9px] font-black uppercase tracking-widest">{t('stats.offline_mode')}</span>
+            <div className="p-8 border-t border-white/5 bg-[var(--bg-primary)]/80 backdrop-blur-md flex items-center justify-between">
+               <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500">
+                     <CheckCircle size={20} />
+                  </div>
+                  <div>
+                     <p className="text-[10px] font-black text-[var(--text-primary)] uppercase tracking-widest">Sincronización Elite</p>
+                     <p className="text-[8px] font-bold text-[var(--text-secondary)] uppercase opacity-50">V3.5 Real-time active</p>
+                  </div>
                </div>
                <button 
                   onClick={onClose}
-                  className="px-8 py-3 rounded-xl bg-rc-teal text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-rc-teal/20 transition-all hover:scale-105 active:scale-95"
+                  className="px-10 py-4 rounded-2xl bg-rc-teal text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-rc-teal/30 hover:scale-105 active:scale-95 transition-all"
                >
-                  {t('common.save')}
+                  Cerrar Panel
                </button>
             </div>
           </motion.div>

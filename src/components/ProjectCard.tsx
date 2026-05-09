@@ -1,100 +1,113 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Project } from '../types/project';
-import { Calendar, Layers, Star, AlertTriangle, ShieldCheck, ChevronRight } from 'lucide-react';
+import { Calendar, Layers, Activity, AlertTriangle, ShieldCheck, Zap, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({ project, onOpenDetail }) => {
   const { t } = useTranslation();
   const latestEval = project.evaluations[0];
   
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case 'Stable': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
-      case 'Growth': return 'text-[#3BC7AA] bg-[#3BC7AA]/10 border-[#3BC7AA]/20';
-      case 'At Risk': return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-      case 'Critical': return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
-      default: return 'text-slate-500 bg-slate-500/10 border-slate-500/20';
+  const getFlagStyles = (flag: string) => {
+    switch (flag) {
+      case 'Verde': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/10';
+      case 'Amarilla': return 'text-amber-500 bg-amber-500/10 border-amber-500/20 shadow-amber-500/10';
+      case 'Roja': return 'text-rose-500 bg-rose-500/10 border-rose-500/20 shadow-rose-500/10';
+      case 'Negra': return 'text-slate-900 bg-slate-950/20 border-slate-900/30 shadow-slate-900/10';
+      default: return 'text-rc-teal bg-rc-teal/10 border-rc-teal/20 shadow-rc-teal/10';
     }
   };
 
-  const statusStyle = getStatusStyle(latestEval?.status || 'Stable');
+  const flagStyle = getFlagStyles(project.healthFlag || 'Verde');
 
   return (
     <motion.div 
-      whileHover={{ y: -5, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.2)' }}
-      className="glass-card p-6 rounded-[40px] border border-white/5 relative overflow-hidden group cursor-pointer h-full flex flex-col"
+      whileHover={{ y: -8, scale: 1.02 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      className="glass-card p-8 rounded-[48px] border border-white/5 relative overflow-hidden group cursor-pointer h-full flex flex-col shadow-2xl"
       onClick={onOpenDetail}
     >
-      {/* Background Accent */}
-      <div className={`absolute -top-16 -right-16 w-32 h-32 rounded-full blur-[60px] opacity-10 group-hover:opacity-20 transition-opacity ${statusStyle?.split(' ')?.[1] || 'bg-slate-500/10'}`} />
+      {/* Background Accent / Health Glow */}
+      <div className={`absolute -top-24 -right-24 w-48 h-48 rounded-full blur-[100px] opacity-20 group-hover:opacity-40 transition-all duration-700 ${flagStyle.split(' ')[1]}`} />
 
-      <div className="flex justify-between items-start mb-6">
-        <div className="flex items-center gap-4 flex-1 min-w-0">
-          <div className="w-12 h-12 rounded-[18px] bg-black/20 border border-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:border-rc-teal/30 transition-all">
+      <div className="flex justify-between items-start mb-8 relative z-10">
+        <div className="flex items-center gap-5 flex-1 min-w-0">
+          <div className="w-16 h-16 rounded-[24px] bg-black/40 border border-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-2xl group-hover:border-rc-teal/40 transition-all duration-500">
              {project.logoUrl ? (
-               <img src={project.logoUrl} alt={project.client} className="w-8 h-8 object-contain" />
+               <img src={project.logoUrl} alt={project.client} className="w-10 h-10 object-contain" />
              ) : (
-               <span className="text-sm font-black text-rc-teal uppercase">{project.client.charAt(0)}</span>
+               <span className="text-xl font-black text-rc-teal uppercase">{project.client.charAt(0)}</span>
              )}
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="text-[var(--text-primary)] font-black text-xl leading-tight group-hover:text-rc-teal transition-colors truncate uppercase tracking-tighter">
+            <h4 className="text-[var(--text-primary)] font-black text-2xl leading-tight group-hover:text-rc-teal transition-colors truncate uppercase tracking-tighter">
                {project.client}
             </h4>
-            <div className="flex items-center gap-2 text-[var(--text-secondary)] text-[10px] font-black mt-1 uppercase tracking-widest opacity-60">
-              <Calendar size={12} className="text-rc-teal" /> {project.startDate}
+            <div className="flex items-center gap-3 text-[var(--text-secondary)] text-[11px] font-black mt-1 uppercase tracking-widest opacity-50">
+              <span className="flex items-center gap-1"><Zap size={12} className="text-rc-teal" /> {project.techDNA?.operationMode}</span>
+              <span className="w-1 h-1 rounded-full bg-white/20" />
+              <span className="flex items-center gap-1"><Globe size={12} /> {project.techDNA?.isp}</span>
             </div>
           </div>
         </div>
-        <div className={`flex items-center gap-1.5 px-4 py-1.5 rounded-2xl text-[9px] font-black uppercase tracking-widest border shrink-0 shadow-sm ${statusStyle}`}>
-          {latestEval?.status === 'At Risk' || latestEval?.status === 'Critical' ? (
-             <AlertTriangle size={12} strokeWidth={2.5} />
+      </div>
+
+      {/* Flag Badge */}
+      <div className="flex mb-6 relative z-10">
+        <div className={`flex items-center gap-2 px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border shadow-2xl ${flagStyle}`}>
+          {project.healthFlag === 'Roja' || project.healthFlag === 'Negra' ? (
+             <AlertTriangle size={14} className="animate-pulse" />
           ) : (
-             <ShieldCheck size={12} strokeWidth={2.5} />
+             <ShieldCheck size={14} />
           )}
-          {t(`status.${(latestEval?.status || 'stable').toLowerCase()}`)}
+          Bandera {project.healthFlag}
         </div>
       </div>
 
       {/* Strategic Insight Snapshot */}
-      <div className="bg-black/5 dark:bg-white/5 p-4 rounded-3xl border border-white/5 mb-6 flex-1 flex items-center">
-         <p className="text-[11px] text-[var(--text-secondary)] font-bold italic line-clamp-3 leading-relaxed">
+      <div className="bg-black/20 p-6 rounded-[32px] border border-white/5 mb-8 flex-1 relative overflow-hidden group/insight">
+         <div className="absolute top-0 right-0 p-4 opacity-5 group-hover/insight:opacity-10 transition-opacity">
+            <Activity size={40} className="text-rc-teal" />
+         </div>
+         <p className="text-sm text-[var(--text-primary)] font-medium italic leading-relaxed opacity-80 line-clamp-4 relative z-10">
             "{latestEval?.qualitative || 'Sin evaluación estratégica registrada.'}"
          </p>
       </div>
 
-      <div className="flex items-center justify-between gap-4 mt-auto">
-        {/* Services Count */}
-        <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-rc-teal/10 flex items-center justify-center text-rc-teal border border-rc-teal/10">
-                <Layers size={20} />
+      {/* Operational Pulse Section */}
+      <div className="grid grid-cols-2 gap-4 mt-auto pt-6 border-t border-white/5 relative z-10">
+        {/* HC Comparison */}
+        <div className="space-y-2">
+            <div className="flex items-center justify-between">
+                <span className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest opacity-60">Pulse HC</span>
+                <span className="text-[10px] font-black text-rc-teal">{project.opsPulse?.hcReal || 0}/{project.opsPulse?.hcContracted || 0}</span>
             </div>
-            <div>
-                <div className="text-sm font-black text-[var(--text-primary)] leading-none">{project?.services?.length || 0}</div>
-                <div className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest opacity-60">{t('projects.activeServices')}</div>
+            <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden">
+                <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(100, ((project.opsPulse?.hcReal || 0) / (project.opsPulse?.hcContracted || 1)) * 100)}%` }}
+                    className="h-full bg-rc-teal shadow-[0_0_8px_#3BC7AA]" 
+                />
             </div>
         </div>
 
-        {/* Health Score Pillar */}
-        <div className="flex flex-col items-end gap-1.5 flex-1 max-w-[120px]">
-           <div className="flex items-center justify-between w-full">
-              <span className="text-[8px] text-[var(--text-secondary)] font-black uppercase tracking-widest">{t('projects.strategicHealth')}</span>
-              <span className="text-xs font-black text-rc-teal">{latestEval?.quantitative || 0}/5</span>
-           </div>
-           <div className="w-full h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
-              <motion.div 
-                 initial={{ width: 0 }}
-                 animate={{ width: `${(latestEval?.quantitative || 0) * 20}%` }}
-                 transition={{ duration: 1, ease: 'easeOut' }}
-                 className="h-full bg-gradient-to-r from-rc-teal/60 to-rc-teal" 
-              />
-           </div>
+        {/* Services / Assets Summary */}
+        <div className="flex items-center justify-end gap-6">
+            <div className="flex flex-col items-end">
+                <span className="text-xl font-black text-[var(--text-primary)] leading-none">{project?.services?.length || 0}</span>
+                <span className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest opacity-60">Services</span>
+            </div>
+            <div className="flex flex-col items-end">
+                <span className="text-xl font-black text-rc-teal leading-none">{project?.assets?.length || 0}</span>
+                <span className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest opacity-60">Assets</span>
+            </div>
         </div>
       </div>
 
-      {/* Apple-style Interactive Overlay */}
-      <div className="absolute inset-0 bg-rc-teal/[0.01] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      {/* Action Indicator */}
+      <div className="absolute bottom-8 right-8 opacity-0 group-hover:opacity-40 transition-opacity">
+         <Activity size={24} className="text-rc-teal animate-pulse" />
+      </div>
 
     </motion.div>
   );

@@ -96,7 +96,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
   }, [projects, searchQuery]);
 
   const stats = useMemo(() => {
-    const riskCount = projects.filter(p => p?.evaluations?.[0]?.status === 'At Risk' || p?.evaluations?.[0]?.status === 'Critical').length;
+    const riskCount = projects.filter(p => p.healthFlag === 'Roja' || p.healthFlag === 'Negra').length;
     const totalQuantitative = projects.reduce((acc, p) => acc + (p?.evaluations?.[0]?.quantitative || 0), 0);
     const avgScore = projects.length > 0 
       ? (totalQuantitative / projects.length).toFixed(1)
@@ -104,7 +104,7 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
 
     return {
       total: projects.length,
-      optimos: projects.filter(p => p?.status === 'Óptimo').length,
+      optimos: projects.filter(p => p.healthFlag === 'Verde').length,
       riesgo: riskCount,
       avgScore
     };
@@ -147,9 +147,9 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
 
   const urgencyStats = useMemo(() => {
      const total = projects.length || 1;
-     const optimized = projects.filter(p => p?.evaluations?.[0]?.status === 'Stable' || p?.evaluations?.[0]?.status === 'Growth').length;
-     const attention = projects.filter(p => p?.evaluations?.[0]?.status === 'At Risk').length;
-     const critical = projects.filter(p => p?.evaluations?.[0]?.status === 'Critical').length;
+     const optimized = projects.filter(p => p.healthFlag === 'Verde').length;
+     const attention = projects.filter(p => p.healthFlag === 'Amarilla').length;
+     const critical = projects.filter(p => p.healthFlag === 'Roja' || p.healthFlag === 'Negra').length;
 
      return {
         optimized: Math.round((optimized / total) * 100),
@@ -705,12 +705,12 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
                           {/* STATUS */}
                           <div className="text-right">
                              <span className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${
-                                p.evaluations[0]?.status === 'Stable' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
-                                p.evaluations[0]?.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                                p.evaluations[0]?.status === 'Growth' ? 'bg-rc-teal/10 text-rc-teal border-rc-teal/10' :
-                                'bg-rose-500/10 text-rose-500 border-rose-500/20'
+                                p.healthFlag === 'Verde' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
+                                p.healthFlag === 'Amarilla' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                p.healthFlag === 'Roja' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' :
+                                'bg-slate-900/10 text-slate-400 border-slate-900/20'
                              }`}>
-                                {t(`status.${(p.evaluations[0]?.status || 'stable').toLowerCase().replace(' ', '')}`)}
+                                Bandera {p.healthFlag || 'Verde'}
                              </span>
                           </div>
                        </div>
