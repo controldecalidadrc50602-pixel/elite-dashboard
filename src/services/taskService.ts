@@ -89,7 +89,7 @@ export const taskService = {
     }
     
     // Automation Trigger
-    this.triggerEmailAutomation(task, 'Nueva Tarea Asignada');
+    this.triggerEmailAutomation(task, 'Asignación de Nueva Tarea');
 
     const newTasks = [...allTasks, task];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newTasks));
@@ -109,7 +109,7 @@ export const taskService = {
     if (oldTask?.status !== 'Closed' && updatedTask.status === 'Closed') {
       taskToSave.completionTime = new Date().toISOString();
       taskToSave.effectivenessScore = this.calculateEffectivenessScore(taskToSave);
-      this.triggerEmailAutomation(taskToSave, 'Tarea Finalizada con Éxito');
+      this.triggerEmailAutomation(taskToSave, 'Tarea Finalizada - Auditoría de Cumplimiento');
     }
 
     if (isFirebaseConfigured) {
@@ -126,33 +126,40 @@ export const taskService = {
   },
 
   calculateEffectivenessScore(task: Task): number {
-    // 1. Compliance (SLA) - 40%
-    const onTime = new Date(task.completionTime || '') <= new Date(task.endTime);
-    const compliance = onTime ? 100 : 0;
+    // NUEVO ALGORITMO: (Peso de Tarea * % Checklist) / Tiempo empleado
+    const weight = task.operationalValue || 5;
+    const progressFactor = (task.progress || 0) / 100;
+    
+    const start = new Date(task.startTime).getTime();
+    const end = new Date(task.completionTime || new Date()).getTime();
+    const targetEnd = new Date(task.endTime).getTime();
+    
+    // Tiempo empleado en horas (mínimo 1h para evitar división por cero)
+    const timeSpentHours = Math.max(1, (end - start) / 3600000);
+    
+    // Factor de cumplimiento de tiempo (si terminó antes del deadline, bonus)
+    const timeFactor = end <= targetEnd ? 1.2 : 0.8;
 
-    // 2. Effectiveness (Subtasks) - 40%
-    const subtaskEffectiveness = task.progress || 0;
-
-    // 3. Responsiveness (First Response < 2h) - 20%
-    let responsiveness = 0;
-    if (task.firstResponseTime) {
-      const start = new Date(task.startTime).getTime();
-      const firstResp = new Date(task.firstResponseTime).getTime();
-      const diffHours = (firstResp - start) / 3600000;
-      responsiveness = diffHours <= 2 ? 100 : Math.max(0, 100 - (diffHours - 2) * 10);
-    }
-
-    const score = (compliance * 0.4) + (subtaskEffectiveness * 0.4) + (responsiveness * 0.2);
-    return Math.round(score);
+    const rawScore = ((weight * progressFactor) / timeSpentHours) * 100 * timeFactor;
+    
+    return Math.min(100, Math.round(rawScore));
   },
 
-  triggerEmailAutomation(task: Task, type: string) {
-    if (!task.responsibleEmail) return;
+  triggerEmailAutomation(task: Task, subject: string) {
+    if (!task.responsibleEmail && !task.assignedTo) return;
     
-    console.log(`%c[AUTOMATION TRIGGER]: ${type}`, 'background: #3BC7AA; color: white; padding: 2px 5px; border-radius: 3px;');
-    console.log(`Enviando email a: ${task.responsibleEmail}`);
-    console.log(`Detalles: ${task.title} | SLA: ${task.endTime}`);
-    console.log(`Link: https://elite-dashboard.rc506.com/tasks/${task.id}`);
+    const email = task.responsibleEmail || `${task.assignedTo?.toLowerCase().replace(' ', '.')}@rc506.com`;
+    
+    console.log(`%c[Rc506 AUTOMATION] 📧`, 'background: #3BC7AA; color: white; font-weight: bold; padding: 4px 8px; border-radius: 4px;');
+    console.log(`Asunto: ${subject}`);
+    console.log(`Para: ${email}`);
+    console.log(`-------------------------------------------`);
+    console.log(`ESTIMADO(A): ${task.assignedTo}`);
+    console.log(`Se ha actualizado el estado de la tarea: ${task.title}`);
+    console.log(`SLA Límite: ${new Date(task.endTime).toLocaleString()}`);
+    console.log(`Prioridad: ${task.priority}`);
+    console.log(`-------------------------------------------`);
+    console.log(`Rc506 Elite Dashboard v3.5 - Protocolo de Cumplimiento`);
   },
 
   async deleteTask(id: string, allTasks: Task[]): Promise<Task[]> {
@@ -169,3 +176,4 @@ export const taskService = {
     return newTasks;
   }
 };
+

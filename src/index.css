@@ -66,7 +66,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .glass-panel {
-  @apply backdrop-blur-[10px] bg-black/50 border-r border-white/5;
+  @apply backdrop-blur-[20px] bg-black/40 border-r border-white/5;
 }
 
 /* Premium Buttons */
@@ -87,31 +87,69 @@ h1, h2, h3, h4, h5, h6 {
   @apply text-5xl font-extralight tracking-tighter text-[var(--rc-turquoise)];
 }
 
-/* Custom Utilities */
-@utility status-ring {
-  @apply relative;
-  &::after {
-    content: '';
-    @apply absolute inset-0 rounded-full blur-xl opacity-20 pointer-events-none transition-opacity duration-1000;
+/* --- NEW PREMIUM UTILITIES --- */
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; filter: blur(8px); }
+  50% { opacity: 1; filter: blur(12px); }
+}
+
+.glow-ring-verde {
+  @apply border-2 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.4)];
+  animation: pulse-glow 3s infinite;
+}
+
+.glow-ring-amarilla {
+  @apply border-2 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.4)];
+  animation: pulse-glow 3s infinite;
+}
+
+.glow-ring-roja {
+  @apply border-2 border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.4)];
+  animation: pulse-glow 2s infinite;
+}
+
+.glow-ring-negra {
+  @apply border-2 border-purple-600/50 shadow-[0_0_15px_rgba(147,51,234,0.4)];
+  animation: pulse-glow 1.5s infinite;
+}
+
+/* Custom Scrollbar for Feed */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(109, 110, 113, 0.2);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 188, 169, 0.3);
+}
+
+/* Layout Helpers */
+.layout-3-cols {
+  display: grid;
+  grid-template-columns: 280px 1fr 380px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+@media (max-width: 1280px) {
+  .layout-3-cols {
+    grid-template-columns: 80px 1fr 320px;
   }
 }
 
-/* Custom transitions for Framer Motion */
-.spring-transition {
-  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Scrollbar styling - iOS style */
-::-webkit-scrollbar {
-  width: 5px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-slate-400/20 dark:bg-slate-500/20 rounded-full hover:bg-slate-400/40 transition-all;
+@media (max-width: 1024px) {
+  .layout-3-cols {
+    grid-template-columns: 80px 1fr;
+  }
+  .right-panel-hide {
+    display: none;
+  }
 }
 
 /* --- ZOHO-ELITE PROFESSIONAL UTILITIES --- */

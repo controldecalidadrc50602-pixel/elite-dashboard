@@ -28,6 +28,7 @@ import { exportService } from '../services/exportService';
 import ProjectCard from '../components/ProjectCard'; // Keep it if needed elsewhere, but we will use Accordion here
 import ProjectAccordion from '../components/ProjectAccordion';
 import TaskManager, { Task } from '../components/TaskManager';
+import AuditDashboard from '../components/Dashboard/AuditDashboard';
 import ProjectDetailsModal from '../components/ProjectDetailsModal';
 import ProjectModal from '../components/Modals/ProjectModal';
 import StatCard from '../components/common/StatCard';
@@ -37,12 +38,9 @@ import { projectService } from '../services/projectService';
 import { taskService } from '../services/taskService';
 import { initialProjects } from '../lib/mockData';
 
-import { 
-  Project, 
-  ClientService, 
-  Evaluation, 
-  Alert 
-} from '../types/project';
+import { Project, Alert } from '../types/project';
+import StoriesBar from '../components/Dashboard/StoriesBar';
+import LiveOpsPanel from '../components/Dashboard/LiveOpsPanel';
 
 interface DashboardProps {
   activeTab: 'overview' | 'clients' | 'status' | 'tasks';
@@ -110,57 +108,6 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
     };
   }, [projects]);
 
-  // Dynamic Chart Calculations
-  const chartData = useMemo(() => {
-     const months = [
-        { name: t('months.oct'), val: 0, count: 0 },
-        { name: t('months.nov'), val: 0, count: 0 },
-        { name: t('months.dec'), val: 0, count: 0 },
-        { name: t('months.jan'), val: 0, count: 0 },
-        { name: t('months.feb'), val: 0, count: 0 },
-        { name: t('months.mar'), val: 0, count: 0 },
-     ];
-
-     if (projects.length > 0) {
-        projects.forEach(p => {
-           p.evaluations?.forEach(ev => {
-              const idx = (ev.month || 0) % 6; 
-              months[idx].val += ev.quantitative || 0;
-              months[idx].count += 1;
-           });
-        });
-     }
-
-     const points = months.map((m, i) => {
-        const avg = m.count > 0 ? m.val / m.count : 3; 
-        const x = (i / 5) * 400;
-        const y = 120 - (avg * 20); 
-        return `${x},${y}`;
-     });
-
-     return {
-        path: `M${points.join(' L')}`,
-        points: months,
-        lastY: points[points.length - 1]?.split(',')[1] || 60
-     };
-  }, [projects, t]);
-
-  const urgencyStats = useMemo(() => {
-     const total = projects.length || 1;
-     const optimized = projects.filter(p => p.healthFlag === 'Verde').length;
-     const attention = projects.filter(p => p.healthFlag === 'Amarilla').length;
-     const critical = projects.filter(p => p.healthFlag === 'Roja' || p.healthFlag === 'Negra').length;
-
-     return {
-        optimized: Math.round((optimized / total) * 100),
-        attention: Math.round((attention / total) * 100),
-        critical: Math.round((critical / total) * 100),
-        optimizedCount: optimized,
-        attentionCount: attention,
-        criticalCount: critical
-     };
-  }, [projects]);
-
   const recentAlerts = useMemo(() => {
      const allAlerts: { project: string, alert: Alert }[] = [];
      projects.forEach(p => {
@@ -225,505 +172,205 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
   };
 
   if (loading) return (
-    <div className="h-96 flex items-center justify-center">
-       <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--rc-turquoise)]"></div>
+    <div className="h-full flex items-center justify-center bg-black">
+       <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-rc-teal"></div>
     </div>
   );
 
   return (
-    <div className="space-y-6">
-      {/* Demo Banner */}
-      {!isFirebaseConfigured && (
-         <motion.div 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between gap-4"
-         >
-            <div className="flex items-center gap-3">
-               <div className="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center text-amber-500">
-                  <DatabaseZap size={16} />
-               </div>
-               <div>
-                  <h4 className="text-amber-500 font-bold text-xs tracking-tight">{t('stats.offline_mode')}</h4>
-                  <p className="text-amber-500/60 text-[10px] font-medium leading-none">{t('stats.offline_desc')}</p>
-               </div>
-            </div>
-            <div className="text-[9px] font-black text-amber-500/40 uppercase tracking-widest border border-amber-500/10 px-2 py-1 rounded-lg">{t('stats.demo_mode')}</div>
-         </motion.div>
-      )}
-      <div className="space-y-12 pb-12">
-        {/* VIEW: EXECUTIVE OVERVIEW */}
-        {activeTab === 'overview' && (
-        <div className="space-y-16 animate-in fade-in slide-in-from-bottom-6 duration-700 ease-out">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-[var(--glass-border)]">
-             <div className="flex items-center gap-6">
-                <div className="w-20 h-20 bg-[var(--rc-turquoise)]/5 rounded-[2.5rem] flex items-center justify-center text-[var(--rc-turquoise)] border border-[var(--rc-turquoise)]/10">
-                   <BarChart3 size={36} strokeWidth={1.5} />
-                </div>
-                <div>
-                   <h1 className="text-5xl font-light tracking-tighter text-[var(--text-primary)] leading-none">{t('nav.dashboard')}</h1>
-                   <p className="text-[var(--text-secondary)] font-medium text-[11px] uppercase tracking-[0.2em] mt-3 opacity-60">{t('stats.trends')}</p>
-                </div>
-             </div>
-             
-             <div className="flex items-center gap-4">
-                <div className="px-5 py-2.5 bg-[var(--card-bg)] rounded-full border border-[var(--glass-border)] flex items-center gap-3">
-                   <div className="w-2 h-2 bg-emerald-500 rounded-full" />
-                   <span className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Sincronizado</span>
-                </div>
-             </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <StatCard title={t('stats.total')} value={stats.total} icon={<Users />} color="rc-teal" trend="+2.4%" />
-            <StatCard title={t('stats.optimal')} value={stats.optimos} icon={<TrendingUp />} color="emerald" trend="+12%" />
-            <StatCard title={t('stats.risk')} value={stats.riesgo} icon={<AlertCircle />} color="rose" trend="-5%" />
-            <StatCard title={t('stats.avgScore')} value={stats.avgScore} icon={<Star />} color="amber" trend="+0.2" />
-          </div>
-
-          {/* Executive Charts Row - Premium Glassmorphism */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-             <div className="glass-card p-12 rounded-[48px] min-h-[400px] flex flex-col relative overflow-hidden group">
-                <div className="flex items-center justify-between mb-16 relative z-10">
-                   <div className="flex flex-col">
-                      <h3 className="section-title mb-1">{t('dashboard.audit_pulse')}</h3>
-                      <span className="text-[10px] font-medium text-rc-teal/60 uppercase tracking-widest">Consultoría Estratégica</span>
-                   </div>
-                   <div className="flex gap-6 text-[10px] font-semibold uppercase tracking-wider">
-                      <span className="flex items-center gap-2 text-rc-teal"><div className="w-1.5 h-1.5 bg-rc-teal rounded-full shadow-[0_0_8px_rgba(59,199,170,0.4)]"></div> {t('dashboard.target')}</span>
-                      <span className="flex items-center gap-2 text-[var(--text-secondary)]"><div className="w-1.5 h-1.5 bg-slate-400 rounded-full opacity-40"></div> {t('dashboard.actual')}</span>
-                   </div>
-                </div>
-                
-                <div className="flex-1 w-full mt-auto relative z-10">
-                   <svg viewBox="0 0 400 120" className="w-full h-48 overflow-visible">
-                      <defs>
-                         <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="#3BBCA9" stopOpacity="0.15" />
-                            <stop offset="100%" stopColor="#3BBCA9" stopOpacity="0" />
-                         </linearGradient>
-                      </defs>
-                      
-                      {/* Area under the line */}
-                      <motion.path 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 2, delay: 1 }}
-                        d={`${chartData.path} L 400,120 L 0,120 Z`}
-                        fill="url(#areaGradient)"
-                      />
-
-                      <path d="M0,80 Q50,75 100,50 T200,60 T300,30 T400,45" fill="none" stroke="var(--text-secondary)" strokeWidth="1" strokeDasharray="4 4" opacity="0.15" />
-                      
-                      <motion.path 
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 1 }}
-                        transition={{ duration: 2.5, ease: "easeInOut" }}
-                        d={chartData.path}
-                        fill="none" 
-                        stroke="#3BBCA9" 
-                        strokeWidth="3" 
-                        strokeLinecap="round" 
-                      />
-                      <motion.circle 
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 2.5 }}
-                        cx="400" cy={chartData.lastY} r="5" fill="#3BBCA9" 
-                      />
-                   </svg>
-                   <div className="flex justify-between mt-10 text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.2em]">
-                      {chartData.points.map((m, i) => <span key={i} className="hover:text-rc-teal transition-colors cursor-default">{m.name}</span>)}
-                   </div>
-                </div>
-             </div>
-
-             <div className="glass-card p-12 rounded-[48px] min-h-[400px] flex flex-col relative overflow-hidden group">
-                <h3 className="section-title mb-16 relative z-10">{t('dashboard.urgency_matrix')}</h3>
-                
-                <div className="flex-1 flex items-center justify-around gap-12 relative z-10">
-                   <div className="relative w-48 h-48 group-hover:scale-105 transition-transform duration-700">
-                      <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--glass-border)]" />
-                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray={`${urgencyStats.optimized} ${100 - urgencyStats.optimized}`} className="text-emerald-400 transition-all duration-1000" />
-                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray={`${urgencyStats.attention} ${100 - urgencyStats.attention}`} strokeDashoffset={-urgencyStats.optimized} className="text-amber-400 transition-all duration-1000" />
-                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray={`${urgencyStats.critical} ${100 - urgencyStats.critical}`} strokeDashoffset={-(urgencyStats.optimized + urgencyStats.attention)} className="text-rose-400 transition-all duration-1000" />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                         <span className="large-value text-[var(--text-primary)]">{stats.total}</span>
-                         <span className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wider">{t('dashboard.total_cl')}</span>
-                      </div>
-                   </div>
-                   
-                   <div className="space-y-8">
-                      <div className="flex items-center gap-5 group/item">
-                         <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]" />
-                         <div className="flex flex-col">
-                            <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-secondary)]">{t('dashboard.optimized')}</span>
-                            <span className="text-2xl font-light text-[var(--text-primary)] tracking-tight leading-none">{urgencyStats.optimized}%</span>
-                         </div>
-                      </div>
-                      <div className="flex items-center gap-5 group/item">
-                         <div className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.3)]" />
-                         <div className="flex flex-col">
-                            <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-secondary)]">{t('dashboard.attention')}</span>
-                            <span className="text-2xl font-light text-[var(--text-primary)] tracking-tight leading-none">{urgencyStats.attention}%</span>
-                         </div>
-                      </div>
-                      <div className="flex items-center gap-5 group/item">
-                         <div className="w-2 h-2 rounded-full bg-rose-400 shadow-[0_0_10px_rgba(248,113,113,0.3)]" />
-                         <div className="flex flex-col">
-                            <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-secondary)]">{t('dashboard.critical')}</span>
-                            <span className="text-2xl font-light text-[var(--text-primary)] tracking-tight leading-none">{urgencyStats.critical}%</span>
-                         </div>
-                      </div>
-                   </div>
-                </div>
-             </div>
-          </div>
-
-          {/* Elite Task Center - NEW SECTION */}
-          <div className="glass-card p-12 rounded-[48px] border border-[var(--glass-border)] relative overflow-hidden">
-             <div className="flex items-center justify-between mb-12 relative z-10">
-                <div className="flex items-center gap-6">
-                   <div className="w-14 h-14 bg-rc-teal/5 rounded-2xl flex items-center justify-center text-rc-teal border border-rc-teal/10">
-                      <Clock size={28} strokeWidth={1.5} />
-                   </div>
-                   <div>
-                      <h3 className="text-xl font-light tracking-tight text-[var(--text-primary)] uppercase">Centro de Operaciones</h3>
-                      <p className="text-[10px] font-medium text-rc-teal/60 uppercase tracking-[0.2em] mt-1">Tareas Activas y Responsables</p>
-                   </div>
-                </div>
-                <div className="px-5 py-2.5 bg-[var(--card-bg)] rounded-2xl border border-[var(--glass-border)] text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-                   {tasks.filter(t => t.status !== 'Closed').length} Tareas Pendientes
-                </div>
-             </div>
-
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
-                {tasks.filter(t => t.status !== 'Closed').slice(0, 4).map((task, idx) => (
-                   <motion.div 
-                      key={task.id}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="bg-white/[0.03] dark:bg-black/[0.1] border border-[var(--glass-border)] p-8 rounded-[40px] hover:bg-white/[0.05] transition-all group"
-                   >
-                      <div className="flex items-center justify-between mb-6">
-                         <span className={`px-3 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wider border ${
-                            task.priority === 'High' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' : 
-                            task.priority === 'Medium' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 
-                            'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                         }`}>
-                            {task.priority}
-                         </span>
-                         <div className={`w-1.5 h-1.5 rounded-full ${isOverdue(task.endTime) ? 'bg-rose-500 animate-pulse' : 'bg-rc-teal'}`} />
-                      </div>
-                      
-                      <h4 className="text-[15px] font-semibold text-[var(--text-primary)] leading-snug line-clamp-2 mb-8 group-hover:text-rc-teal transition-colors">
-                         {task.title}
-                      </h4>
-
-                      <div className="space-y-6 mt-auto">
-                         <div className="flex items-center gap-4">
-                            <div className="w-9 h-9 rounded-full bg-rc-teal/5 border border-rc-teal/10 flex items-center justify-center text-rc-teal text-[11px] font-semibold">
-                               {task.assignedTo?.split(' ').map(n => n[0]).join('') || '?'}
-                            </div>
-                            <div className="flex flex-col">
-                               <span className="text-[9px] font-medium text-[var(--text-secondary)] uppercase tracking-wider leading-none">Responsable</span>
-                               <span className="text-[12px] font-semibold text-[var(--text-primary)] mt-1">{task.assignedTo}</span>
-                            </div>
-                         </div>
-
-                         <div className="pt-6 border-t border-[var(--glass-border)] flex items-center justify-between">
-                            <div className="flex flex-col">
-                               <span className="text-[9px] font-medium text-[var(--text-secondary)] uppercase tracking-wider">Tiempo</span>
-                               <span className="text-[12px] font-light text-rc-teal tabular-nums">{getElapsedTime(task.startTime)}</span>
-                            </div>
-                            <div className={`px-3 py-1 rounded-lg text-[9px] font-semibold uppercase tracking-wider ${
-                               task.status === 'In Progress' ? 'bg-rc-teal/10 text-rc-teal' : 'text-[var(--text-secondary)]'
-                            }`}>
-                               {task.status}
-                            </div>
-                         </div>
-                      </div>
-                   </motion.div>
-                ))}
-             </div>
-          </div>
-
-          {/* Quick Alerts Feed - Redesigned */}
-          <div className="glass-card p-12 rounded-[48px] border border-[var(--glass-border)] relative overflow-hidden">
-             <div className="flex items-center justify-between mb-12 relative z-10">
-                <div className="flex items-center gap-6">
-                   <div className="w-14 h-14 bg-rose-500/5 rounded-2xl flex items-center justify-center text-rose-500 border border-rose-500/10">
-                      <ShieldAlert size={28} strokeWidth={1.5} />
-                   </div>
-                   <div>
-                      <h3 className="text-xl font-light tracking-tight text-[var(--text-primary)] uppercase">{t('projects.recent_alerts')}</h3>
-                      <p className="text-[10px] font-medium text-rose-500/60 uppercase tracking-[0.2em] mt-1">Monitoreo de Infraestructura</p>
-                   </div>
-                </div>
-                {recentAlerts.length > 0 && (
-                   <div className="px-5 py-2.5 bg-rose-500/5 rounded-2xl border border-rose-500/10 flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></div>
-                      <span className="text-[11px] font-semibold text-rose-500 uppercase tracking-wider">{recentAlerts.length} Eventos Críticos</span>
-                   </div>
-                )}
-             </div>
-             
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative z-10">
-                {recentAlerts.map(({ project, alert }, idx) => (
-                   <motion.div 
-                      key={alert.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.15 }}
-                      whileHover={{ y: -4 }}
-                      className="bg-white/[0.03] dark:bg-black/[0.1] border border-[var(--glass-border)] p-8 rounded-[40px] flex flex-col min-h-[220px] transition-all"
-                   >
-                      <div className="flex items-center justify-between mb-6">
-                         <span className="text-[10px] font-semibold text-rc-teal uppercase tracking-widest">{project}</span>
-                         <span className="text-[10px] font-medium text-[var(--text-secondary)]">{new Date(alert.date).toLocaleDateString()}</span>
-                      </div>
-                      <p className="text-[15px] font-medium text-[var(--text-primary)] leading-relaxed mb-8 flex-1">
-                         {alert.description}
-                      </p>
-                      <div className="mt-auto flex items-center justify-between pt-6 border-t border-[var(--glass-border)]">
-                         <span className={`px-3 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wider border ${
-                            alert.severity === 'High' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
-                         }`}>
-                            {t(`projects.severity_${alert.severity.toLowerCase()}`)}
-                         </span>
-                         <button className="w-10 h-10 rounded-full bg-[var(--card-bg)] flex items-center justify-center text-[var(--text-secondary)] hover:text-rc-teal border border-[var(--glass-border)] transition-all">
-                            <ArrowRight size={18} strokeWidth={1.5} />
-                         </button>
-                      </div>
-                   </motion.div>
-                ))}
-                {recentAlerts.length === 0 && (
-                   <div className="col-span-3 py-16 text-center">
-                      <p className="section-title opacity-40">{t('dashboard.no_records')}</p>
-                   </div>
-                )}
-             </div>
-          </div>
-      </div>
-       )}
-
-      {/* VIEW: CLIENT MANAGEMENT (OPERATIONAL) */}
-
-
-      {activeTab === 'clients' && (
-        <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 pb-4">
-             <div className="flex items-center gap-5">
-                <div className="w-14 h-14 bg-rc-teal/5 rounded-2xl flex items-center justify-center text-rc-teal border border-rc-teal/10">
-                   <Users size={24} strokeWidth={1.5} />
-                </div>
-                <div>
-                   <h1 className="text-3xl font-light tracking-tight text-[var(--text-primary)] leading-tight">{t('nav.clients')}</h1>
-                   <p className="text-[var(--text-secondary)] font-medium text-[10px] uppercase tracking-widest mt-1 opacity-60">{filteredProjects.length} {t('dashboard.active_clients')}</p>
-                </div>
-             </div>
-
-             <div className="flex items-center gap-3">
-                <div className="relative group">
-                   <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] group-focus-within:text-rc-teal transition-colors" />
-                   <input 
-                      type="text"
-                      placeholder={t('dashboard.search_placeholder')}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl py-2.5 pl-12 pr-6 text-sm font-medium focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all outline-none w-full md:w-64"
-                   />
-                </div>
-                <div className="relative">
-                   <button 
-                     onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-                     className="bg-slate-900 border border-white/10 hover:bg-slate-800 text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
-                   >
-                      <Download size={16} /> Exportar <ChevronDown size={14} className={`transition-transform ${isExportMenuOpen ? 'rotate-180' : ''}`} />
-                   </button>
-                   
-                   <AnimatePresence>
-                      {isExportMenuOpen && (
-                         <motion.div 
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className="absolute right-0 mt-3 w-48 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-[100] overflow-hidden"
-                         >
-                            <button 
-                               onClick={() => { exportService.exportToPDF(projects, tasks, t); setIsExportMenuOpen(false); }}
-                               className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-colors text-[10px] font-black uppercase tracking-widest text-slate-300 text-left"
-                            >
-                               <FileText size={16} className="text-rose-400" /> PDF Ejecutivo
-                            </button>
-                            <button 
-                               onClick={() => { exportService.exportToExcel(projects, tasks); setIsExportMenuOpen(false); }}
-                               className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-colors text-[10px] font-black uppercase tracking-widest text-slate-300 text-left"
-                            >
-                               <FileSpreadsheet size={16} className="text-emerald-400" /> Excel (XLSX)
-                            </button>
-                         </motion.div>
-                      )}
-                   </AnimatePresence>
-                </div>
-
-                <button 
-                  onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
-                  className="bg-rc-teal hover:shadow-xl hover:shadow-rc-teal/20 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shrink-0"
-                >
-                   <Plus size={16} /> {t('projects.newProject')}
-                </button>
-             </div>
-          </div>
-
-          {/* TACTICAL TABLE HEADER - ZOHO ELITE STYLE */}
-          <div className="technical-grid px-8 py-5 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-[0.15em] opacity-40 border-b border-[var(--glass-border)] bg-black/[0.02] dark:bg-white/[0.02] rounded-t-3xl">
-             <div className="w-1.5 h-1.5" />
-             <div>Cliente</div>
-             <div className="hidden md:block">Proyecto ID</div>
-             <div className="hidden sm:block">Operaciones</div>
-             <div className="text-right pr-4">Estado</div>
-             <div className="text-right">Detalle</div>
-          </div>
-
-          <motion.div 
-            layout
-            className="flex flex-col"
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredProjects.map((project, idx) => (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.03 }}
-                  layout
-                >
-                  <ProjectAccordion 
-                    project={project} 
-                    onOpenDetail={() => openProjectDetail(project)}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-
-          {projects.length === 0 ? (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="py-20 flex flex-col items-center justify-center text-center space-y-6 glass-card rounded-[40px] border-dashed border-2 border-rc-teal/20"
-            >
-              <div className="w-20 h-20 bg-rc-teal/10 rounded-full flex items-center justify-center text-rc-teal animate-bounce">
-                <Plus size={40} />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tighter uppercase">{t('dashboard.welcome_ready')}</h3>
-                <p className="text-[var(--text-secondary)] font-medium text-sm max-w-xs mx-auto">
-                  {t('dashboard.first_client_desc')}
-                </p>
-              </div>
-              <button 
-                onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
-                className="bg-rc-teal text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-rc-teal/30 hover:scale-110 transition-all flex items-center gap-3"
-              >
-                <Plus size={18} /> {t('projects.newProject')}
-              </button>
-            </motion.div>
-          ) : filteredProjects.length === 0 ? (
-            <div className="py-20 flex flex-col items-center justify-center space-y-4 opacity-40">
-              <Search size={48} className="text-rc-teal" />
-              <p className="font-bold text-sm tracking-widest uppercase">{t('dashboard.no_results')}</p>
-            </div>
-          ) : null}
-        </div>
-      )}
-
-      {/* VIEW: AUDIT VIEW (TABLE) */}
-      {activeTab === 'status' && (
-        <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-           <div className="glass-card p-10 rounded-[48px] border border-[var(--glass-border)]">
-              <div className="flex items-center justify-between mb-12">
-                 <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 bg-rc-teal/5 rounded-2xl flex items-center justify-center text-rc-teal border border-rc-teal/10">
-                      <Star size={24} strokeWidth={1.5} />
-                    </div>
-                    <div>
-                       <h3 className="text-2xl font-light tracking-tight text-[var(--text-primary)]">{t('projects.individualTitle')}</h3>
-                       <p className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-widest mt-1 opacity-60">{t('dashboard.audit_execution')}</p>
-                    </div>
-                 </div>
-              </div>
-
-              <div className="overflow-x-auto">
-                 {/* HEADER GRID */}
-                 <div className="technical-grid-audit px-10 py-5 border-b border-[var(--glass-border)] text-[var(--text-secondary)] text-[10px] font-semibold uppercase tracking-wider bg-black/[0.02] dark:bg-white/[0.02] rounded-t-3xl">
-                    <div>{t('dashboard.table_client')}</div>
-                    <div className="text-center">{t('dashboard.table_health')}</div>
-                    <div>{t('dashboard.table_history')}</div>
-                    <div className="text-right">{t('dashboard.table_status')}</div>
-                 </div>
-
-                 {/* BODY GRID */}
-                 <div className="flex flex-col divide-y divide-[var(--glass-border)]">
-                    {projects.map(p => (
-                       <div 
-                          key={p.id} 
-                          onClick={() => openProjectDetail(p)}
-                          className="technical-grid-audit px-8 py-5 group hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer elite-accent-line"
-                       >
-                          {/* CLIENT */}
-                          <div className="flex items-center gap-5">
-                             <div className="w-12 h-12 rounded-2xl bg-[var(--bg-primary)] border border-[var(--glass-border)] flex items-center justify-center overflow-hidden shrink-0">
-                                {p.logoUrl ? (
-                                   <img src={p.logoUrl} alt={p.client} className="w-9 h-9 object-contain" />
-                                ) : (
-                                   <span className="text-xs font-semibold text-rc-teal uppercase">{p.client.charAt(0)}</span>
-                                )}
-                             </div>
-                             <div>
-                                <div className="font-semibold text-[var(--text-primary)] text-[13px] tracking-tight">{p.client}</div>
-                                <div className="text-[10px] font-medium text-rc-teal mt-0.5 opacity-60">ID: {p.id}</div>
-                             </div>
-                          </div>
-
-                          {/* HEALTH - PERFECT SYMMETRY */}
-                          <div className="text-center">
-                             <div className="text-3xl font-light text-rc-teal tracking-tighter tabular-nums">{p.evaluations[0]?.quantitative || '-'}</div>
-                          </div>
-
-                          {/* HISTORY */}
-                          <div className="max-w-md">
-                             <p className="text-[11px] text-[var(--text-secondary)] font-medium italic line-clamp-1 pr-4">
-                                "{p.evaluations[0]?.qualitative || t('dashboard.no_records')}"
-                             </p>
-                          </div>
-
-                          {/* STATUS */}
-                          <div className="text-right">
-                             <span className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${
-                                p.healthFlag === 'Verde' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
-                                p.healthFlag === 'Amarilla' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                                p.healthFlag === 'Roja' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' :
-                                'bg-slate-900/10 text-slate-400 border-slate-900/20'
-                             }`}>
-                                Bandera {p.healthFlag || 'Verde'}
-                             </span>
-                          </div>
-                       </div>
-                    ))}
-                 </div>
+    <div className="flex h-full overflow-hidden bg-black/40">
+      {/* Center Column: Feed */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden border-r border-white/5">
+        {/* Stories / Top Bar */}
+        <div className="pt-6 px-8 border-b border-white/5 bg-black/20 backdrop-blur-md">
+           <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[14px] font-bold text-[var(--text-primary)] tracking-tight uppercase">{t('nav.dashboard')} <span className="text-rc-teal ml-2">V3.5</span></h2>
+              <div className="flex items-center gap-4">
+                 <button className="text-[var(--rc-slate)] hover:text-rc-teal transition-colors"><Bell size={18} strokeWidth={1.2} /></button>
+                 <button className="text-[var(--rc-slate)] hover:text-rc-teal transition-colors"><Search size={18} strokeWidth={1.2} /></button>
               </div>
            </div>
+           <StoriesBar projects={projects} />
         </div>
-      )}
 
+        {/* Scrollable Feed Area */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
+           <div className="max-w-4xl mx-auto space-y-10 pb-20">
+              
+              {/* VIEW: EXECUTIVE OVERVIEW (As Newsfeed) */}
+              {activeTab === 'overview' && (
+                <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                  
+                  {/* Summary Cards (Condensed for Feed) */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <StatCard title={t('stats.total')} value={stats.total} icon={<Users />} color="rc-teal" trend="+2.4%" />
+                    <StatCard title={t('stats.optimal')} value={stats.optimos} icon={<TrendingUp />} color="emerald" trend="+12%" />
+                    <StatCard title={t('stats.risk')} value={stats.riesgo} icon={<AlertCircle />} color="rose" trend="-5%" />
+                    <StatCard title={t('stats.avgScore')} value={stats.avgScore} icon={<Star />} color="amber" trend="+0.2" />
+                  </div>
 
-      {activeTab === 'tasks' && <TaskManager />}
+                  {/* Active Tasks Feed */}
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                       <h3 className="text-[11px] font-bold text-[var(--rc-slate)] uppercase tracking-[0.2em]">Activity Feed</h3>
+                       <span className="text-[10px] text-rc-teal font-medium cursor-pointer hover:underline">Ver todas</span>
+                    </div>
+                    
+                    {tasks.filter(t => t.status !== 'Closed').map((task, idx) => (
+                      <motion.div 
+                        key={task.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="glass-card p-8 rounded-[32px] border-white/5 hover:bg-white/[0.03] transition-all group"
+                      >
+                         <div className="flex items-center gap-4 mb-6">
+                            <div className="w-10 h-10 rounded-full bg-rc-teal/10 flex items-center justify-center text-rc-teal text-[11px] font-bold">
+                               {task.assignedTo?.charAt(0)}
+                            </div>
+                            <div className="flex-1">
+                               <div className="flex items-center gap-2">
+                                  <span className="text-[13px] font-bold text-white">{task.assignedTo}</span>
+                                  <span className="text-[11px] text-[var(--rc-slate)]">publicó una actualización</span>
+                               </div>
+                               <span className="text-[10px] text-[var(--rc-slate)] opacity-50 uppercase tracking-widest">{getElapsedTime(task.startTime)} atrás</span>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${
+                               task.priority === 'High' ? 'bg-rose-500/10 text-rose-500' : 'bg-rc-teal/10 text-rc-teal'
+                            }`}>
+                               {task.priority}
+                            </span>
+                         </div>
 
+                         <h4 className="text-[18px] font-light text-white leading-tight mb-4 group-hover:text-rc-teal transition-colors">
+                            {task.title}
+                         </h4>
+                         
+                         {task.description && (
+                            <p className="text-[14px] text-[var(--rc-slate)] leading-relaxed mb-6 font-medium">
+                               {task.description}
+                            </p>
+                         )}
+
+                         <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                            <div className="flex items-center gap-6">
+                               <div className="flex items-center gap-2 text-[var(--rc-slate)] hover:text-rc-teal transition-colors cursor-pointer">
+                                  <CheckCircle2 size={16} strokeWidth={1.5} />
+                                  <span className="text-[11px] font-bold uppercase tracking-widest">{task.status}</span>
+                               </div>
+                            </div>
+                            <div className="flex items-center gap-6">
+                               <SlaTimer 
+                                 startTime={task.startTime} 
+                                 endTime={task.endTime} 
+                                 status={task.status} 
+                               />
+                               <div className="w-px h-8 bg-white/5 mx-2" />
+                               <button 
+                                 onClick={() => openProjectDetail(projects.find(p => p.id === task.projectId) || projects[0])}
+                                 className="flex items-center gap-2 text-[var(--rc-slate)] hover:text-rc-teal transition-colors cursor-pointer"
+                               >
+                                  <ArrowRight size={16} strokeWidth={1.5} />
+                                  <span className="text-[11px] font-bold uppercase tracking-widest">Ver Cliente</span>
+                               </button>
+                            </div>
+                         </div>
+
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'clients' && (
+                 <div className="space-y-8 animate-in fade-in slide-in-from-right-4">
+                    <div className="flex items-center justify-between mb-6">
+                       <h1 className="text-3xl font-light tracking-tight">{t('nav.clients')}</h1>
+                       <button 
+                         onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
+                         className="bg-rc-teal hover:shadow-xl hover:shadow-rc-teal/20 text-[var(--bg-primary)] px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
+                       >
+                          <Plus size={16} strokeWidth={2.5} /> {t('projects.newProject')}
+                       </button>
+                    </div>
+
+                    <div className="relative mb-10">
+                       <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-[var(--rc-slate)]" />
+                       <input 
+                         type="text"
+                         placeholder="Buscar clientes..."
+                         value={searchQuery}
+                         onChange={(e) => setSearchQuery(e.target.value)}
+                         className="w-full bg-black/40 border border-white/5 rounded-3xl py-5 pl-16 pr-8 text-sm focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal/50 outline-none transition-all"
+                       />
+                    </div>
+
+                    <div className="space-y-4">
+                       {filteredProjects.map((project) => (
+                          <ProjectAccordion 
+                            key={project.id}
+                            project={project}
+                            onOpenDetail={() => openProjectDetail(project)}
+                          />
+                       ))}
+                    </div>
+                 </div>
+              )}
+
+              {activeTab === 'status' && (
+                 <div className="space-y-10 animate-in fade-in slide-in-from-right-4">
+                    <AuditDashboard tasks={tasks} />
+                    
+                    <div className="mt-20">
+                       <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-8">Auditoría de Clientes</h3>
+                       <div className="glass-card rounded-[40px] overflow-hidden border-white/5">
+                          <div className="technical-grid-audit px-10 py-6 border-b border-white/5 text-[10px] font-bold uppercase tracking-widest text-[var(--rc-slate)] bg-white/[0.02]">
+                             <div>Cliente</div>
+                             <div className="text-center">Score</div>
+                             <div>Resumen</div>
+                             <div className="text-right">Salud</div>
+                          </div>
+                          <div className="divide-y divide-white/5">
+                             {projects.map(p => (
+                                <div 
+                                   key={p.id}
+                                   onClick={() => openProjectDetail(p)}
+                                   className="technical-grid-audit px-10 py-6 hover:bg-white/[0.03] transition-all cursor-pointer group"
+                                >
+                                   <div className="flex items-center gap-4">
+                                      <div className="w-10 h-10 rounded-xl bg-black border border-white/10 flex items-center justify-center">
+                                         {p.logoUrl ? <img src={p.logoUrl} className="w-7 h-7 object-contain" /> : <span className="text-rc-teal font-bold">{p.client.charAt(0)}</span>}
+                                      </div>
+                                      <span className="font-semibold text-white group-hover:text-rc-teal transition-colors">{p.client}</span>
+                                   </div>
+                                   <div className="text-center text-2xl font-light text-rc-teal tracking-tighter">{p.evaluations[0]?.quantitative || '-'}</div>
+                                   <div className="text-[12px] text-[var(--rc-slate)] italic line-clamp-1 truncate">{p.evaluations[0]?.qualitative || 'Sin registros'}</div>
+                                   <div className="text-right">
+                                      <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
+                                         p.healthFlag === 'Verde' ? 'text-emerald-500 bg-emerald-500/10' : 
+                                         p.healthFlag === 'Amarilla' ? 'text-amber-500 bg-amber-500/10' : 'text-rose-500 bg-rose-500/10'
+                                      }`}>
+                                         {p.healthFlag}
+                                      </span>
+                                   </div>
+                                </div>
+                             ))}
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              )}
+
+              {activeTab === 'tasks' && <TaskManager />}
+
+           </div>
+        </div>
+      </div>
+
+      {/* Right Column: Live Ops */}
+      <LiveOpsPanel projects={projects} tasks={tasks} />
+
+      {/* Modals remain global */}
       <ProjectDetailsModal 
          project={selectedProject}
          isOpen={isSlideoverOpen}
@@ -739,7 +386,6 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
          onSave={handleSaveProject}
          project={editingProject}
       />
-    </div>
     </div>
   );
 };
