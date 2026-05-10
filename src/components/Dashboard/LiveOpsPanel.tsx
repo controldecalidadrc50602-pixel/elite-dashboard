@@ -6,7 +6,8 @@ import {
   ShieldAlert, 
   Zap,
   TrendingUp,
-  Circle
+  Clock,
+  ArrowUpRight
 } from 'lucide-react';
 import { Project } from '../../types/project';
 import { Task } from '../TaskManager';
@@ -17,11 +18,11 @@ interface LiveOpsPanelProps {
 }
 
 const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
-  const activeTasks = tasks.filter(t => t.status === 'In Progress');
   const criticalProjects = projects.filter(p => p.healthFlag === 'Roja' || p.healthFlag === 'Negra');
 
   return (
-    <aside className="w-[380px] h-full glass-panel border-l border-white/5 flex flex-col overflow-hidden relative">
+    <aside className="w-[380px] h-full glass-panel border-l border-white/5 flex flex-col overflow-hidden relative z-40">
+      {/* Header */}
       <div className="p-8 border-b border-white/5 bg-white/[0.01]">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-xl font-black text-white uppercase tracking-tighter">Live Health</h2>
@@ -33,18 +34,18 @@ const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estado Operativo de Cuentas</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8 pb-10">
-        {/* KPI Grid - 15% smaller text/padding */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-10 pb-10">
+        {/* KPI Grid */}
         <div className="grid grid-cols-2 gap-4">
            {[
              { label: 'Cuentas', value: projects.length, icon: Users, color: 'text-rc-teal' },
-             { label: 'Críticas', value: projects.filter(p => p.healthFlag === 'Roja').length, icon: ShieldAlert, color: 'text-rose-500' },
+             { label: 'Críticas', value: criticalProjects.length, icon: ShieldAlert, color: 'text-rose-500' },
              { label: 'Efectividad', value: '94%', icon: TrendingUp, color: 'text-rc-teal' },
              { label: 'Pendientes', value: tasks.length, icon: Clock, color: 'text-amber-500' },
            ].map((kpi, idx) => {
              const Icon = kpi.icon;
              return (
-               <div key={idx} className="glass-card p-4 rounded-3xl border-white/5 hover:border-rc-teal/30 hover:shadow-[0_0_15px_rgba(59,188,169,0.1)] transition-all group">
+               <div key={idx} className="glass-card p-4 rounded-3xl border-white/5 hover:border-rc-teal/30 transition-all group">
                   <div className="flex items-center justify-between mb-2">
                      <div className={`p-2 rounded-xl bg-black/40 ${kpi.color} group-hover:scale-110 transition-transform`}>
                         <Icon size={14} />
@@ -57,52 +58,74 @@ const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
            })}
         </div>
 
-        {/* Account Feed */}
+        {/* Critical Alerts Feed */}
         <div className="space-y-4">
-            <div className="text-center py-6 border border-dashed border-white/5 rounded-3xl">
-              <p className="text-[10px] text-[var(--rc-slate)] uppercase tracking-widest opacity-40">Sin alertas pendientes</p>
-            </div>
-          )}
+           <div className="flex items-center justify-between mb-4 px-1">
+              <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Alertas Estratégicas</h3>
+              <ShieldAlert size={14} className="text-rose-500" />
+           </div>
+           
+           {criticalProjects.length > 0 ? (
+             criticalProjects.slice(0, 3).map((project) => (
+               <div key={project.id} className="glass-card p-5 rounded-[32px] flex items-center gap-4 hover:bg-white/[0.02] cursor-pointer group">
+                  <div className="w-2 h-10 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.4)]" />
+                  <div className="flex-1 min-w-0">
+                     <div className="flex items-center justify-between mb-1">
+                        <span className="text-[13px] font-black text-white uppercase truncate pr-2">{project.client}</span>
+                        <ArrowUpRight size={14} className="text-rose-500 opacity-0 group-hover:opacity-100 transition-all" />
+                     </div>
+                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight truncate">SLA en Riesgo Crítico</p>
+                  </div>
+               </div>
+             ))
+           ) : (
+             <div className="py-8 text-center border-2 border-dashed border-white/5 rounded-[32px] opacity-30">
+                <p className="text-[9px] font-black uppercase tracking-widest">Sin alertas críticas</p>
+             </div>
+           )}
         </div>
-      </section>
 
-      {/* Active Team Status */}
-      <section className="space-y-6 flex-1">
-        <div className="flex items-center justify-between">
-          <h3 className="text-[11px] font-bold text-[var(--rc-slate)] uppercase tracking-[0.2em]">Estado del Equipo</h3>
-          <Users size={14} className="text-[var(--rc-slate)] opacity-40" />
-        </div>
-
+        {/* Team Activity */}
         <div className="space-y-6">
-          {tasks.filter(t => t.status === 'In Progress').slice(0, 5).map((task) => (
-            <div key={task.id} className="flex items-start gap-4">
-              <div className="relative">
-                <div className="w-9 h-9 rounded-full bg-rc-teal/10 border border-rc-teal/20 flex items-center justify-center text-rc-teal text-[10px] font-bold">
-                  {task.assignedTo?.split(' ').map(n => n[0]).join('')}
-                </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-black rounded-full" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span className="text-[12px] font-semibold text-[var(--text-primary)]">{task.assignedTo}</span>
-                  <span className="text-[9px] font-medium text-rc-teal opacity-60">En Linea</span>
-                </div>
-                <p className="text-[10px] text-[var(--rc-slate)] truncate mt-0.5">Trabajando en: <span className="text-white/60">{task.title}</span></p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+           <div className="flex items-center justify-between mb-4 px-1">
+              <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Estado del Equipo</h3>
+              <Activity size={14} className="text-rc-teal" />
+           </div>
 
-      {/* Footer / Performance */}
-      <div className="mt-auto pt-8 border-t border-white/5">
-        <div className="bg-gradient-to-br from-rc-teal/10 to-transparent p-6 rounded-[32px] border border-rc-teal/10">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-[10px] font-bold text-rc-teal uppercase tracking-widest">Global Score</span>
-            <TrendingUp size={14} className="text-rc-teal" />
+           <div className="space-y-4">
+              {tasks.filter(t => t.status === 'In Progress').slice(0, 4).map((task) => (
+                <div key={task.id} className="flex items-center gap-4 p-4 rounded-[24px] hover:bg-white/[0.02] transition-all group border border-transparent hover:border-white/5">
+                   <div className="relative">
+                      <div className="w-10 h-10 rounded-2xl bg-rc-teal/10 border border-rc-teal/20 flex items-center justify-center text-rc-teal text-[11px] font-black uppercase">
+                         {task.assignedTo?.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-[#050505] rounded-full" />
+                   </div>
+                   <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                         <span className="text-[13px] font-black text-white truncate">{task.assignedTo}</span>
+                         <span className="text-[8px] font-black text-rc-teal uppercase tracking-widest">Online</span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 truncate mt-0.5 font-medium italic">"{task.title}"</p>
+                   </div>
+                </div>
+              ))}
+           </div>
+        </div>
+      </div>
+
+      {/* Global Performance Footer */}
+      <div className="p-8 border-t border-white/5 bg-black/40 backdrop-blur-md">
+        <div className="bg-gradient-to-br from-rc-teal/10 to-transparent p-6 rounded-[32px] border border-rc-teal/10 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+             <TrendingUp size={40} className="text-rc-teal" />
           </div>
-          <div className="text-3xl font-light tracking-tighter text-rc-teal">98.2%</div>
-          <p className="text-[9px] text-[var(--rc-slate)] mt-2">Eficiencia operativa en tiempo real</p>
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[10px] font-black text-rc-teal uppercase tracking-[0.2em]">Performance Index</span>
+            <span className="px-2 py-0.5 bg-rc-teal text-black text-[8px] font-black rounded uppercase">Live</span>
+          </div>
+          <div className="text-4xl font-black tracking-tighter text-white">98.4%</div>
+          <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-2">Eficiencia operativa global</p>
         </div>
       </div>
     </aside>
