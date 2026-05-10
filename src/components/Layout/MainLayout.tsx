@@ -1,35 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from './Sidebar';
-import { motion } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
+import { Navigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import Dashboard from '../../pages/Dashboard';
+import { LayoutGrid, Users, CheckSquare, ShieldCheck } from 'lucide-react';
 
-interface MainLayoutProps {
-  children: React.ReactNode;
-  activeTab: string;
-  setActiveTab: (tab: any) => void;
-}
+const MainLayout: React.FC = () => {
+  const { user, loading } = useAuth();
+  const [activeTab, setActiveTab] = useState<'overview' | 'clients' | 'status' | 'tasks'>('overview');
 
-const MainLayout: React.FC<MainLayoutProps> = ({ children, activeTab, setActiveTab }) => {
+  if (loading) return (
+    <div className="h-screen w-full flex items-center justify-center bg-[#050505]">
+       <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-rc-teal/20 border-t-rc-teal rounded-full animate-spin" />
+          <span className="text-[10px] font-black text-rc-teal uppercase tracking-[0.3em] animate-pulse">Initializing Elite V3.5</span>
+       </div>
+    </div>
+  );
+  
+  if (!user) return <Navigate to="/login" />;
+
   return (
-    <div className="flex flex-col md:flex-row h-screen w-screen bg-[#050505] overflow-hidden selection:bg-rc-teal/30">
-      {/* Sidebar - Desktop Only */}
-      <div className="hidden md:block h-full z-50">
+    <div className="flex h-screen w-full bg-[var(--bg-primary)] overflow-hidden">
+      {/* Sidebar Compacto (10% menos - original era ~280px, ahora 240px) */}
+      <div className="hidden md:block w-[240px] h-full flex-shrink-0 z-50">
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
-      
-      {/* Main Content Area */}
-      <main className="flex-1 relative flex flex-col h-full overflow-hidden pb-20 md:pb-0">
+
+      <main className="flex-1 h-full relative overflow-hidden">
         {/* Universal Backdrop Blur for the whole content area */}
         <div className="absolute inset-0 bg-gradient-to-br from-rc-teal/[0.01] to-transparent pointer-events-none" />
         
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, scale: 0.99 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-          className="flex-1 h-full overflow-hidden relative"
-        >
-          {children}
-        </motion.div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            className="h-full w-full"
+          >
+            <Dashboard activeTab={activeTab} />
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Mobile Bottom Tab Bar */}
@@ -61,8 +75,4 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, activeTab, setActiveT
   );
 };
 
-// Internal imports needed for the mobile tab bar icons if not present
-import { LayoutGrid, Users, CheckSquare, ShieldCheck } from 'lucide-react';
-
 export default MainLayout;
-
