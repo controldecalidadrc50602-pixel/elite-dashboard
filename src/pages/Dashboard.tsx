@@ -284,39 +284,94 @@ const Dashboard: React.FC<DashboardProps> = ({ activeTab }) => {
               )}
 
               {activeTab === 'clients' && (
-                 <div className="space-y-8 animate-in fade-in slide-in-from-right-4">
-                    <div className="flex items-center justify-between mb-6">
-                       <h1 className="text-3xl font-light tracking-tight">{t('nav.clients')}</h1>
+                 <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
+                    <div className="flex items-center justify-between">
+                       <div>
+                          <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Control de Cuentas</h1>
+                          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Gestión Estratégica de Clientes</p>
+                       </div>
                        <button 
                          onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
-                         className="bg-rc-teal hover:shadow-xl hover:shadow-rc-teal/20 text-[var(--bg-primary)] px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
+                         className="bg-rc-teal hover:shadow-[0_0_20px_rgba(59,188,169,0.4)] text-black px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
                        >
-                          <Plus size={16} strokeWidth={2.5} /> {t('projects.newProject')}
+                          <Plus size={18} strokeWidth={3} /> {t('projects.newProject')}
                        </button>
                     </div>
 
-                    <div className="relative mb-10">
-                       <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-[var(--rc-slate)]" />
+                    <div className="relative group">
+                       <Search size={20} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-rc-teal transition-colors" />
                        <input 
                          type="text"
-                         placeholder="Buscar clientes..."
+                         placeholder="Filtrar por nombre o servicio..."
                          value={searchQuery}
                          onChange={(e) => setSearchQuery(e.target.value)}
-                         className="w-full bg-black/40 border border-white/5 rounded-3xl py-5 pl-16 pr-8 text-sm focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal/50 outline-none transition-all"
+                         className="w-full bg-white/[0.02] border border-white/5 rounded-[32px] py-6 pl-16 pr-8 text-sm focus:border-rc-teal/30 focus:bg-white/[0.04] outline-none transition-all placeholder:text-slate-600 font-medium"
                        />
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 pb-20">
                        {filteredProjects.map((project) => (
-                          <ProjectAccordion 
+                          <motion.div 
                             key={project.id}
-                            project={project}
-                            onOpenDetail={() => openProjectDetail(project)}
-                          />
+                            whileHover={{ y: -5 }}
+                            className="glass-card p-6 rounded-[40px] border border-white/5 group relative overflow-hidden"
+                          >
+                             <div className="absolute top-0 right-0 w-32 h-32 bg-rc-teal/5 blur-[60px] -z-10 group-hover:bg-rc-teal/10 transition-colors" />
+                             
+                             <div className="flex items-start justify-between mb-6">
+                                <div className="flex items-center gap-4">
+                                   <div className="w-14 h-14 rounded-[22px] bg-black/40 border border-white/10 flex items-center justify-center p-3 shadow-inner">
+                                      {project.logoUrl ? (
+                                         <img src={project.logoUrl} className="w-full h-full object-contain" />
+                                      ) : (
+                                         <Star className="text-rc-teal opacity-20" size={24} />
+                                      )}
+                                   </div>
+                                   <div>
+                                      <h3 className="text-[17px] font-black text-white uppercase tracking-tight truncate max-w-[180px]">{project.client}</h3>
+                                      <span className="text-[9px] font-black text-rc-teal uppercase tracking-widest bg-rc-teal/10 px-2 py-0.5 rounded-lg">Elite Account</span>
+                                   </div>
+                                </div>
+                                <div className="text-right">
+                                   <div className="text-2xl font-black text-white tracking-tighter">{project.evaluations[0]?.quantitative || '--'}%</div>
+                                   <div className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Global Score</div>
+                                </div>
+                             </div>
+
+                             <div className="space-y-4 mb-8">
+                                <div className="flex flex-wrap gap-2">
+                                   {project.services.slice(0, 3).map(s => (
+                                      <span key={s.id} className="px-3 py-1.5 bg-white/5 rounded-xl text-[9px] font-bold text-slate-400 uppercase tracking-wider border border-white/5">
+                                         {s.name}
+                                      </span>
+                                   ))}
+                                </div>
+                                <p className="text-[12px] text-slate-500 font-medium line-clamp-2 leading-relaxed">
+                                   {project.evaluations[0]?.qualitative || 'Sin resumen estratégico registrado en la última auditoría.'}
+                                </p>
+                             </div>
+
+                             <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                                <div className={`flex items-center gap-2 ${
+                                   project.healthFlag === 'Verde' ? 'text-emerald-500' : 
+                                   project.healthFlag === 'Amarilla' ? 'text-amber-500' : 'text-rose-500'
+                                }`}>
+                                   <div className={`w-2 h-2 rounded-full bg-current ${project.healthFlag === 'Roja' ? 'animate-pulse' : ''}`} />
+                                   <span className="text-[10px] font-black uppercase tracking-widest">{project.healthFlag} Status</span>
+                                </div>
+                                <button 
+                                  onClick={() => openProjectDetail(project)}
+                                  className="px-5 py-2.5 bg-white/5 hover:bg-white/10 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] text-white transition-all border border-white/5 hover:border-rc-teal/30"
+                                >
+                                   Ver Ficha
+                                </button>
+                             </div>
+                          </motion.div>
                        ))}
                     </div>
                  </div>
               )}
+
 
               {activeTab === 'status' && (
                  <div className="space-y-10 animate-in fade-in slide-in-from-right-4">

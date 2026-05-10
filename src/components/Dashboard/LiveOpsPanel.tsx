@@ -21,59 +21,44 @@ const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
   const criticalProjects = projects.filter(p => p.healthFlag === 'Roja' || p.healthFlag === 'Negra');
 
   return (
-    <aside className="w-[380px] h-full border-l border-white/5 bg-black/20 backdrop-blur-xl p-8 overflow-y-auto hidden xl:flex flex-col gap-10 custom-scrollbar">
-      {/* System Health Section */}
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-[11px] font-bold text-[var(--rc-slate)] uppercase tracking-[0.2em]">Live Health Ops</h3>
+    <aside className="w-[380px] h-full glass-panel border-l border-white/5 flex flex-col overflow-hidden relative">
+      <div className="p-8 border-b border-white/5 bg-white/[0.01]">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-xl font-black text-white uppercase tracking-tighter">Live Health</h2>
           <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Active</span>
+             <div className="w-2 h-2 bg-rc-teal rounded-full animate-pulse shadow-[0_0_8px_rgba(59,188,169,0.8)]" />
+             <span className="text-[9px] font-black text-rc-teal uppercase tracking-[0.2em]">Real-time</span>
           </div>
         </div>
+        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estado Operativo de Cuentas</p>
+      </div>
 
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8 pb-10">
+        {/* KPI Grid - 15% smaller text/padding */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="glass-card p-5 rounded-3xl border-white/5 bg-white/[0.02]">
-            <Activity size={16} className="text-rc-teal mb-3" strokeWidth={1.5} />
-            <div className="text-2xl font-light tracking-tighter">{projects.length}</div>
-            <div className="text-[9px] font-medium text-[var(--rc-slate)] uppercase tracking-wider mt-1">Cuentas</div>
-          </div>
-          <div className="glass-card p-5 rounded-3xl border-white/5 bg-white/[0.02]">
-            <Zap size={16} className="text-amber-400 mb-3" strokeWidth={1.5} />
-            <div className="text-2xl font-light tracking-tighter">{activeTasks.length}</div>
-            <div className="text-[9px] font-medium text-[var(--rc-slate)] uppercase tracking-wider mt-1">En Curso</div>
-          </div>
+           {[
+             { label: 'Cuentas', value: projects.length, icon: Users, color: 'text-rc-teal' },
+             { label: 'Críticas', value: projects.filter(p => p.healthFlag === 'Roja').length, icon: ShieldAlert, color: 'text-rose-500' },
+             { label: 'Efectividad', value: '94%', icon: TrendingUp, color: 'text-rc-teal' },
+             { label: 'Pendientes', value: tasks.length, icon: Clock, color: 'text-amber-500' },
+           ].map((kpi, idx) => {
+             const Icon = kpi.icon;
+             return (
+               <div key={idx} className="glass-card p-4 rounded-3xl border-white/5 hover:border-rc-teal/30 hover:shadow-[0_0_15px_rgba(59,188,169,0.1)] transition-all group">
+                  <div className="flex items-center justify-between mb-2">
+                     <div className={`p-2 rounded-xl bg-black/40 ${kpi.color} group-hover:scale-110 transition-transform`}>
+                        <Icon size={14} />
+                     </div>
+                     <span className={`text-lg font-black tracking-tighter ${kpi.color}`}>{kpi.value}</span>
+                  </div>
+                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none">{kpi.label}</span>
+               </div>
+             );
+           })}
         </div>
-      </section>
 
-      {/* Critical Alerts */}
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-[11px] font-bold text-[var(--rc-slate)] uppercase tracking-[0.2em]">Alertas Críticas</h3>
-          <span className="text-[10px] font-bold text-rose-500/60">{criticalProjects.length}</span>
-        </div>
-
+        {/* Account Feed */}
         <div className="space-y-4">
-          {criticalProjects.slice(0, 3).map((p) => (
-            <motion.div 
-              key={p.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-4 p-4 rounded-2xl bg-rose-500/[0.03] border border-rose-500/10 hover:bg-rose-500/[0.05] transition-all cursor-pointer group"
-            >
-              <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500 border border-rose-500/10">
-                <ShieldAlert size={18} strokeWidth={1.5} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="text-[12px] font-semibold text-rose-500 truncate">{p.client}</h4>
-                <p className="text-[10px] text-rose-500/60 truncate mt-0.5">SLA en riesgo crítico</p>
-              </div>
-            </motion.div>
-          ))}
-          {criticalProjects.length === 0 && (
             <div className="text-center py-6 border border-dashed border-white/5 rounded-3xl">
               <p className="text-[10px] text-[var(--rc-slate)] uppercase tracking-widest opacity-40">Sin alertas pendientes</p>
             </div>

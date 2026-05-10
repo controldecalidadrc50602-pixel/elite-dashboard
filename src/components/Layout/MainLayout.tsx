@@ -10,30 +10,30 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children, activeTab, setActiveTab }) => {
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-[#050505] overflow-hidden selection:bg-rc-teal/30">
+    <div className="flex flex-col md:flex-row h-screen w-screen bg-[#050505] overflow-hidden selection:bg-rc-teal/30">
       {/* Sidebar - Desktop Only */}
-      <div className="hidden md:block">
+      <div className="hidden md:block h-full z-50">
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
       
       {/* Main Content Area */}
-      <main className="flex-1 relative flex flex-col overflow-hidden pb-20 md:pb-0">
+      <main className="flex-1 relative flex flex-col h-full overflow-hidden pb-20 md:pb-0">
         {/* Universal Backdrop Blur for the whole content area */}
-        <div className="absolute inset-0 bg-gradient-to-br from-rc-teal/[0.02] to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-rc-teal/[0.01] to-transparent pointer-events-none" />
         
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex-1 h-full overflow-hidden"
+          initial={{ opacity: 0, scale: 0.99 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+          className="flex-1 h-full overflow-hidden relative"
         >
           {children}
         </motion.div>
       </main>
 
       {/* Mobile Bottom Tab Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-black/80 backdrop-blur-2xl border-t border-white/5 flex items-center justify-around px-4 z-[90]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-black/40 backdrop-blur-3xl border-t border-white/5 flex items-center justify-around px-4 z-[90]">
          {[
            { id: 'overview', icon: LayoutGrid, label: 'Feed' },
            { id: 'clients', icon: Users, label: 'Clientes' },

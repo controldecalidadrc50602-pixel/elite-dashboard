@@ -95,38 +95,88 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glow-ring-verde {
-  @apply border-2 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.4)];
-  animation: pulse-glow 3s infinite;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid var(--glass-border);
+  box-shadow: var(--premium-shadow);
 }
 
-.glow-ring-amarilla {
-  @apply border-2 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.4)];
-  animation: pulse-glow 3s infinite;
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 0.5px solid var(--glass-border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.glow-ring-roja {
-  @apply border-2 border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.4)];
-  animation: pulse-glow 2s infinite;
+.glass-card:hover {
+  border-color: rgba(59, 188, 169, 0.3);
+  box-shadow: 0 0 20px rgba(59, 188, 169, 0.1);
+  transform: translateY(-2px);
 }
 
-.glow-ring-negra {
-  @apply border-2 border-purple-600/50 shadow-[0_0_15px_rgba(147,51,234,0.4)];
-  animation: pulse-glow 1.5s infinite;
+/* Interactive Elements */
+button, .clickable {
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-/* Custom Scrollbar for Feed */
+button:hover {
+  filter: brightness(1.2);
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 15px var(--rc-turquoise);
+}
+
+/* Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(109, 110, 113, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 188, 169, 0.3);
+  background: var(--rc-turquoise);
+}
+
+/* Typographic refinement */
+h1, h2, h3 {
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.text-xs-premium {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+}
+
+/* Technical Grid */
+.technical-grid-audit {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@keyframes pulse-red {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.animate-pulse-red {
+  animation: pulse-red 1s infinite ease-in-out;
 }
 
 /* Layout Helpers */
