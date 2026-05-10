@@ -19,7 +19,15 @@ interface Props {
   onDelete?: (id: string) => void;
   onEditRequest?: (project: Project) => void;
 }
-
+const ProjectDetailsModal: React.FC<Props> = ({ 
+  project, 
+  isOpen, 
+  onClose, 
+  onUpdate, 
+  onDelete, 
+  onEditRequest 
+}) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'identity' | 'operations' | 'services' | 'tech' | 'assets'>('identity');
   const [isEditing, setIsEditing] = useState(false);
   const [editedProject, setEditedProject] = useState<Project | null>(project);
@@ -555,7 +563,4 @@ interface Props {
     document.body
   );
 };
-
-export default ProjectDetailsModal;
-
 export default ProjectDetailsModal;
