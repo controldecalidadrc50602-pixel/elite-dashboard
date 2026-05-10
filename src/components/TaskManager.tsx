@@ -26,6 +26,7 @@ export interface SubTask {
 export interface Task {
   id: string;
   title: string;
+  description?: string;
   projectId: string;
   projectName: string;
   status: 'Open' | 'In Progress' | 'Closed';

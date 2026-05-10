@@ -29,6 +29,7 @@ import ProjectCard from '../components/ProjectCard'; // Keep it if needed elsewh
 import ProjectAccordion from '../components/ProjectAccordion';
 import TaskManager, { Task } from '../components/TaskManager';
 import AuditDashboard from '../components/Dashboard/AuditDashboard';
+import SlaTimer from '../components/common/SlaTimer';
 import ProjectDetailsModal from '../components/ProjectDetailsModal';
 import ProjectModal from '../components/Modals/ProjectModal';
 import StatCard from '../components/common/StatCard';

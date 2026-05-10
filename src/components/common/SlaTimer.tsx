@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, AlertTriangle } from 'lucide-react';
+import { Clock, AlertTriangle, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Props {
