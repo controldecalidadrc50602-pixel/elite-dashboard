@@ -133,7 +133,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                   {[
                     { id: 'identity', label: 'Identidad', icon: User },
                     { id: 'operations', label: 'Operaciones', icon: Activity },
-                    { id: 'services', label: 'Bitácora', icon: Layers },
+                    { id: 'services', label: 'Logbook', icon: Layers },
                     { id: 'tech', label: 'Tech DNA', icon: Zap },
                     { id: 'assets', label: 'Activos', icon: Headphones },
                     { id: 'evaluation', label: 'Evaluación', icon: Activity },
@@ -339,19 +339,19 @@ const ProjectDetailsModal: React.FC<Props> = ({
                             {(!editedProject.opsPulse?.shifts || editedProject.opsPulse.shifts.length === 0) && (
                                <div className="col-span-full py-16 text-center border-2 border-dashed border-white/5 rounded-[32px] opacity-20">
                                   <p className="text-xs font-black uppercase tracking-widest">Sin turnos configurados</p>
-                               </div>
+                                </div>
                             )}
                          </div>
                       </div>
                     </div>
                   )}
 
-                  {/* TAB: BITÁCORA (SERVICIOS) */}
+                  {/* TAB: LOGBOOK (SERVICES) */}
                   {activeTab === 'services' && (
                     <div className="space-y-8 animate-in fade-in duration-500">
                       <div className="flex items-center justify-between mb-4">
                          <div>
-                            <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Bitácora de Servicios</h3>
+                            <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Logbook de Servicios</h3>
                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Trazabilidad Técnica y Operativa</p>
                          </div>
                          {isEditing && (
@@ -366,8 +366,10 @@ const ProjectDetailsModal: React.FC<Props> = ({
                            <div key={service.id} className="glass-card p-10 rounded-[48px] border border-white/5 hover:border-rc-teal/30 transition-all group flex flex-col h-full">
                               <div className="flex items-center justify-between mb-8">
                                  <div className={`w-14 h-14 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center text-rc-teal group-hover:bg-rc-teal group-hover:text-white transition-all`}>
-                                    {service.name.toLowerCase().includes('bot') ? <MessageSquare size={28} /> : 
-                                     service.name.toLowerCase().includes('yeastar') ? <Phone size={28} /> : <Globe size={28} />}
+                                    {service.type === 'Botmaker' ? <MessageSquare size={28} /> : 
+                                     (service.type === 'Yeastar' || service.type === 'IPBX') ? <Phone size={28} /> : 
+                                     service.type === 'Servicios Web' ? <Globe size={28} /> : 
+                                     service.type === 'Capacitaciones' ? <Users size={28} /> : <Layers size={28} />}
                                  </div>
                                  <span className="text-[9px] font-black text-rc-teal bg-rc-teal/10 px-3 py-1 rounded-full uppercase tracking-widest">ACTIVO</span>
                               </div>
@@ -376,26 +378,53 @@ const ProjectDetailsModal: React.FC<Props> = ({
                               <p className="text-xs text-slate-500 font-medium mb-8 flex-1">{service.description}</p>
 
                               <div className="space-y-4 pt-8 border-t border-white/5">
-                                 {service.name.toLowerCase().includes('bot') && (
-                                   <>
-                                     <div className="flex justify-between items-center">
-                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Tipo</span>
-                                        <span className="text-[11px] font-black text-white uppercase">{service.botType || 'No definido'}</span>
-                                     </div>
-                                     <div className="flex justify-between items-center">
-                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Propósito</span>
-                                        <span className="text-[11px] font-black text-white uppercase">{service.purpose || 'No definido'}</span>
-                                     </div>
-                                   </>
-                                 )}
                                  <div className="flex justify-between items-center">
-                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Última Act.</span>
-                                    <span className="text-[11px] font-black text-rc-teal uppercase">{service.lastUpdate || '---'}</span>
+                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Categoría</span>
+                                    <span className="text-[11px] font-black text-rc-teal uppercase">{service.type || 'Estándar'}</span>
+                                 </div>
+
+                                 {service.type === 'Botmaker' && (
+                                    <div className="flex justify-between items-center">
+                                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Solución</span>
+                                       <span className="text-[11px] font-black text-white uppercase">{service.botmakerType}</span>
+                                    </div>
+                                 )}
+
+                                 {(service.type === 'Yeastar' || service.type === 'IPBX') && (
+                                    <>
+                                       <div className="flex justify-between items-center">
+                                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Extensiones</span>
+                                          <span className="text-[11px] font-black text-white uppercase">{service.extensionCount}</span>
+                                       </div>
+                                       <div className="flex justify-between items-center">
+                                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Fecha Inicio</span>
+                                          <span className="text-[11px] font-black text-white uppercase">{service.setupDate}</span>
+                                       </div>
+                                    </>
+                                 )}
+
+                                 {service.type === 'Servicios Web' && (
+                                    <div className="flex justify-between items-center">
+                                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Desarrollo</span>
+                                       <span className="text-[11px] font-black text-white uppercase">{service.webServiceType}</span>
+                                    </div>
+                                 )}
+
+                                 {service.type === 'Capacitaciones' && (
+                                    <div className="flex justify-between items-center">
+                                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Modalidad</span>
+                                       <span className="text-[11px] font-black text-white uppercase">{service.trainingType}</span>
+                                    </div>
+                                 )}
+
+                                 <div className="flex justify-between items-center">
+                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Contratado</span>
+                                    <span className="text-[11px] font-black text-rc-teal uppercase">{service.startDate || '---'}</span>
                                  </div>
                               </div>
                               
                               <button className="mt-8 w-full py-4 bg-white/5 hover:bg-white/10 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] transition-all">
-                                 Ver Detalle Bitácora
+                                 Ver Detalle Logbook
                               </button>
                            </div>
                          ))}

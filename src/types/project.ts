@@ -19,22 +19,30 @@ export interface ClientService {
   startDate: string;
   score: number;
   
-  // Platform / Bot Data
-  type?: 'Platform' | 'Telephony' | 'Other';
+  // Categoría Técnica Principal
+  type?: 'Botmaker' | 'Yeastar' | 'IPBX' | 'Contact Center' | 'Servicios Web' | 'Capacitaciones' | 'Other';
+
+  // Sub-configuraciones según categoría
+  // Botmaker
+  botmakerType?: 'Plataforma' | 'Plataforma+Bots(Intenciones)' | 'Plataforma+ Agente IA' | 'Plataforma+ Bots+Agente IA';
+  
+  // Yeastar & IPBX
+  extensionCount?: number;
+  setupDate?: string;
+
+  // Servicios WEB
+  webServiceType?: 'Onepage' | 'Pagina a la medida';
+
+  // Capacitaciones
+  trainingType?: 'Free' | 'Costo';
+
+  // Legado / Otros (Keep for compatibility)
   botType?: 'IA Generativa' | 'Flujos' | 'Híbrido';
   purpose?: 'Generar Leads' | 'Resolver dudas' | 'Autogestión';
   lastUpdate?: string;
-
-  // Telephony Data
   trunkId?: string;
   lastAdminAccess?: string;
-
-  // Contact Center Data
   mgmtType?: 'Ventas' | 'Servicio';
-  responsible?: string;
-  collaborator?: string;
-  positionsCount?: number;
-  shiftMatrix?: string;
 
   // Bitácora
   logs?: ServiceLog[];

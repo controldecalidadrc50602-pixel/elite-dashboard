@@ -658,13 +658,21 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                        onChange={e => {
                                           const s = [...(formData.services || [])];
                                           s[index].type = e.target.value as any;
+                                          // Reset fields based on type
+                                          if (s[index].type === 'Botmaker') s[index].botmakerType = 'Plataforma';
+                                          if (s[index].type === 'Servicios Web') s[index].webServiceType = 'Onepage';
+                                          if (s[index].type === 'Capacitaciones') s[index].trainingType = 'Free';
                                           setFormData({...formData, services: s});
                                        }}
                                        className="w-full text-[10px] font-black uppercase tracking-widest"
                                      >
-                                        <option value="Other">Estandar</option>
-                                        <option value="Platform">Plataforma (Bot)</option>
-                                        <option value="Telephony">Telefonía (Yeastar/Gstar)</option>
+                                        <option value="Other">Estándar</option>
+                                        <option value="Botmaker">Botmaker</option>
+                                        <option value="Yeastar">Yeastar</option>
+                                        <option value="IPBX">IPBX</option>
+                                        <option value="Contact Center">Contact Center</option>
+                                        <option value="Servicios Web">Servicios Web</option>
+                                        <option value="Capacitaciones">Capacitaciones</option>
                                      </select>
                                   </div>
                                </div>
@@ -687,50 +695,55 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                             <div className="p-6 bg-slate-900/40 rounded-[32px] border border-white/5 space-y-4">
                                <div className="flex items-center gap-2 mb-2">
                                   <div className="w-1.5 h-1.5 rounded-full bg-[var(--rc-turquoise)] shadow-[0_0_8px_var(--rc-turquoise)]" />
-                                  <span className="text-[9px] font-black uppercase text-white tracking-widest">Ficha Técnica (Logbook)</span>
+                                  <span className="text-[9px] font-black uppercase text-white tracking-widest">Configuración Técnica</span>
                                </div>
 
-                               {service.type === 'Platform' && (
-                                  <div className="grid grid-cols-3 gap-6">
+                               {service.type === 'Botmaker' && (
+                                  <div className="grid grid-cols-2 gap-6">
                                      <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">Tipo de Bot</label>
+                                        <label className="text-[8px] opacity-60">Tipo de Solución Plataforma</label>
                                         <select 
-                                          value={service.botType}
+                                          value={service.botmakerType}
                                           onChange={e => {
                                              const s = [...(formData.services || [])];
-                                             s[index].botType = e.target.value as any;
+                                             s[index].botmakerType = e.target.value as any;
                                              setFormData({...formData, services: s});
                                           }}
                                           className="w-full py-2 px-3 text-[10px]"
                                         >
-                                           <option value="IA Generativa">IA Generativa</option>
-                                           <option value="Flujos">Flujos</option>
-                                           <option value="Híbrido">Híbrido</option>
+                                           <option value="Plataforma">Plataforma</option>
+                                           <option value="Plataforma+Bots(Intenciones)">Plataforma+Bots(Intenciones)</option>
+                                           <option value="Plataforma+ Agente IA">Plataforma+ Agente IA</option>
+                                           <option value="Plataforma+ Bots+Agente IA">Plataforma+ Bots+Agente IA</option>
                                         </select>
                                      </div>
+                                  </div>
+                               )}
+
+                               {(service.type === 'Yeastar' || service.type === 'IPBX') && (
+                                  <div className="grid grid-cols-2 gap-6">
                                      <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">Propósito</label>
-                                        <select 
-                                          value={service.purpose}
-                                          onChange={e => {
-                                             const s = [...(formData.services || [])];
-                                             s[index].purpose = e.target.value as any;
-                                             setFormData({...formData, services: s});
-                                          }}
-                                          className="w-full py-2 px-3 text-[10px]"
-                                        >
-                                           <option value="Generar Leads">Generar Leads</option>
-                                           <option value="Resolver dudas">Resolver dudas</option>
-                                           <option value="Autogestión">Autogestión</option>
-                                        </select>
-                                     </div>
-                                     <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">Última Actualización</label>
+                                        <label className="text-[8px] opacity-60">Cantidad Extensiones</label>
                                         <input 
-                                          type="date" value={service.lastUpdate}
+                                          type="number"
+                                          placeholder="Ej: 50"
+                                          value={service.extensionCount || ''}
                                           onChange={e => {
                                              const s = [...(formData.services || [])];
-                                             s[index].lastUpdate = e.target.value;
+                                             s[index].extensionCount = parseInt(e.target.value) || 0;
+                                             setFormData({...formData, services: s});
+                                          }}
+                                          className="w-full py-2 px-3 text-[10px]"
+                                        />
+                                     </div>
+                                     <div className="space-y-1">
+                                        <label className="text-[8px] opacity-60">Fecha de Inicio</label>
+                                        <input 
+                                          type="date"
+                                          value={service.setupDate || ''}
+                                          onChange={e => {
+                                             const s = [...(formData.services || [])];
+                                             s[index].setupDate = e.target.value;
                                              setFormData({...formData, services: s});
                                           }}
                                           className="w-full py-2 px-3 text-[10px]"
@@ -739,34 +752,48 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                   </div>
                                )}
 
-                               {service.type === 'Telephony' && (
+                               {service.type === 'Servicios Web' && (
                                   <div className="grid grid-cols-2 gap-6">
                                      <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">ID de Troncal / PBX</label>
-                                        <input 
-                                          placeholder="Ej: SIP-TRUNK-01"
-                                          value={service.trunkId}
+                                        <label className="text-[8px] opacity-60">Tipo de Desarrollo</label>
+                                        <select 
+                                          value={service.webServiceType}
                                           onChange={e => {
                                              const s = [...(formData.services || [])];
-                                             s[index].trunkId = e.target.value;
+                                             s[index].webServiceType = e.target.value as any;
                                              setFormData({...formData, services: s});
                                           }}
                                           className="w-full py-2 px-3 text-[10px]"
-                                        />
-                                     </div>
-                                     <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">Último Acceso Admin</label>
-                                        <input 
-                                          type="date" value={service.lastAdminAccess}
-                                          onChange={e => {
-                                             const s = [...(formData.services || [])];
-                                             s[index].lastAdminAccess = e.target.value;
-                                             setFormData({...formData, services: s});
-                                          }}
-                                          className="w-full py-2 px-3 text-[10px]"
-                                        />
+                                        >
+                                           <option value="Onepage">Onepage</option>
+                                           <option value="Pagina a la medida">Página a la medida</option>
+                                        </select>
                                      </div>
                                   </div>
+                               )}
+
+                               {service.type === 'Capacitaciones' && (
+                                  <div className="grid grid-cols-2 gap-6">
+                                     <div className="space-y-1">
+                                        <label className="text-[8px] opacity-60">Modalidad</label>
+                                        <select 
+                                          value={service.trainingType}
+                                          onChange={e => {
+                                             const s = [...(formData.services || [])];
+                                             s[index].trainingType = e.target.value as any;
+                                             setFormData({...formData, services: s});
+                                          }}
+                                          className="w-full py-2 px-3 text-[10px]"
+                                        >
+                                           <option value="Free">Free</option>
+                                           <option value="Costo">Costo</option>
+                                        </select>
+                                     </div>
+                                  </div>
+                               )}
+
+                               {service.type === 'Contact Center' && (
+                                  <p className="text-[9px] font-medium text-slate-500 italic">Configure los detalles de HC en la pestaña de Operaciones.</p>
                                )}
 
                                {service.type === 'Other' && (
