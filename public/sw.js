@@ -1,4 +1,4 @@
-const CACHE_NAME = 'elite-dashboard-v3.5.1'; // Incrementar versión para forzar actualización
+const CACHE_NAME = 'elite-dashboard-v4.0.0'; // Incrementar versión para forzar actualización
 const STATIC_ASSETS = [
   '/',
   '/index.html',
