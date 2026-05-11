@@ -28,7 +28,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
   onEditRequest 
 }) => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'identity' | 'operations' | 'services' | 'tech' | 'assets'>('identity');
+  const [activeTab, setActiveTab] = useState<'identity' | 'operations' | 'services' | 'tech' | 'assets' | 'evaluation'>('identity');
   const [isEditing, setIsEditing] = useState(false);
   const [editedProject, setEditedProject] = useState<Project | null>(project);
 
@@ -136,6 +136,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                     { id: 'services', label: 'Bitácora', icon: Layers },
                     { id: 'tech', label: 'Tech DNA', icon: Zap },
                     { id: 'assets', label: 'Activos', icon: Headphones },
+                    { id: 'evaluation', label: 'Evaluación', icon: Activity },
                   ].map(tab => (
                     <button 
                       key={tab.id}
@@ -419,38 +420,53 @@ const ProjectDetailsModal: React.FC<Props> = ({
                           <div className="space-y-4">
                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Modalidad de Operación</label>
                              <div className="flex gap-4">
-                               {['RC506', 'WYP', 'IPBX', 'HÍBRIDO'].map(mode => (
-                                 <button
-                                   key={mode}
-                                   type="button"
-                                   disabled={!isEditing}
-                                   onClick={() => setEditedProject({...editedProject, techDNA: { ...editedProject.techDNA!, operationMode: mode as any }})}
-                                   className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
-                                     editedProject.techDNA?.operationMode === mode 
-                                     ? 'bg-rc-teal text-[var(--bg-primary)] border-rc-teal shadow-lg' 
-                                     : 'bg-white/5 border-white/5 text-[var(--text-secondary)] hover:bg-white/10'
-                                   } disabled:opacity-50`}
-                                 >
-                                   {mode}
-                                 </button>
-                               ))}
+                                {['RC506', 'WYP', 'IPBX', 'HÍBRIDO'].map(mode => (
+                                  <button
+                                    key={mode}
+                                    type="button"
+                                    disabled={!isEditing}
+                                    onClick={() => setEditedProject({...editedProject, techDNA: { ...editedProject.techDNA!, operationMode: mode as any }})}
+                                    className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                                      editedProject.techDNA?.operationMode === mode 
+                                      ? 'bg-rc-teal text-[var(--bg-primary)] border-rc-teal shadow-lg' 
+                                      : 'bg-white/5 border-white/5 text-[var(--text-secondary)] hover:bg-white/10'
+                                    } disabled:opacity-50`}
+                                  >
+                                    {mode}
+                                  </button>
+                                ))}
                              </div>
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                              <div className="space-y-6">
                                 <div className="space-y-4">
-                                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Proveedor de Internet (ISP)</label>
-                                   <input 
+                                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">País de Operación</label>
+                                   <select 
                                      disabled={!isEditing}
-                                     value={editedProject.techDNA?.isp || ''}
-                                     onChange={(e) => setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'RC506', phoneLine: ''}), isp: e.target.value}})}
-                                     className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 px-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50"
-                                     placeholder="Ej: Tigo Business, Kolbi..."
-                                   />
+                                     value={editedProject.techDNA?.country || 'Costa Rica'}
+                                     onChange={(e) => setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'RC506', phoneLine: ''}), country: e.target.value as any}})}
+                                     className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 px-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50 appearance-none"
+                                   >
+                                      <option value="Costa Rica">Costa Rica</option>
+                                      <option value="Venezuela">Venezuela</option>
+                                   </select>
                                 </div>
                                 <div className="space-y-4">
-                                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Líneas Telefónicas / Troncales</label>
+                                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">SIP Trunk Virtual</label>
+                                   <select 
+                                     disabled={!isEditing}
+                                     value={editedProject.techDNA?.sipTrunkVirtual || 'N/A.'}
+                                     onChange={(e) => setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'RC506', phoneLine: ''}), sipTrunkVirtual: e.target.value as any}})}
+                                     className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 px-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50 appearance-none"
+                                   >
+                                      {['Navegalo', 'Vocex', 'ICE', 'Call My Way', 'Callcentric', 'Voip.ms', 'Movistar Vzla.', 'N/A.'].map(opt => (
+                                        <option key={opt} value={opt}>{opt}</option>
+                                      ))}
+                                   </select>
+                                </div>
+                                <div className="space-y-4">
+                                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Líneas Telefónicas / Troncales (ID Físico)</label>
                                    <input 
                                      disabled={!isEditing}
                                      value={editedProject.techDNA?.phoneLine || ''}
@@ -538,6 +554,73 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                   <p className="text-xs font-black uppercase tracking-widest">Sin activos registrados en inventario</p>
                                </div>
                              )}
+                          </div>
+                       </div>
+                    </div>
+                  )}
+
+                  {/* TAB: EVALUACIÓN */}
+                  {activeTab === 'evaluation' && (
+                    <div className="space-y-8 animate-in fade-in duration-500">
+                       <div className="glass-card p-10 rounded-[48px] border border-white/5 space-y-10">
+                          <div className="flex items-center justify-between">
+                             <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal">
+                                   <Star size={24} />
+                                </div>
+                                <div>
+                                   <h3 className="text-xl font-black text-white uppercase tracking-tighter">Evaluación del Cliente</h3>
+                                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Rúbricas de Salud y Compromiso</p>
+                                </div>
+                             </div>
+                             <div className={`px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest border transition-all ${
+                                editedProject.clientEvaluation?.status === 'Verde' ? 'bg-emerald-500 text-[var(--bg-primary)] border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]' :
+                                editedProject.clientEvaluation?.status === 'Amarilla' ? 'bg-amber-500 text-[var(--bg-primary)] border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]' :
+                                editedProject.clientEvaluation?.status === 'Roja' ? 'bg-rose-500 text-[var(--bg-primary)] border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]' :
+                                'bg-slate-900 text-white border-white/10'
+                             }`}>
+                                {editedProject.clientEvaluation?.status || 'SIN EVALUAR'}
+                             </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             {[
+                               { id: 'projectLeader', label: 'Asignación de un líder de proyecto' },
+                               { id: 'documentation', label: 'Entrega oportuna de documentación' },
+                               { id: 'receptivity', label: 'Apertura y receptividad a asesoría' },
+                               { id: 'continuity', label: 'Uso efectivo y continuidad' },
+                               { id: 'reportValuation', label: 'Valoración del informe de gestión' },
+                               { id: 'paymentPunctuality', label: 'Puntualidad en el pago' },
+                             ].map(rubric => (
+                               <div key={rubric.id} className="p-6 bg-black/40 border border-white/5 rounded-3xl flex items-center justify-between">
+                                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{rubric.label}</span>
+                                  <div 
+                                    onClick={() => {
+                                      if (!isEditing) return;
+                                      const evalObj = (editedProject.clientEvaluation || { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' }) as any;
+                                      const newVal = !evalObj[rubric.id];
+                                      const newEval = { ...evalObj, [rubric.id]: newVal };
+                                      
+                                      const keys = ['projectLeader', 'documentation', 'receptivity', 'continuity', 'reportValuation', 'paymentPunctuality'];
+                                      const trueCount = keys.filter(k => newEval[k]).length;
+                                      
+                                      let status = 'Verde';
+                                      if (trueCount <= 2) status = 'Negra';
+                                      else if (trueCount <= 3) status = 'Roja';
+                                      else if (trueCount <= 5) status = 'Amarilla';
+                                      
+                                      newEval.status = status;
+                                      setEditedProject({...editedProject, clientEvaluation: newEval});
+                                    }}
+                                    className={`w-12 h-7 rounded-full transition-all relative ${isEditing ? 'cursor-pointer' : 'opacity-50'} ${editedProject.clientEvaluation?.[rubric.id as keyof typeof editedProject.clientEvaluation] ? 'bg-rc-teal' : 'bg-white/10'}`}
+                                  >
+                                     <motion.div 
+                                       animate={{ x: editedProject.clientEvaluation?.[rubric.id as keyof typeof editedProject.clientEvaluation] ? 22 : 4 }}
+                                       className="absolute top-1 w-5 h-5 bg-white rounded-full shadow-lg" 
+                                     />
+                                  </div>
+                               </div>
+                             ))}
                           </div>
                        </div>
                     </div>

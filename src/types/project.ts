@@ -1,5 +1,9 @@
 import { Task } from '../components/TaskManager';
 
+export type SipTrunkVirtual = 'Navegalo' | 'Vocex' | 'ICE' | 'Call My Way' | 'Callcentric' | 'Voip.ms' | 'Movistar Vzla.' | 'N/A.';
+export type Country = 'Venezuela' | 'Costa Rica';
+
+
 export interface ServiceLog {
   id: string;
   date: string;
@@ -76,6 +80,18 @@ export interface TechDNA {
   connectivityType?: 'Fibra Óptica' | 'Radiofrecuencia' | 'Cobre';
   redundancy?: boolean;
   phoneLine: string;
+  sipTrunkVirtual?: SipTrunkVirtual;
+  country?: Country;
+}
+
+export interface ClientEvaluation {
+  projectLeader: boolean;
+  documentation: boolean;
+  receptivity: boolean;
+  continuity: boolean;
+  reportValuation: boolean;
+  paymentPunctuality: boolean;
+  status: 'Verde' | 'Amarilla' | 'Roja' | 'Negra';
 }
 
 export interface HardwareAsset {
@@ -111,4 +127,5 @@ export interface Project {
   techDNA?: TechDNA;
   assets?: HardwareAsset[];
   strategy?: StrategySLA;
+  clientEvaluation?: ClientEvaluation;
 }

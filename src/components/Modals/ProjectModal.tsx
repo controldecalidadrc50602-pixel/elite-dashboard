@@ -12,7 +12,7 @@ interface Props {
   project?: Project | null;
 }
 
-type TabType = 'basic' | 'ops' | 'tech' | 'services' | 'assets' | 'strategy';
+type TabType = 'basic' | 'ops' | 'tech' | 'services' | 'assets' | 'strategy' | 'evaluation';
 
 const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => {
   const { t } = useTranslation();
@@ -28,9 +28,10 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
     evaluations: [],
     healthFlag: 'Verde',
     opsPulse: { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
-    techDNA: { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false },
+    techDNA: { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false, sipTrunkVirtual: 'N/A.', country: 'Costa Rica' },
     assets: [],
-    strategy: { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 }
+    strategy: { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
+    clientEvaluation: { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' }
   });
 
   useEffect(() => {
@@ -38,9 +39,10 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
       setFormData({
         ...project,
         opsPulse: project.opsPulse || { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
-        techDNA: project.techDNA || { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false },
+        techDNA: project.techDNA || { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false, sipTrunkVirtual: 'N/A.', country: 'Costa Rica' },
         assets: project.assets || [],
-        strategy: project.strategy || { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 }
+        strategy: project.strategy || { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
+        clientEvaluation: project.clientEvaluation || { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' }
       });
     } else {
       setFormData({
@@ -53,9 +55,10 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
         evaluations: [],
         healthFlag: 'Verde',
         opsPulse: { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
-        techDNA: { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false },
+        techDNA: { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false, sipTrunkVirtual: 'N/A.', country: 'Costa Rica' },
         assets: [],
-        strategy: { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 }
+        strategy: { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
+        clientEvaluation: { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' }
       });
     }
     setActiveTab('basic');
@@ -99,7 +102,8 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
       opsPulse: formData.opsPulse as OperationPulse,
       techDNA: formData.techDNA as TechDNA,
       assets: formData.assets as HardwareAsset[],
-      strategy: formData.strategy as StrategySLA
+      strategy: formData.strategy as StrategySLA,
+      clientEvaluation: formData.clientEvaluation as any
     };
 
     onSave(finalProject);
@@ -113,6 +117,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
     { id: 'services', label: 'Servicios', icon: Layers },
     { id: 'assets', label: 'Activos', icon: Headphones },
     { id: 'strategy', label: 'Estrategia', icon: Shield },
+    { id: 'evaluation', label: 'Evaluación', icon: Activity },
   ];
 
   return createPortal(
@@ -493,14 +498,106 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                         </div>
                       </div>
 
+                      <div className="grid grid-cols-2 gap-8">
+                         <div className="space-y-2">
+                           <label>País de Operación</label>
+                           <select 
+                             value={formData.techDNA?.country}
+                             onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, country: e.target.value as any }})}
+                             className="w-full font-black uppercase tracking-widest cursor-pointer"
+                           >
+                             <option value="Costa Rica">Costa Rica</option>
+                             <option value="Venezuela">Venezuela</option>
+                           </select>
+                         </div>
+                         <div className="space-y-2">
+                           <label>SIP Trunk Virtual</label>
+                           <select 
+                             value={formData.techDNA?.sipTrunkVirtual}
+                             onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, sipTrunkVirtual: e.target.value as any }})}
+                             className="w-full font-black uppercase tracking-widest cursor-pointer"
+                           >
+                             {['Navegalo', 'Vocex', 'ICE', 'Call My Way', 'Callcentric', 'Voip.ms', 'Movistar Vzla.', 'N/A.'].map(opt => (
+                               <option key={opt} value={opt}>{opt}</option>
+                             ))}
+                           </select>
+                         </div>
+                      </div>
+
                       <div className="space-y-2">
-                         <label>Línea Telefónica / Troncal</label>
+                         <label>Línea Telefónica / Troncal (ID Físico)</label>
                          <input 
                            value={formData.techDNA?.phoneLine}
                            onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, phoneLine: e.target.value }})}
-                           placeholder="Ej: Sip Trunk / Análoga"
+                           placeholder="Ej: Sip Trunk / Análoga / Cloud"
                            className="w-full"
                          />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {activeTab === 'evaluation' && (
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
+                      <header>
+                        <h2 className="section-title">Evaluación del Cliente</h2>
+                        <p className="text-[var(--text-secondary)] text-xs font-medium">Rúbricas de compromiso y salud de la relación comercial.</p>
+                      </header>
+
+                      <div className="grid grid-cols-1 gap-4">
+                         {[
+                           { id: 'projectLeader', label: 'Asignación de un líder de proyecto' },
+                           { id: 'documentation', label: 'Entrega oportuna de documentación e información' },
+                           { id: 'receptivity', label: 'Apertura y receptividad a la asesoría brindada' },
+                           { id: 'continuity', label: 'Uso efectivo y continuidad en el servicio' },
+                           { id: 'reportValuation', label: 'Recepción y valoración del informe de gestión' },
+                           { id: 'paymentPunctuality', label: 'Puntualidad en el pago del servicio' },
+                         ].map(rubric => (
+                           <div key={rubric.id} className="p-6 bg-black/10 border border-white/5 rounded-[32px] flex items-center justify-between">
+                              <span className="text-xs font-bold uppercase tracking-widest">{rubric.label}</span>
+                              <div 
+                                onClick={() => {
+                                  const evalObj = (formData.clientEvaluation || { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' }) as any;
+                                  const newVal = !evalObj[rubric.id];
+                                  const newEval = { ...evalObj, [rubric.id]: newVal };
+                                  
+                                  // Recalculate status
+                                  const keys = ['projectLeader', 'documentation', 'receptivity', 'continuity', 'reportValuation', 'paymentPunctuality'];
+                                  const trueCount = keys.filter(k => newEval[k]).length;
+                                  
+                                  let status = 'Verde';
+                                  if (trueCount <= 2) status = 'Negra';
+                                  else if (trueCount <= 3) status = 'Roja';
+                                  else if (trueCount <= 5) status = 'Amarilla';
+                                  
+                                  newEval.status = status;
+                                  setFormData({...formData, clientEvaluation: newEval});
+                                }}
+                                className={`w-14 h-8 rounded-full transition-all cursor-pointer relative ${formData.clientEvaluation?.[rubric.id as keyof typeof formData.clientEvaluation] ? 'bg-rc-teal' : 'bg-white/10'}`}
+                              >
+                                 <motion.div 
+                                   animate={{ x: formData.clientEvaluation?.[rubric.id as keyof typeof formData.clientEvaluation] ? 28 : 4 }}
+                                   className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-lg"
+                                 />
+                              </div>
+                           </div>
+                         ))}
+                      </div>
+
+                      <div className="p-8 bg-rc-teal/5 border border-rc-teal/20 rounded-[40px] flex items-center justify-between">
+                         <div>
+                            <h4 className="text-sm font-black uppercase tracking-tighter">Estado de la Evaluación</h4>
+                            <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Basado en el cumplimiento de las rúbricas anteriores</p>
+                         </div>
+                         <div className="flex items-center gap-4">
+                            <div className={`px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest border transition-all ${
+                              formData.clientEvaluation?.status === 'Verde' ? 'bg-emerald-500 text-[var(--bg-primary)] border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]' :
+                              formData.clientEvaluation?.status === 'Amarilla' ? 'bg-amber-500 text-[var(--bg-primary)] border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]' :
+                              formData.clientEvaluation?.status === 'Roja' ? 'bg-rose-500 text-[var(--bg-primary)] border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]' :
+                              'bg-slate-900 text-white border-white/10'
+                            }`}>
+                              {formData.clientEvaluation?.status}
+                            </div>
+                         </div>
                       </div>
                     </motion.div>
                   )}

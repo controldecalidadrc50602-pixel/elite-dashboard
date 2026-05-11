@@ -62,11 +62,13 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
 
   const stats = useMemo(() => {
     const riskCount = projects.filter(p => p.healthFlag === 'Roja' || p.healthFlag === 'Negra').length;
+    const clientHealthRisk = projects.filter(p => p.clientEvaluation?.status === 'Roja' || p.clientEvaluation?.status === 'Negra').length;
     const totalQuantitative = projects.reduce((acc, p) => acc + (p?.evaluations?.[0]?.quantitative || 0), 0);
     return {
       total: projects.length,
-      optimos: projects.filter(p => p.healthFlag === 'Verde').length,
+      optimos: projects.filter(p => p.healthFlag === 'Verde' && p.clientEvaluation?.status === 'Verde').length,
       riesgo: riskCount,
+      clientRisk: clientHealthRisk,
       avgScore: projects.length > 0 ? (totalQuantitative / projects.length).toFixed(1) : '0.0'
     };
   }, [projects]);
@@ -114,9 +116,9 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
                 <div className="space-y-10 animate-in fade-in duration-500">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <StatCard title="Cuentas" value={stats.total} icon={<Users />} color="rc-teal" trend="+2" />
-                    <StatCard title="Óptimos" value={stats.optimos} icon={<TrendingUp />} color="emerald" trend="+5%" />
-                    <StatCard title="Riesgo" value={stats.riesgo} icon={<AlertCircle />} color="rose" trend="-2" />
-                    <StatCard title="Global" value={stats.avgScore + '%'} icon={<Star />} color="amber" trend="+0.5" />
+                    <StatCard title="Salud Cliente" value={stats.clientRisk} icon={<Star />} color={stats.clientRisk > 0 ? "rose" : "emerald"} trend="Alertas" />
+                    <StatCard title="Riesgo Op." value={stats.riesgo} icon={<AlertCircle />} color="rose" trend="-2" />
+                    <StatCard title="Global" value={stats.avgScore + '%'} icon={<TrendingUp />} color="amber" trend="+0.5" />
                   </div>
 
                   <div className="space-y-6">

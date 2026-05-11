@@ -18,6 +18,8 @@ interface LiveOpsPanelProps {
 
 const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
   const criticalProjects = projects.filter(p => p.healthFlag === 'Roja' || p.healthFlag === 'Negra');
+  const clientHealthAlerts = projects.filter(p => p.clientEvaluation?.status === 'Roja' || p.clientEvaluation?.status === 'Negra');
+  const allAlerts = [...criticalProjects.map(p => ({...p, alertType: 'Operation'})), ...clientHealthAlerts.map(p => ({...p, alertType: 'Client'}))];
 
   return (
     <aside className="w-[340px] h-full glass-panel border-l border-[var(--glass-border)] flex flex-col overflow-hidden relative z-40 transition-all duration-300">
@@ -66,22 +68,24 @@ const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
            
            <div className="space-y-3">
             <AnimatePresence mode="popLayout">
-              {criticalProjects.length > 0 ? (
-                criticalProjects.slice(0, 3).map((project, idx) => (
+               {allAlerts.length > 0 ? (
+                allAlerts.slice(0, 5).map((project, idx) => (
                   <motion.div 
-                    key={project.id}
+                    key={`${project.id}-${(project as any).alertType}`}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.1 }}
                     className="glass-card p-4 rounded-[28px] flex items-center gap-3 hover:bg-white/[0.02] cursor-pointer group premium-button border-[var(--glass-border)]"
                   >
-                    <div className="w-1.5 h-8 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]" />
+                    <div className={`w-1.5 h-8 rounded-full shadow-lg ${(project as any).alertType === 'Client' ? 'bg-amber-500 shadow-amber-500/40' : 'bg-rose-500 shadow-rose-500/40'}`} />
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-0.5">
                           <span className="text-[12px] font-black text-[var(--text-primary)] uppercase truncate pr-2">{project.client}</span>
-                          <ArrowUpRight size={12} className="text-rose-500 opacity-0 group-hover:opacity-100 transition-all" />
+                          <ArrowUpRight size={12} className="text-rc-teal opacity-0 group-hover:opacity-100 transition-all" />
                         </div>
-                        <p className="text-[8px] text-slate-500 font-bold uppercase tracking-tight truncate">SLA en Riesgo Crítico</p>
+                        <p className="text-[8px] text-slate-500 font-bold uppercase tracking-tight truncate">
+                           {(project as any).alertType === 'Client' ? 'Salud del Cliente en Riesgo' : 'SLA en Riesgo Crítico'}
+                        </p>
                     </div>
                   </motion.div>
                 ))
