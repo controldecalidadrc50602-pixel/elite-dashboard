@@ -416,6 +416,27 @@ const ProjectDetailsModal: React.FC<Props> = ({
                              </div>
                           </div>
 
+                          <div className="space-y-4">
+                             <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Modalidad de Operación</label>
+                             <div className="flex gap-4">
+                               {['RC506', 'WYP', 'IPBX', 'HÍBRIDO'].map(mode => (
+                                 <button
+                                   key={mode}
+                                   type="button"
+                                   disabled={!isEditing}
+                                   onClick={() => setEditedProject({...editedProject, techDNA: { ...editedProject.techDNA!, operationMode: mode as any }})}
+                                   className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                                     editedProject.techDNA?.operationMode === mode 
+                                     ? 'bg-rc-teal text-[var(--bg-primary)] border-rc-teal shadow-lg' 
+                                     : 'bg-white/5 border-white/5 text-[var(--text-secondary)] hover:bg-white/10'
+                                   } disabled:opacity-50`}
+                                 >
+                                   {mode}
+                                 </button>
+                               ))}
+                             </div>
+                          </div>
+
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                              <div className="space-y-6">
                                 <div className="space-y-4">
@@ -423,7 +444,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                    <input 
                                      disabled={!isEditing}
                                      value={editedProject.techDNA?.isp || ''}
-                                     onChange={(e) => setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'REMOTE', phoneLine: ''}), isp: e.target.value}})}
+                                     onChange={(e) => setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'RC506', phoneLine: ''}), isp: e.target.value}})}
                                      className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 px-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50"
                                      placeholder="Ej: Tigo Business, Kolbi..."
                                    />
@@ -433,7 +454,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                    <input 
                                      disabled={!isEditing}
                                      value={editedProject.techDNA?.phoneLine || ''}
-                                     onChange={(e) => setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'REMOTE', isp: ''}), phoneLine: e.target.value}})}
+                                     onChange={(e) => setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'RC506', isp: ''}), phoneLine: e.target.value}})}
                                      className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 px-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50"
                                      placeholder="Ej: +506 4000-0000"
                                    />
@@ -445,7 +466,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                    <div className="flex items-center justify-between">
                                       <h5 className="text-[11px] font-black text-white uppercase tracking-widest">Redundancia de Red</h5>
                                       <div 
-                                        onClick={() => isEditing && setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'REMOTE', isp: '', phoneLine: ''}), redundancy: !editedProject.techDNA?.redundancy}})}
+                                        onClick={() => isEditing && setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'RC506', isp: '', phoneLine: ''}), redundancy: !editedProject.techDNA?.redundancy}})}
                                         className={`w-14 h-8 rounded-full transition-all cursor-pointer relative ${editedProject.techDNA?.redundancy ? 'bg-rc-teal' : 'bg-white/10'}`}
                                       >
                                          <motion.div 

@@ -28,7 +28,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
     evaluations: [],
     healthFlag: 'Verde',
     opsPulse: { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
-    techDNA: { operationMode: 'REMOTE', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false },
+    techDNA: { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false },
     assets: [],
     strategy: { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 }
   });
@@ -38,7 +38,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
       setFormData({
         ...project,
         opsPulse: project.opsPulse || { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
-        techDNA: project.techDNA || { operationMode: 'REMOTE', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false },
+        techDNA: project.techDNA || { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false },
         assets: project.assets || [],
         strategy: project.strategy || { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 }
       });
@@ -53,7 +53,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
         evaluations: [],
         healthFlag: 'Verde',
         opsPulse: { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
-        techDNA: { operationMode: 'REMOTE', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false },
+        techDNA: { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false },
         assets: [],
         strategy: { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 }
       });
@@ -414,7 +414,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                       <div className="space-y-2">
                         <label>Modalidad de Operación</label>
                         <div className="flex gap-4">
-                          {['REMOTE', 'WIP', 'HÍBRIDO'].map(mode => (
+                          {['RC506', 'WYP', 'IPBX', 'HÍBRIDO'].map(mode => (
                             <button
                               key={mode} type="button"
                               onClick={() => setFormData({...formData, techDNA: { ...formData.techDNA!, operationMode: mode as any }})}

@@ -70,7 +70,7 @@ export interface OperationPulse {
 }
 
 export interface TechDNA {
-  operationMode: 'REMOTE' | 'WIP' | 'HÍBRIDO';
+  operationMode: 'RC506' | 'WYP' | 'IPBX' | 'HÍBRIDO';
   isp: string;
   internetSpeed?: string;
   connectivityType?: 'Fibra Óptica' | 'Radiofrecuencia' | 'Cobre';
