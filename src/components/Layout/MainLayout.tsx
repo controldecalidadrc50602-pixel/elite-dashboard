@@ -18,10 +18,10 @@ const MainLayout: React.FC = () => {
   if (!user) return <Navigate to="/login" />;
 
   return (
-    <div className="flex h-screen bg-[#050505] text-white overflow-hidden">
+    <div className="flex h-screen app-container text-white overflow-hidden font-inter">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
-      <main className="flex-1 overflow-y-auto relative custom-scrollbar">
+      <main className="flex-1 overflow-y-auto relative scrollbar-hide">
         <div className="p-10 max-w-[1600px] mx-auto">
           <AnimatePresence mode="wait">
             <motion.div
@@ -29,7 +29,7 @@ const MainLayout: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             >
               {activeTab === 'services' ? (
                 <ServiceMonitor />

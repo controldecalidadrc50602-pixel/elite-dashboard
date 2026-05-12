@@ -8,95 +8,79 @@
   --bg-main: #0B0E14;
   --bg-card: rgba(22, 27, 34, 0.95);
   --bg-input: #0D1117;
-  --text-primary: #FFFFFF;
+  --rc-teal: #3BC7AA;
   --text-secondary: #8B949E;
-  --rc-turquoise: #3BC7AA;
   --border-ultra-thin: rgba(255, 255, 255, 0.05);
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-main);
-  background-image: radial-gradient(circle at center, #111420 0%, #0B0E14 100%);
-  color: var(--text-primary);
+  color: white;
   overflow: hidden;
-  height: 100vh;
 }
 
-@layer components {
-  .glass-card {
-    background: var(--bg-card);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border-ultra-thin);
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .glass-card:hover {
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-  }
-
-  .label-executive {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .input-executive {
-    background: var(--bg-input);
-    border: 1px solid var(--border-ultra-thin);
-    border-radius: 8px;
-    color: var(--text-primary);
-    padding: 10px 14px;
-    font-size: 13px;
-    transition: all 0.2s;
-  }
-
-  .input-executive:focus {
-    outline: none;
-    border-color: var(--rc-turquoise);
-    box-shadow: 0 0 0 2px rgba(59, 188, 169, 0.1);
-  }
-
-  .btn-primary {
-    background: var(--rc-turquoise);
-    color: #000;
-    font-weight: 600;
-    padding: 10px 20px;
-    border-radius: 8px;
-    transition: all 0.2s;
-    text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: 0.5px;
-  }
-
-  .btn-primary:hover {
-    filter: brightness(1.1);
-    box-shadow: 0 0 20px rgba(59, 188, 169, 0.3);
-  }
-
-  .badge-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 8px;
-  }
-
-  .status-green { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
-  .status-yellow { background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
-  .status-red { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+/* Fondo Global con Gradiente Radial */
+.app-container {
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #111420 0%, #0B0E14 100%);
+  position: relative;
 }
 
-/* Hide Scrollbar */
+/* Glassmorphism Card System */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-ultra-thin);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+}
+
+/* Executive Labels */
+.label-executive {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Neon Status Dots */
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+}
+
+.status-green { background-color: #3BC7AA; box-shadow: 0 0 10px #3BC7AA; }
+.status-yellow { background-color: #FBBF24; box-shadow: 0 0 10px #FBBF24; }
+.status-red { background-color: #F43F5E; box-shadow: 0 0 10px #F43F5E; }
+
+/* Custom Scrollbar Premium */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rc-teal);
+}
+
+/* Utility to hide scrollbar but keep functionality */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
