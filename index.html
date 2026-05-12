@@ -8,16 +8,13 @@
     
     <!-- ANTI-CACHE SCRIPT (Emergency Purge) -->
     <script>
-      // Destruir Service Workers viejos que causan error MIME
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
           for(let registration of registrations) {
             registration.unregister();
-            console.log('SW Unregistered for Clean Load');
           }
         });
       }
-      // Limpiar caché de la aplicación
       if ('caches' in window) {
         caches.keys().then(function(names) {
           for (let name of names) caches.delete(name);
@@ -27,7 +24,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Usamos ruta absoluta con timestamp para forzar recarga fresca -->
-    <script type="module" src="/src/main.tsx?v=4.0.0"></script>
+    <!-- Restaurada ruta limpia para compatibilidad con Vite Build -->
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
