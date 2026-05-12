@@ -29,7 +29,7 @@ import ProjectDetailsModal from '../components/ProjectDetailsModal';
 import ProjectModal from '../components/Modals/ProjectModal';
 import SlaTimer from '../components/common/SlaTimer';
 
-const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'tasks' }> = ({ activeTab }) => {
+const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'services' | 'tasks' }> = ({ activeTab }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);

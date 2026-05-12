@@ -221,15 +221,15 @@ export const exportService = {
     // Global Metrics Calculation
     const pillars = [
       { key: 'responseTime', label: 'Tiempo de Respuesta' },
-      { key: 'communication', label: 'Comunicación Fluida' },
-      { key: 'resolution', label: 'Capacidad de Resolución' },
+      { key: 'communicationQuality', label: 'Comunicación Fluida' },
+      { key: 'effectiveResolution', label: 'Capacidad de Resolución' },
       { key: 'proactivity', label: 'Proactividad Operativa' },
       { key: 'technicalKnowledge', label: 'Conocimiento Técnico' },
       { key: 'reliability', label: 'Confiabilidad / Backup' },
       { key: 'flexibility', label: 'Flexibilidad de Cambio' },
       { key: 'innovation', label: 'Aporte de Innovación' },
-      { key: 'documentation', label: 'Reportes & Documentos' },
-      { key: 'overallSatisfaction', label: 'Satisfacción Global' }
+      { key: 'serviceCulture', label: 'Cultura de Servicio' },
+      { key: 'valuePerception', label: 'Percepción de Valor' }
     ];
 
     const globalPillarAverages = pillars.map(p => {
@@ -324,21 +324,21 @@ export const exportService = {
 
     // Quarterly Assessment Data
     const assessment = project.quarterlyAssessment || {
-      responseTime: 0, communication: 0, resolution: 0, proactivity: 0, technicalKnowledge: 0,
-      reliability: 0, flexibility: 0, innovation: 0, documentation: 0, overallSatisfaction: 0
+      responseTime: 0, communicationQuality: 0, effectiveResolution: 0, proactivity: 0, technicalKnowledge: 0,
+      reliability: 0, flexibility: 0, innovation: 0, serviceCulture: 0, valuePerception: 0
     };
 
     const pillarData = [
       ['Tiempo de Respuesta', assessment.responseTime],
-      ['Comunicación Fluida', assessment.communication],
-      ['Capacidad de Resolución', assessment.resolution],
+      ['Comunicación Fluida', assessment.communicationQuality],
+      ['Capacidad de Resolución', assessment.effectiveResolution],
       ['Proactividad Operativa', assessment.proactivity],
       ['Conocimiento Técnico', assessment.technicalKnowledge],
       ['Confiabilidad / Backup', assessment.reliability],
       ['Flexibilidad de Cambio', assessment.flexibility],
       ['Aporte de Innovación', assessment.innovation],
-      ['Reportes & Documentos', assessment.documentation],
-      ['Satisfacción Global', assessment.overallSatisfaction]
+      ['Cultura de Servicio', assessment.serviceCulture],
+      ['Percepción de Valor', assessment.valuePerception]
     ];
 
     autoTable(doc, {

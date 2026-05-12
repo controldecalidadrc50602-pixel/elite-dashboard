@@ -53,15 +53,15 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
   const pillarMetrics = useMemo(() => {
     const pillars = [
       { key: 'responseTime', label: 'T. Respuesta' },
-      { key: 'communication', label: 'Comunicación' },
-      { key: 'resolution', label: 'Resolución' },
+      { key: 'communicationQuality', label: 'Comunicación' },
+      { key: 'effectiveResolution', label: 'Resolución' },
       { key: 'proactivity', label: 'Proactividad' },
       { key: 'technicalKnowledge', label: 'Tech DNA' },
       { key: 'reliability', label: 'Confiabilidad' },
       { key: 'flexibility', label: 'Flexibilidad' },
       { key: 'innovation', label: 'Innovación' },
-      { key: 'documentation', label: 'Reportes' },
-      { key: 'overallSatisfaction', label: 'Satisfacción' }
+      { key: 'serviceCulture', label: 'Cultura' },
+      { key: 'valuePerception', label: 'Percepción' }
     ];
 
     return pillars.map(p => {
@@ -96,6 +96,15 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
       score: 75 + (i * 2) + Math.floor(Math.random() * 5)
     }));
   }, []);
+
+  const adminStatusDistribution = useMemo(() => {
+    const statuses = ['Activo', 'Prueba', 'En Proceso', 'Inactivo'];
+    return statuses.map(status => ({
+      name: status,
+      count: projects.filter(p => p.adminStatus === status).length,
+      percentage: projects.length > 0 ? Math.round((projects.filter(p => p.adminStatus === status).length / projects.length) * 100) : 0
+    }));
+  }, [projects]);
 
   return (
     <div className="space-y-12 animate-in fade-in duration-700">
@@ -144,11 +153,11 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
                   </RadarChart>
                </ResponsiveContainer>
             </div>
-            <div className="mt-8 grid grid-cols-2 gap-4">
-               {pillarMetrics.slice(0, 4).map(m => (
-                 <div key={m.pillar} className="p-4 bg-white/[0.02] rounded-2xl border border-white/5">
-                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block mb-1">{m.pillar}</span>
-                    <span className="text-lg font-black text-white leading-none">{m.value}%</span>
+            <div className="mt-8 grid grid-cols-2 gap-3">
+               {pillarMetrics.map(m => (
+                 <div key={m.pillar} className="p-3 bg-white/[0.02] rounded-2xl border border-white/5 hover:border-rc-teal/30 transition-colors">
+                    <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest block mb-1">{m.pillar}</span>
+                    <span className="text-sm font-black text-white leading-none">{m.value}%</span>
                  </div>
                ))}
             </div>
@@ -192,13 +201,41 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
                         type="monotone" 
                         dataKey="score" 
                         stroke="#3BBCA9" 
-                        strokeWidth={5}
+                        strokeWidth={4}
                         fillOpacity={1} 
                         fill="url(#colorScore)" 
                         animationDuration={2000}
                      />
                   </AreaChart>
                </ResponsiveContainer>
+            </div>
+
+            {/* Ciclo de Vida del Cliente (New Section) */}
+            <div className="mt-12 pt-12 border-t border-white/5">
+               <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-8">Ciclo de Vida del Cliente</h4>
+               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  {adminStatusDistribution.map(status => (
+                    <div key={status.name} className="relative group">
+                       <div className="flex items-center justify-between mb-3">
+                          <span className="text-xs font-black text-white uppercase tracking-tighter">{status.name}</span>
+                          <span className="text-[10px] font-black text-rc-teal">{status.percentage}%</span>
+                       </div>
+                       <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${status.percentage}%` }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            className={`h-full rounded-full ${
+                              status.name === 'Activo' ? 'bg-emerald-400' :
+                              status.name === 'Prueba' ? 'bg-amber-400' :
+                              status.name === 'En Proceso' ? 'bg-blue-400' : 'bg-rose-500'
+                            }`}
+                          />
+                       </div>
+                       <p className="mt-2 text-[9px] font-bold text-slate-600 uppercase tracking-widest">{status.count} Clientes</p>
+                    </div>
+                  ))}
+               </div>
             </div>
          </div>
       </div>

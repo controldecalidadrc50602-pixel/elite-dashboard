@@ -31,11 +31,16 @@ export const initialProjects: Project[] = [
     healthFlag: 'Verde',
     opsPulse: { hcContracted: 10, hcReal: 10, backupStatus: 'Disponible', operationType: 'Ventas' },
     techDNA: { operationMode: 'RC506', isp: 'Liberty', phoneLine: 'Sip Trunk', country: 'Costa Rica', sipTrunkVirtual: 'Navegalo' },
-    clientEvaluation: { projectLeader: true, documentation: true, receptivity: true, continuity: true, reportValuation: true, paymentPunctuality: true, status: 'Verde' },
+    adminStatus: 'Activo',
+    clientEvaluation: { 
+      projectLeader: true, timelyDocumentation: true, advisoryReceptivity: true, 
+      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
+      paymentPunctuality: true, status: 'Verde' 
+    },
     assets: [],
     quarterlyAssessment: {
-      responseTime: 5, communication: 5, resolution: 5, proactivity: 5, technicalKnowledge: 5,
-      reliability: 5, flexibility: 5, innovation: 5, documentation: 5, overallSatisfaction: 5
+      responseTime: 5, communicationQuality: 5, effectiveResolution: 5, proactivity: 5, technicalKnowledge: 5,
+      reliability: 5, flexibility: 5, innovation: 5, serviceCulture: 5, valuePerception: 5
     }
   },
   {
@@ -47,11 +52,16 @@ export const initialProjects: Project[] = [
     healthFlag: 'Verde',
     opsPulse: { hcContracted: 5, hcReal: 5, backupStatus: 'Disponible', operationType: 'Servicio al Cliente' },
     techDNA: { operationMode: 'RC506', isp: 'Telecable', phoneLine: 'Cloud', country: 'Costa Rica', sipTrunkVirtual: 'Vocex' },
-    clientEvaluation: { projectLeader: true, documentation: true, receptivity: true, continuity: true, reportValuation: true, paymentPunctuality: true, status: 'Verde' },
+    adminStatus: 'Activo',
+    clientEvaluation: { 
+      projectLeader: true, timelyDocumentation: true, advisoryReceptivity: true, 
+      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
+      paymentPunctuality: true, status: 'Verde' 
+    },
     assets: [],
     quarterlyAssessment: {
-      responseTime: 4, communication: 5, resolution: 4, proactivity: 4, technicalKnowledge: 5,
-      reliability: 4, flexibility: 4, innovation: 4, documentation: 5, overallSatisfaction: 5
+      responseTime: 4, communicationQuality: 5, effectiveResolution: 4, proactivity: 4, technicalKnowledge: 5,
+      reliability: 4, flexibility: 4, innovation: 4, serviceCulture: 5, valuePerception: 5
     }
   },
   {
@@ -63,11 +73,16 @@ export const initialProjects: Project[] = [
     healthFlag: 'Amarilla',
     opsPulse: { hcContracted: 4, hcReal: 3, backupStatus: 'Disponible', operationType: 'Servicio al Cliente' },
     techDNA: { operationMode: 'WYP', isp: 'Liberty', phoneLine: 'Analog', country: 'Venezuela', sipTrunkVirtual: 'Movistar Vzla.' },
-    clientEvaluation: { projectLeader: true, documentation: false, receptivity: true, continuity: false, reportValuation: true, paymentPunctuality: true, status: 'Amarilla' },
+    adminStatus: 'Prueba',
+    clientEvaluation: { 
+      projectLeader: true, timelyDocumentation: false, advisoryReceptivity: true, 
+      effectiveServiceUse: false, serviceContinuity: false, reportValuation: true, 
+      paymentPunctuality: true, status: 'Amarilla' 
+    },
     assets: [],
     quarterlyAssessment: {
-      responseTime: 3, communication: 3, resolution: 3, proactivity: 4, technicalKnowledge: 4,
-      reliability: 3, flexibility: 4, innovation: 3, documentation: 3, overallSatisfaction: 3
+      responseTime: 3, communicationQuality: 3, effectiveResolution: 3, proactivity: 4, technicalKnowledge: 4,
+      reliability: 3, flexibility: 4, innovation: 3, serviceCulture: 3, valuePerception: 3
     }
   },
   {
@@ -79,11 +94,16 @@ export const initialProjects: Project[] = [
     healthFlag: 'Verde',
     opsPulse: { hcContracted: 8, hcReal: 8, backupStatus: 'Disponible', operationType: 'Servicio al Cliente' },
     techDNA: { operationMode: 'RC506', isp: 'ICE', phoneLine: 'Cloud', country: 'Costa Rica', sipTrunkVirtual: 'ICE' },
-    clientEvaluation: { projectLeader: true, documentation: true, receptivity: true, continuity: true, reportValuation: true, paymentPunctuality: true, status: 'Verde' },
+    adminStatus: 'Activo',
+    clientEvaluation: { 
+      projectLeader: true, timelyDocumentation: true, advisoryReceptivity: true, 
+      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
+      paymentPunctuality: true, status: 'Verde' 
+    },
     assets: [],
     quarterlyAssessment: {
-      responseTime: 5, communication: 5, resolution: 5, proactivity: 5, technicalKnowledge: 4,
-      reliability: 5, flexibility: 4, innovation: 4, documentation: 5, overallSatisfaction: 5
+      responseTime: 5, communicationQuality: 5, effectiveResolution: 5, proactivity: 5, technicalKnowledge: 4,
+      reliability: 5, flexibility: 4, innovation: 4, serviceCulture: 5, valuePerception: 5
     }
   },
   {
@@ -95,11 +115,16 @@ export const initialProjects: Project[] = [
     healthFlag: 'Amarilla',
     opsPulse: { hcContracted: 12, hcReal: 10, backupStatus: 'En Uso', operationType: 'Ventas' },
     techDNA: { operationMode: 'HÍBRIDO', isp: 'Telecable', phoneLine: 'Sip Trunk', country: 'Venezuela', sipTrunkVirtual: 'Voip.ms' },
-    clientEvaluation: { projectLeader: false, documentation: false, receptivity: true, continuity: true, reportValuation: false, paymentPunctuality: false, status: 'Roja' },
+    adminStatus: 'Inactivo',
+    clientEvaluation: { 
+      projectLeader: false, timelyDocumentation: false, advisoryReceptivity: true, 
+      effectiveServiceUse: true, serviceContinuity: true, reportValuation: false, 
+      paymentPunctuality: false, status: 'Roja' 
+    },
     assets: [],
     quarterlyAssessment: {
-      responseTime: 2, communication: 3, resolution: 2, proactivity: 2, technicalKnowledge: 3,
-      reliability: 3, flexibility: 2, innovation: 2, documentation: 2, overallSatisfaction: 3
+      responseTime: 2, communicationQuality: 3, effectiveResolution: 2, proactivity: 2, technicalKnowledge: 3,
+      reliability: 3, flexibility: 2, innovation: 2, serviceCulture: 2, valuePerception: 3
     }
   },
   {
@@ -111,11 +136,16 @@ export const initialProjects: Project[] = [
     healthFlag: 'Verde',
     opsPulse: { hcContracted: 15, hcReal: 15, backupStatus: 'Disponible', operationType: 'Ventas' },
     techDNA: { operationMode: 'RC506', isp: 'Liberty', phoneLine: 'Cloud', country: 'Costa Rica', sipTrunkVirtual: 'Call My Way' },
-    clientEvaluation: { projectLeader: true, documentation: true, receptivity: true, continuity: true, reportValuation: true, paymentPunctuality: true, status: 'Verde' },
+    adminStatus: 'Activo',
+    clientEvaluation: { 
+      projectLeader: true, timelyDocumentation: true, advisoryReceptivity: true, 
+      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
+      paymentPunctuality: true, status: 'Verde' 
+    },
     assets: [],
     quarterlyAssessment: {
-      responseTime: 5, communication: 5, resolution: 5, proactivity: 5, technicalKnowledge: 5,
-      reliability: 5, flexibility: 5, innovation: 5, documentation: 5, overallSatisfaction: 5
+      responseTime: 5, communicationQuality: 5, effectiveResolution: 5, proactivity: 5, technicalKnowledge: 5,
+      reliability: 5, flexibility: 5, innovation: 5, serviceCulture: 5, valuePerception: 5
     }
   },
   {
@@ -127,11 +157,16 @@ export const initialProjects: Project[] = [
     healthFlag: 'Amarilla',
     opsPulse: { hcContracted: 6, hcReal: 6, backupStatus: 'Disponible', operationType: 'Servicio al Cliente' },
     techDNA: { operationMode: 'WYP', isp: 'Liberty', phoneLine: 'Cloud', country: 'Venezuela', sipTrunkVirtual: 'Callcentric' },
-    clientEvaluation: { projectLeader: true, documentation: false, receptivity: true, continuity: true, reportValuation: true, paymentPunctuality: true, status: 'Amarilla' },
+    adminStatus: 'Prueba',
+    clientEvaluation: { 
+      projectLeader: true, timelyDocumentation: false, advisoryReceptivity: true, 
+      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
+      paymentPunctuality: true, status: 'Amarilla' 
+    },
     assets: [],
     quarterlyAssessment: {
-      responseTime: 4, communication: 4, resolution: 4, proactivity: 3, technicalKnowledge: 4,
-      reliability: 4, flexibility: 4, innovation: 3, documentation: 4, overallSatisfaction: 4
+      responseTime: 4, communicationQuality: 4, effectiveResolution: 4, proactivity: 3, technicalKnowledge: 4,
+      reliability: 4, flexibility: 4, innovation: 3, serviceCulture: 4, valuePerception: 4
     }
   },
   {
@@ -143,11 +178,16 @@ export const initialProjects: Project[] = [
     healthFlag: 'Verde',
     opsPulse: { hcContracted: 20, hcReal: 18, backupStatus: 'Disponible', operationType: 'Servicio al Cliente' },
     techDNA: { operationMode: 'HÍBRIDO', isp: 'Telecable', phoneLine: 'Cloud', country: 'Costa Rica', sipTrunkVirtual: 'Navegalo' },
-    clientEvaluation: { projectLeader: true, documentation: true, receptivity: true, continuity: true, reportValuation: true, paymentPunctuality: true, status: 'Verde' },
+    adminStatus: 'En Proceso',
+    clientEvaluation: { 
+      projectLeader: true, timelyDocumentation: true, advisoryReceptivity: true, 
+      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
+      paymentPunctuality: true, status: 'Verde' 
+    },
     assets: [],
     quarterlyAssessment: {
-      responseTime: 5, communication: 5, resolution: 4, proactivity: 4, technicalKnowledge: 4,
-      reliability: 5, flexibility: 5, innovation: 4, documentation: 5, overallSatisfaction: 5
+      responseTime: 5, communicationQuality: 5, effectiveResolution: 4, proactivity: 4, technicalKnowledge: 4,
+      reliability: 5, flexibility: 5, innovation: 4, serviceCulture: 5, valuePerception: 5
     }
   }
 ];

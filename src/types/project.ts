@@ -146,7 +146,7 @@ export interface Project {
   };
   strategicObjective?: string;
   services: ClientService[];
-  adminStatus: 'En Proceso' | 'Prueba' | 'Activo' | 'Inactivo';
+  adminStatus: 'En Proceso' | 'Prueba' | 'Activo' | 'Inactivo' | 'Archivado';
   evaluations: Evaluation[];
   alerts?: Alert[];
   healthFlag: 'Verde' | 'Amarilla' | 'Roja' | 'Negra';

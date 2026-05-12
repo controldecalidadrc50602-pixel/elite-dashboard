@@ -27,11 +27,16 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
     services: [],
     evaluations: [],
     healthFlag: 'Verde',
+    adminStatus: 'En Proceso',
     opsPulse: { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
     techDNA: { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false, sipTrunkVirtual: 'N/A.', country: 'Costa Rica' },
     assets: [],
     strategy: { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
-    clientEvaluation: { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' }
+    clientEvaluation: { 
+      projectLeader: false, timelyDocumentation: false, advisoryReceptivity: false, 
+      effectiveServiceUse: false, serviceContinuity: false, reportValuation: false, 
+      paymentPunctuality: false, status: 'Verde' 
+    }
   });
 
   useEffect(() => {
@@ -42,7 +47,12 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
         techDNA: project.techDNA || { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false, sipTrunkVirtual: 'N/A.', country: 'Costa Rica' },
         assets: project.assets || [],
         strategy: project.strategy || { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
-        clientEvaluation: project.clientEvaluation || { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' }
+        adminStatus: project.adminStatus || 'En Proceso',
+        clientEvaluation: project.clientEvaluation || { 
+          projectLeader: false, timelyDocumentation: false, advisoryReceptivity: false, 
+          effectiveServiceUse: false, serviceContinuity: false, reportValuation: false, 
+          paymentPunctuality: false, status: 'Verde' 
+        }
       });
     } else {
       setFormData({
@@ -57,8 +67,13 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
         opsPulse: { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
         techDNA: { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false, sipTrunkVirtual: 'N/A.', country: 'Costa Rica' },
         assets: [],
-        strategy: { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
-        clientEvaluation: { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' }
+        strategy: project?.strategy || { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
+        adminStatus: 'En Proceso',
+        clientEvaluation: { 
+          projectLeader: false, timelyDocumentation: false, advisoryReceptivity: false, 
+          effectiveServiceUse: false, serviceContinuity: false, reportValuation: false, 
+          paymentPunctuality: false, status: 'Verde' 
+        }
       });
     }
     setActiveTab('basic');
@@ -103,6 +118,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
       techDNA: formData.techDNA as TechDNA,
       assets: formData.assets as HardwareAsset[],
       strategy: formData.strategy as StrategySLA,
+      adminStatus: formData.adminStatus as any || 'En Proceso',
       clientEvaluation: formData.clientEvaluation as any
     };
 
@@ -558,12 +574,16 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                               <span className="text-xs font-bold uppercase tracking-widest">{rubric.label}</span>
                               <div 
                                 onClick={() => {
-                                  const evalObj = (formData.clientEvaluation || { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' }) as any;
+                                  const evalObj = (formData.clientEvaluation || { 
+                                     projectLeader: false, timelyDocumentation: false, advisoryReceptivity: false, 
+                                     effectiveServiceUse: false, serviceContinuity: false, reportValuation: false, 
+                                     paymentPunctuality: false, status: 'Verde' 
+                                  }) as any;
                                   const newVal = !evalObj[rubric.id];
                                   const newEval = { ...evalObj, [rubric.id]: newVal };
                                   
                                   // Recalculate status
-                                  const keys = ['projectLeader', 'documentation', 'receptivity', 'continuity', 'reportValuation', 'paymentPunctuality'];
+                                  const keys = ['projectLeader', 'timelyDocumentation', 'advisoryReceptivity', 'effectiveServiceUse', 'serviceContinuity', 'reportValuation', 'paymentPunctuality'];
                                   const trueCount = keys.filter(k => newEval[k]).length;
                                   
                                   let status = 'Verde';

@@ -4,11 +4,13 @@ import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Dashboard from '../../pages/Dashboard';
-import { LayoutGrid, Users, CheckSquare, ShieldCheck } from 'lucide-react';
+import { LayoutGrid, Users, CheckSquare, ShieldCheck, Archive } from 'lucide-react';
+import ServiceMonitor from './ServiceMonitor';
+import ArchiveVault from '../../pages/ArchiveVault';
 
 const MainLayout: React.FC = () => {
   const { user, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'clients' | 'status'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'clients' | 'services' | 'tasks'>('overview');
 
   if (loading) return (
     <div className="h-screen w-full flex items-center justify-center bg-[#050505]">
@@ -41,7 +43,13 @@ const MainLayout: React.FC = () => {
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className="h-full w-full"
           >
-            <Dashboard activeTab={activeTab} />
+            {activeTab === 'services' ? (
+              <ServiceMonitor />
+            ) : activeTab === 'archive' ? (
+              <ArchiveVault />
+            ) : (
+              <Dashboard activeTab={activeTab} />
+            )}
           </motion.div>
         </AnimatePresence>
       </main>
@@ -51,7 +59,7 @@ const MainLayout: React.FC = () => {
          {[
            { id: 'overview', icon: LayoutGrid, label: 'Audit' },
            { id: 'clients', icon: Users, label: 'Cartera' },
-           { id: 'status', icon: ShieldCheck, label: 'Reportes' },
+           { id: 'services', icon: ShieldCheck, label: 'Servicios' },
          ].map(tab => {
            const Icon = tab.icon;
            const isActive = activeTab === tab.id;

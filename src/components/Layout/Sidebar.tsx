@@ -1,110 +1,131 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { 
   LayoutGrid, 
   Users, 
-  CheckSquare, 
-  ShieldCheck,
-  Star,
+  ShieldCheck, 
+  Activity,
+  FileBarChart,
+  BrainCircuit,
+  Settings,
   LogOut,
-  Sun,
-  Moon,
-  Languages
+  ChevronRight,
+  Monitor,
+  Archive
 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
-  activeTab: string;
-  setActiveTab: (tab: any) => void;
+  activeTab: 'overview' | 'clients' | 'services' | 'tasks' | 'settings' | 'audits' | 'reports' | 'ai-copilot' | 'archive';
+  setActiveTab: (tab: 'overview' | 'clients' | 'services' | 'tasks' | 'settings' | 'audits' | 'reports' | 'ai-copilot' | 'archive') => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
-  const { t, i18n } = useTranslation();
-  const { theme, toggleTheme } = useTheme();
   const { logout, user } = useAuth();
 
-  const toggleLanguage = () => {
-    const nextLang = i18n.language === 'es' ? 'en' : 'es';
-    i18n.changeLanguage(nextLang);
-  };
+  const menuSections = [
+    {
+      title: 'General',
+      items: [
+        { id: 'overview', icon: LayoutGrid, label: 'Dashboard' }
+      ]
+    },
+    {
+      title: 'Cartera',
+      items: [
+        { id: 'clients', icon: Users, label: 'Clientes' },
+        { id: 'services', icon: Monitor, label: 'Servicios' },
+        { id: 'archive', icon: Archive, label: 'Bóveda' }
+      ]
+    },
+    {
+      title: 'Operaciones',
+      items: [
+        { id: 'audits', icon: Activity, label: 'Auditorías' },
+        { id: 'reports', icon: FileBarChart, label: 'Reportes IA' }
+      ]
+    },
+    {
+      title: 'Analytics',
+      items: [
+        { id: 'ai-copilot', icon: BrainCircuit, label: 'IA Copilot' }
+      ]
+    }
+  ];
 
   return (
-    <aside className="w-[88px] h-full glass-panel flex flex-col items-center py-8 gap-8 border-r relative z-50 transition-all duration-300">
-      {/* Branding Logo */}
-      <div className="w-11 h-11 bg-rc-teal/10 rounded-xl flex items-center justify-center text-rc-teal shadow-xl shadow-rc-teal/5 transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer group">
-        <Star size={22} fill="currentColor" className="group-hover:rotate-12 transition-transform" />
+    <aside className="w-[240px] h-full bg-[#0a0a0c] border-r border-white/5 flex flex-col py-8 px-4 relative z-50 overflow-y-auto scrollbar-hide">
+      {/* Branding */}
+      <div className="px-4 mb-10">
+        <div className="flex items-center gap-3">
+           <div className="w-10 h-10 bg-rc-teal/10 rounded-xl flex items-center justify-center text-rc-teal shadow-2xl shadow-rc-teal/20">
+              <ShieldCheck size={24} />
+           </div>
+           <div>
+              <h2 className="text-sm font-black text-white leading-none uppercase tracking-tighter">RC506 | GESTIÓN</h2>
+              <span className="text-[9px] font-black text-rc-teal uppercase tracking-[0.2em]">Elite V3.6</span>
+           </div>
+        </div>
       </div>
       
-      {/* Navigation Links */}
-      <nav className="flex flex-col gap-5">
-        {[
-          { id: 'overview', icon: LayoutGrid, label: 'Audit' },
-          { id: 'clients', icon: Users, label: 'Cartera' },
-          { id: 'status', icon: ShieldCheck, label: 'Reportes' },
-        ].map(item => {
-          const Icon = item.icon;
-          const isActive = activeTab === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id as any)}
-              className={`w-13 h-13 rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all duration-200 group relative premium-button ${
-                isActive 
-                  ? 'bg-rc-teal text-black shadow-lg shadow-rc-teal/20 scale-105' 
-                  : 'text-slate-500 hover:text-[var(--text-primary)] hover:bg-white/5'
-              }`}
-            >
-              <Icon size={19} strokeWidth={isActive ? 2.5 : 1.5} />
-              <span className={`text-[7.5px] font-black uppercase tracking-widest ${isActive ? 'opacity-100' : 'opacity-40'}`}>
-                {item.label}
-              </span>
-              {isActive && (
-                <motion.div 
-                  layoutId="active-pill"
-                  className="absolute -right-1 w-1 h-6 bg-rc-teal rounded-l-full shadow-[2px_0_10px_rgba(59,188,169,0.5)]"
-                />
-              )}
-            </button>
-          );
-        })}
+      {/* Navigation Groups */}
+      <nav className="flex-1 space-y-8">
+        {menuSections.map((section) => (
+          <div key={section.title} className="space-y-2">
+            <h3 className="px-4 text-[9px] font-black text-slate-600 uppercase tracking-[0.2em]">{section.title}</h3>
+            <div className="space-y-1">
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id as any)}
+                    className={`w-full h-11 px-4 rounded-xl flex items-center justify-between transition-all group ${
+                      isActive 
+                        ? 'bg-rc-teal/10 text-rc-teal' 
+                        : 'text-slate-500 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon size={18} className={isActive ? 'text-rc-teal' : 'group-hover:text-white transition-colors'} />
+                      <span className={`text-[11px] font-bold tracking-tight ${isActive ? 'text-white' : ''}`}>
+                        {item.label}
+                      </span>
+                    </div>
+                    {isActive && <ChevronRight size={14} className="opacity-50" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
-      {/* Action Buttons & Profile */}
-      <div className="mt-auto flex flex-col gap-5 items-center pb-4">
-         <button 
-            onClick={toggleTheme}
-            className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-500 hover:text-rc-teal transition-all duration-200 hover:shadow-[0_0_15px_rgba(59,188,169,0.3)] premium-button"
-         >
-            {theme === 'dark' ? <Sun size={18} strokeWidth={1.5} /> : <Moon size={18} strokeWidth={1.5} />}
-         </button>
-         
-         <button 
-            onClick={toggleLanguage}
-            className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-500 hover:text-rc-teal transition-all duration-200 hover:shadow-[0_0_15px_rgba(59,188,169,0.3)] premium-button"
-         >
-            <Languages size={18} strokeWidth={1.5} />
-         </button>
+      {/* User & Settings */}
+      <div className="mt-auto space-y-4 pt-6 border-t border-white/5">
+        <button 
+          onClick={() => setActiveTab('settings' as any)}
+          className="w-full h-11 px-4 rounded-xl flex items-center gap-3 text-slate-500 hover:text-white hover:bg-white/5 transition-all"
+        >
+          <Settings size={18} />
+          <span className="text-[11px] font-bold tracking-tight">Configuración</span>
+        </button>
 
-         <button 
-            onClick={logout}
-            className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-500 hover:text-rose-500 transition-all duration-200 hover:shadow-[0_0_15px_rgba(244,63,94,0.3)] premium-button"
-         >
-            <LogOut size={18} strokeWidth={1.5} />
-         </button>
-
-         <div className="w-11 h-11 rounded-full overflow-hidden border border-white/10 p-0.5 hover:border-rc-teal transition-all duration-200 cursor-pointer ring-2 ring-transparent hover:ring-rc-teal/30">
-            <img 
-               src={user?.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.displayName || 'Marilyn'}`} 
-               alt="Profile" 
-               className="w-full h-full rounded-full object-cover"
-            />
-         </div>
+        <div className="px-4 py-4 bg-white/[0.02] rounded-2xl flex items-center gap-3">
+           <div className="w-8 h-8 rounded-full bg-rc-teal/20 flex items-center justify-center text-rc-teal font-black text-xs uppercase">
+              {user?.email?.substring(0, 2) || 'AD'}
+           </div>
+           <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-black text-white truncate uppercase">{user?.email?.split('@')[0] || 'Admin'}</p>
+              <p className="text-[8px] font-bold text-rc-teal uppercase">RC506 Specialist</p>
+           </div>
+           <button onClick={logout} className="text-slate-600 hover:text-rose-500 transition-colors">
+              <LogOut size={16} />
+           </button>
+        </div>
       </div>
     </aside>
   );
 };
 
 export default Sidebar;
-
