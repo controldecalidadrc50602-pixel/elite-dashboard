@@ -46,6 +46,10 @@ export interface ClientService {
 
   // Bitácora
   logs?: ServiceLog[];
+  responsible?: string;
+  collaborator?: string;
+  positionsCount?: number;
+  shiftMatrix?: string;
 }
 
 export interface Evaluation {
@@ -83,7 +87,7 @@ export interface OperationPulse {
 
 export interface TechDNA {
   operationMode: 'RC506' | 'WYP' | 'IPBX' | 'HÍBRIDO';
-  isp: string;
+  isp?: string;
   internetSpeed?: string;
   connectivityType?: 'Fibra Óptica' | 'Radiofrecuencia' | 'Cobre';
   redundancy?: boolean;

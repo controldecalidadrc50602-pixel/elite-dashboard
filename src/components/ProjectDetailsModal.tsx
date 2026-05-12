@@ -54,15 +54,6 @@ const ProjectDetailsModal: React.FC<Props> = ({
     }
   };
 
-  const getFlagColor = (flag: string) => {
-    switch(flag) {
-      case 'Verde': return 'text-emerald-500 border-emerald-500/30';
-      case 'Amarilla': return 'text-amber-500 border-amber-500/30';
-      case 'Roja': return 'text-rose-500 border-rose-500/30';
-      case 'Negra': return 'text-slate-900 border-slate-900/30';
-      default: return 'text-rc-teal border-rc-teal/30';
-    }
-  };
 
   const calculateScore = (assessment: any) => {
     if (!assessment) return 0;
@@ -307,12 +298,5 @@ const ProjectDetailsModal: React.FC<Props> = ({
     document.body
   );
 };
-export default ProjectDetailsModal;
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>,
-    document.body
-  );
-};
+
 export default ProjectDetailsModal;
