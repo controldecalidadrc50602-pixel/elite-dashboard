@@ -7,8 +7,7 @@ import Dashboard from '../../pages/Dashboard';
 import ServiceMonitor from '../../pages/ServiceMonitor';
 import ArchiveVault from '../../pages/ArchiveVault';
 import AiCopilot from '../../pages/AiCopilot';
-
-type TabType = 'overview' | 'morning' | 'audits' | 'reports-ia' | 'operations' | 'ai-copilot' | 'settings' | 'clients' | 'services' | 'tasks' | 'archive';
+import { TabType, TAB_TITLES } from '../../types/navigation';
 
 const MainLayout: React.FC = () => {
   const { user, loading } = useAuth();
@@ -16,22 +15,6 @@ const MainLayout: React.FC = () => {
 
   if (loading) return null;
   if (!user) return <Navigate to="/login" />;
-  const getTabTitle = (tab: TabType): string => {
-    const titles: Record<TabType, string> = {
-      overview: 'CRM de Inteligencia',
-      morning: 'Mañana Ejecutiva',
-      audits: 'Auditorías de Calidad',
-      'reports-ia': 'Reportes de Inteligencia Artificial',
-      operations: 'Centro de Operaciones',
-      'ai-copilot': 'IA Copilot',
-      settings: 'Configuración de Sistema',
-      clients: 'Gestión de Clientes',
-      services: 'Monitor de Servicios',
-      tasks: 'Gestión de Tareas',
-      archive: 'Bóveda de Archivos'
-    };
-    return titles[tab] || 'Dashboard';
-  };
 
   return (
     <div className="flex h-screen app-container text-white overflow-hidden font-inter bg-[var(--bg-main)]">
@@ -45,7 +28,7 @@ const MainLayout: React.FC = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
             >
               {activeTab === 'services' ? (
                 <ServiceMonitor />
@@ -54,14 +37,13 @@ const MainLayout: React.FC = () => {
               ) : activeTab === 'ai-copilot' ? (
                 <AiCopilot />
               ) : (
-                <Dashboard activeTab={activeTab} title={getTabTitle(activeTab)} />
+                <Dashboard activeTab={activeTab} title={TAB_TITLES[activeTab]} />
               )}
             </motion.div>
           </AnimatePresence>
         </div>
       </main>
     </div>
-
   );
 };
 

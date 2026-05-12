@@ -1,15 +1,17 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  ShieldCheck, Zap, Search, Bell, Database, 
-  ArrowUpRight, Star, Inbox, History, LayoutGrid, List,
-  Calendar, ChevronDown, Filter, Archive, Activity, Users
+import {
+  ShieldCheck, Zap, Search,
+  Database, ArrowUpRight, Star,
+  LayoutGrid, List, Calendar,
+  ChevronDown, Filter, Archive, Activity, Users
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import SkeletonDashboard from '../components/SkeletonDashboard';
+import { TabType } from '../types/navigation';
 
 interface DashboardProps {
-  activeTab: string;
+  activeTab: TabType;
   title: string;
 }
 
