@@ -189,102 +189,70 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
               )}
 
               {activeTab === 'clients' && (
-                 <div className="space-y-8 animate-in fade-in duration-500">
-                    <div className="flex items-center justify-between mb-2">
+                 <div className="space-y-12 animate-in fade-in duration-700 h-full flex flex-col">
+                    <div className="flex items-center justify-between">
                        <div>
-                          <h1 className="text-title text-4xl">Client Control</h1>
-                          <p className="text-meta mt-1">Directorio Estratégico de Cuentas</p>
+                          <h1 className="text-title text-4xl">Cartera de Clientes</h1>
+                          <p className="text-meta mt-1">Directorio Premium Rc506</p>
                        </div>
                        <button 
                          onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
-                         className="bg-rc-teal text-black px-10 py-5 rounded-3xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-rc-teal/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 premium-button"
+                         className="bg-white/5 hover:bg-rc-teal hover:text-black border border-white/10 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 premium-button"
                        >
-                          <Plus size={20} strokeWidth={3} /> {t('projects.newProject')}
+                          <Plus size={18} strokeWidth={3} /> {t('projects.newProject')}
                        </button>
                     </div>
 
                     <div className="relative">
-                       <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500" />
+                       <Search size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500" />
                        <input 
                          type="text"
-                         placeholder="Búsqueda táctica de clientes..."
+                         placeholder="Buscar cliente..."
                          value={searchQuery}
                          onChange={(e) => setSearchQuery(e.target.value)}
-                         className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-[32px] py-6 pl-16 pr-8 text-sm focus:border-rc-teal/40 outline-none transition-all font-medium"
+                         className="w-full bg-black/20 border border-white/5 rounded-2xl py-5 pl-14 pr-6 text-xs focus:border-rc-teal/30 outline-none transition-all font-medium"
                        />
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                       {filteredProjects.map((project) => (
-                          <motion.div 
-                            key={project.id}
-                            whileHover={{ y: -5 }}
-                            className="glass-card p-8 rounded-[48px] group relative overflow-hidden"
-                          >
-                             <div className="flex items-start justify-between mb-8">
-                                <div className="flex items-center gap-5">
-                                   <div className="w-16 h-16 rounded-[28px] bg-black/40 border border-white/10 flex items-center justify-center p-4 shadow-inner relative overflow-hidden">
-                                      {project.logoUrl ? (
-                                         <img src={project.logoUrl} className="w-full h-full object-contain" />
-                                      ) : (
-                                         <Activity className="text-rc-teal opacity-20" size={28} />
-                                      )}
-                                      <div className={`absolute inset-0 bg-current opacity-5 animate-neon ${project.healthFlag === 'Verde' ? 'text-emerald-500' : project.healthFlag === 'Amarilla' ? 'text-amber-500' : 'text-rose-500'}`} />
-                                   </div>
-                                   <div>
-                                      <h3 className="text-xl font-black text-[var(--text-primary)] uppercase tracking-tight truncate max-w-[200px]">{project.client}</h3>
-                                      <div className="flex items-center gap-2 mt-1">
-                                         <div className={`w-1.5 h-1.5 rounded-full ${project.healthFlag === 'Verde' ? 'bg-emerald-500' : 'bg-rose-500'} glow-optimal`} />
-                                         <span className="text-[9px] font-black text-rc-teal uppercase tracking-widest">Active Partner</span>
-                                      </div>
-                                   </div>
+                    <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+                       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 pb-10">
+                          {filteredProjects.map((project) => (
+                             <motion.div 
+                               key={project.id}
+                               whileHover={{ scale: 1.05, y: -5 }}
+                               whileTap={{ scale: 0.95 }}
+                               onClick={() => { setSelectedProject(project); setIsSlideoverOpen(true); }}
+                               className="cursor-pointer group flex flex-col items-center gap-4"
+                             >
+                                <div className={`w-full aspect-square rounded-[32px] bg-white/[0.03] backdrop-blur-md border-[1.5px] flex items-center justify-center p-6 shadow-2xl transition-all duration-500 relative overflow-hidden ${
+                                   project.healthFlag === 'Verde' ? 'border-emerald-500/30 group-hover:border-emerald-500 shadow-emerald-500/5' : 
+                                   project.healthFlag === 'Amarilla' ? 'border-amber-500/30 group-hover:border-amber-500 shadow-amber-500/5' : 
+                                   'border-rose-500/30 group-hover:border-rose-500 shadow-rose-500/5'
+                                }`}>
+                                   {project.logoUrl ? (
+                                      <img src={project.logoUrl} className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-500" alt={project.client} />
+                                   ) : (
+                                      <Activity className="text-rc-teal opacity-20 group-hover:opacity-100 transition-opacity" size={32} />
+                                   )}
+                                   
+                                   {/* Mini Health Indicator */}
+                                   <div className={`absolute top-4 right-4 w-2 h-2 rounded-full ${
+                                      project.healthFlag === 'Verde' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 
+                                      project.healthFlag === 'Amarilla' ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 
+                                      'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]'
+                                   }`} />
                                 </div>
-                                <div className="text-right">
-                                   <div className="text-3xl font-black text-[var(--text-primary)] tracking-tighter leading-none">{project.evaluations[0]?.quantitative || '--'}%</div>
-                                   <div className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">Efectividad</div>
-                                </div>
-                             </div>
-
-                             <div className="space-y-6 mb-8">
-                                <div className="flex items-center gap-4">
-                                   <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest shrink-0">Servicios:</span>
-                                   <div className="flex gap-3 overflow-x-auto custom-scrollbar no-scrollbar py-1">
-                                      {project.services.map(s => (
-                                         <div key={s.id} className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-2xl border border-white/5 transition-all hover:bg-white/10">
-                                            {s.name.includes('Bot') ? <Activity size={12} className="text-rc-teal" /> : 
-                                             s.name.includes('Yeastar') ? <Phone size={12} className="text-amber-500" /> : <Zap size={12} className="text-rc-teal" />}
-                                            <span className="text-[9px] font-black text-white uppercase">{s.name}</span>
-                                         </div>
-                                      ))}
-                                   </div>
-                                </div>
-                                <p className="text-[13px] text-[var(--text-secondary)] font-medium line-clamp-2 leading-relaxed opacity-70">
-                                   {project.evaluations[0]?.qualitative || 'Sin resumen registrado.'}
-                                </p>
-                             </div>
-
-                             <div className="flex items-center justify-between">
-                                <div className="flex -space-x-2">
-                                   {[1,2,3].map(i => (
-                                      <div key={i} className="w-8 h-8 rounded-full bg-slate-800 border-2 border-[var(--bg-secondary)] flex items-center justify-center text-[10px] font-bold text-white shadow-lg">
-                                         {String.fromCharCode(64+i)}
-                                      </div>
-                                   ))}
-                                </div>
-                                <button 
-                                  onClick={() => { setSelectedProject(project); setIsSlideoverOpen(true); }}
-                                  className="px-8 py-3 bg-white/5 hover:bg-rc-teal hover:text-black rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] transition-all border border-white/10 hover:border-rc-teal premium-button"
-                                >
-                                   Ver Ficha
-                                </button>
-                             </div>
-                          </motion.div>
-                       ))}
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center group-hover:text-rc-teal transition-colors">
+                                   {project.client}
+                                </span>
+                             </motion.div>
+                          ))}
+                       </div>
                     </div>
                  </div>
               )}
 
-              {activeTab === 'status' && <AuditDashboard tasks={tasks} />}
+              {activeTab === 'status' && <AuditDashboard projects={projects} />}
               {activeTab === 'tasks' && <TaskManager />}
 
            </div>

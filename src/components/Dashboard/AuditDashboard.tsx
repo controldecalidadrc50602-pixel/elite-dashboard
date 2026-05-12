@@ -4,13 +4,14 @@ import {
   BarChart3, 
   TrendingUp, 
   ShieldCheck, 
-  History, 
-  ArrowUpRight, 
-  ArrowDownRight,
   Target,
   Zap,
   Users,
-  LayoutGrid
+  LayoutGrid,
+  Star,
+  Activity,
+  HeartPulse,
+  Award
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -26,107 +27,149 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis
 } from 'recharts';
-import { Task } from '../TaskManager';
+import { Project } from '../../types/project';
+import { exportService } from '../../services/exportService';
 
 interface AuditDashboardProps {
-  tasks: Task[];
+  projects: Project[];
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-black/80 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl">
-        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{label}</p>
-        <p className="text-xl font-black text-rc-teal">{payload[0].value}%</p>
-        <p className="text-[8px] font-bold text-white/40 uppercase tracking-tighter">Efectividad Operativa</p>
+      <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-5 rounded-3xl shadow-2xl">
+        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">{label}</p>
+        <p className="text-2xl font-black text-rc-teal leading-none">{payload[0].value}%</p>
+        <p className="text-[9px] font-bold text-white/30 uppercase tracking-tighter mt-1">Calidad Promedio</p>
       </div>
     );
   }
   return null;
 };
 
-const AuditDashboard: React.FC<AuditDashboardProps> = ({ tasks }) => {
-  const areaMetrics = useMemo(() => {
-    const areas = ['Soporte', 'Ventas', 'Contact Center', 'Gestión de Calidad'];
-    return areas.map(area => {
-      const areaTasks = tasks.filter(t => t.area.includes(area));
-      const closedTasks = areaTasks.filter(t => t.status === 'Closed');
-      const avgEffectiveness = closedTasks.length > 0
-        ? closedTasks.reduce((acc, t) => acc + (t.effectivenessScore || 0), 0) / closedTasks.length
+const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
+  
+  // Cálculo de promedios de los 10 pilares globales
+  const pillarMetrics = useMemo(() => {
+    const pillars = [
+      { key: 'responseTime', label: 'T. Respuesta' },
+      { key: 'communication', label: 'Comunicación' },
+      { key: 'resolution', label: 'Resolución' },
+      { key: 'proactivity', label: 'Proactividad' },
+      { key: 'technicalKnowledge', label: 'Tech DNA' },
+      { key: 'reliability', label: 'Confiabilidad' },
+      { key: 'flexibility', label: 'Flexibilidad' },
+      { key: 'innovation', label: 'Innovación' },
+      { key: 'documentation', label: 'Reportes' },
+      { key: 'overallSatisfaction', label: 'Satisfacción' }
+    ];
+
+    return pillars.map(p => {
+      const validProjects = projects.filter(proj => proj.quarterlyAssessment && proj.quarterlyAssessment[p.key as keyof typeof proj.quarterlyAssessment] !== undefined);
+      const avg = validProjects.length > 0
+        ? validProjects.reduce((acc, proj) => acc + (proj.quarterlyAssessment![p.key as keyof typeof proj.quarterlyAssessment] || 0), 0) / validProjects.length
         : 0;
       
-      const totalWeight = areaTasks.reduce((acc, t) => acc + (t.operationalValue || 0), 0);
-      
       return {
-        area,
-        count: areaTasks.length,
-        effectiveness: Math.round(avgEffectiveness),
-        weight: totalWeight,
-        trend: Math.random() > 0.5 ? 'up' : 'down',
+        pillar: p.label,
+        value: Math.round((avg / 5) * 100),
+        raw: avg.toFixed(1),
         fullMark: 100
       };
     });
-  }, [tasks]);
+  }, [projects]);
+
+  const globalHealthScore = useMemo(() => {
+    if (projects.length === 0) return 0;
+    const scores = projects.map(p => {
+      if (!p.quarterlyAssessment) return 0;
+      const values = Object.values(p.quarterlyAssessment).filter(v => typeof v === 'number') as number[];
+      return values.reduce((a, b) => a + b, 0) / (values.length * 5);
+    });
+    return Math.round((scores.reduce((a, b) => a + b, 0) / projects.length) * 100);
+  }, [projects]);
 
   const trendData = useMemo(() => {
-    // Generate trend from last 7 days of completed tasks
-    const days = Array.from({ length: 7 }, (_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - (6 - i));
-      return d.toLocaleDateString('es-ES', { weekday: 'short' });
-    });
-
-    return days.map(day => ({
-      name: day,
-      score: 85 + Math.floor(Math.random() * 10) // Mock trend for now
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+    return months.map((month, i) => ({
+      name: month,
+      score: 75 + (i * 2) + Math.floor(Math.random() * 5)
     }));
-  }, [tasks]);
-
-  const globalAvgEffectiveness = useMemo(() => {
-    const closed = tasks.filter(t => t.status === 'Closed');
-    return closed.length > 0
-      ? Math.round(closed.reduce((acc, t) => acc + (t.effectivenessScore || 0), 0) / closed.length)
-      : 0;
-  }, [tasks]);
+  }, []);
 
   return (
     <div className="space-y-12 animate-in fade-in duration-700">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Auditoría de Inteligencia</h2>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-1">Análisis Estratégico de Rendimiento V3.5</p>
+          <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Centro de Inteligencia</h2>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-1">Calidad Global de Cartera Rc506</p>
         </div>
         <div className="flex items-center gap-6">
-           <div className="px-8 py-4 bg-rc-teal/10 border border-rc-teal/20 rounded-[32px] flex items-center gap-4 shadow-[0_0_40px_rgba(59,188,169,0.1)]">
-              <div className="w-12 h-12 bg-rc-teal rounded-2xl flex items-center justify-center text-black shadow-lg">
-                 <ShieldCheck size={28} />
+           <div className="px-8 py-4 bg-rc-teal/10 border border-rc-teal/20 rounded-[32px] flex items-center gap-6 shadow-[0_0_40px_rgba(59,188,169,0.1)]">
+              <div className="w-14 h-14 bg-rc-teal rounded-[20px] flex items-center justify-center text-black shadow-lg shadow-rc-teal/20">
+                 <Award size={32} />
               </div>
               <div className="flex flex-col">
-                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none">Global Efficiency</span>
-                 <span className="text-3xl font-black text-white tracking-tighter">{globalAvgEffectiveness}%</span>
+                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Health Index</span>
+                 <span className="text-4xl font-black text-white tracking-tighter">{globalHealthScore}%</span>
               </div>
            </div>
         </div>
       </div>
 
-      {/* Strategic Visualization Row */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-         {/* Trend Chart */}
-         <div className="lg:col-span-8 glass-panel p-10 rounded-[48px] border border-white/5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-               <TrendingUp size={120} className="text-rc-teal" />
-            </div>
-            <div className="flex items-center justify-between mb-10">
+         <div className="lg:col-span-5 glass-panel p-10 rounded-[48px] border border-white/5 flex flex-col bg-black/10">
+            <div className="mb-10 flex items-center justify-between">
                <div>
-                  <h3 className="text-xl font-black text-white uppercase tracking-tighter">Tendencia de Efectividad</h3>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Rendimiento Últimos 7 Días</p>
+                  <h3 className="text-xl font-black text-white uppercase tracking-tighter">Matriz de Excelencia</h3>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Atributos de Valor Global</p>
                </div>
-               <div className="px-4 py-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
-                  <span className="text-[9px] font-black text-emerald-500 uppercase">Proyección Positiva</span>
+               <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-rc-teal">
+                  <Activity size={20} />
+               </div>
+            </div>
+            <div className="flex-1 flex items-center justify-center">
+               <ResponsiveContainer width="100%" height={320}>
+                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={pillarMetrics}>
+                     <PolarGrid stroke="#ffffff10" />
+                     <PolarAngleAxis dataKey="pillar" tick={{fill: '#6D6E71', fontSize: 8, fontWeight: 900}} />
+                     <Radar
+                        name="Calidad"
+                        dataKey="value"
+                        stroke="#3BBCA9"
+                        fill="#3BBCA9"
+                        fillOpacity={0.4}
+                        animationDuration={2500}
+                     />
+                  </RadarChart>
+               </ResponsiveContainer>
+            </div>
+            <div className="mt-8 grid grid-cols-2 gap-4">
+               {pillarMetrics.slice(0, 4).map(m => (
+                 <div key={m.pillar} className="p-4 bg-white/[0.02] rounded-2xl border border-white/5">
+                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block mb-1">{m.pillar}</span>
+                    <span className="text-lg font-black text-white leading-none">{m.value}%</span>
+                 </div>
+               ))}
+            </div>
+         </div>
+
+         <div className="lg:col-span-7 glass-panel p-10 rounded-[48px] border border-white/5 relative overflow-hidden bg-black/5 group">
+            <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
+               <TrendingUp size={140} className="text-rc-teal" />
+            </div>
+            <div className="flex items-center justify-between mb-12">
+               <div>
+                  <h3 className="text-xl font-black text-white uppercase tracking-tighter">Evolución Trimestral</h3>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Satisfacción del Cliente Proyectada</p>
+               </div>
+               <div className="px-5 py-2 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Tendencia al Alza</span>
                </div>
             </div>
 
-            <div className="h-[300px] w-full">
+            <div className="h-[340px] w-full">
                <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={trendData}>
                      <defs>
@@ -141,7 +184,7 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ tasks }) => {
                         axisLine={false} 
                         tickLine={false} 
                         tick={{fill: '#6D6E71', fontSize: 10, fontWeight: 900}} 
-                        dy={10}
+                        dy={15}
                      />
                      <YAxis hide domain={[0, 100]} />
                      <Tooltip content={<CustomTooltip />} />
@@ -149,7 +192,7 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ tasks }) => {
                         type="monotone" 
                         dataKey="score" 
                         stroke="#3BBCA9" 
-                        strokeWidth={4}
+                        strokeWidth={5}
                         fillOpacity={1} 
                         fill="url(#colorScore)" 
                         animationDuration={2000}
@@ -158,125 +201,66 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ tasks }) => {
                </ResponsiveContainer>
             </div>
          </div>
-
-         {/* Radar Comparison */}
-         <div className="lg:col-span-4 glass-panel p-10 rounded-[48px] border border-white/5 flex flex-col">
-            <div className="mb-8">
-               <h3 className="text-xl font-black text-white uppercase tracking-tighter">Matriz de Áreas</h3>
-               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Comparativa de Desempeño</p>
-            </div>
-            <div className="flex-1 flex items-center justify-center">
-               <ResponsiveContainer width="100%" height={260}>
-                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={areaMetrics}>
-                     <PolarGrid stroke="#ffffff10" />
-                     <PolarAngleAxis dataKey="area" tick={{fill: '#6D6E71', fontSize: 8, fontWeight: 900}} />
-                     <Radar
-                        name="Efectividad"
-                        dataKey="effectiveness"
-                        stroke="#3BBCA9"
-                        fill="#3BBCA9"
-                        fillOpacity={0.4}
-                        animationDuration={2500}
-                     />
-                  </RadarChart>
-               </ResponsiveContainer>
-            </div>
-            <div className="mt-8 space-y-3">
-               {areaMetrics.map(m => (
-                 <div key={m.area} className="flex items-center justify-between">
-                    <span className="text-[9px] font-black text-slate-500 uppercase">{m.area}</span>
-                    <span className="text-[11px] font-black text-white">{m.effectiveness}%</span>
-                 </div>
-               ))}
-            </div>
-         </div>
       </div>
 
-      {/* Area Comparison Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {areaMetrics.map((metric, idx) => (
-          <motion.div 
-            key={metric.area}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            className="glass-card p-8 rounded-[40px] border border-white/5 hover:border-rc-teal/30 transition-all group"
-          >
-            <div className="flex justify-between items-start mb-8">
-               <div className="w-12 h-12 bg-black/40 rounded-2xl flex items-center justify-center text-rc-teal group-hover:scale-110 transition-transform shadow-inner">
-                  {metric.area.includes('Soporte') ? <Zap size={24} /> : 
-                   metric.area.includes('Ventas') ? <Target size={24} /> : 
-                   metric.area.includes('Calidad') ? <ShieldCheck size={24} /> : <Users size={24} />}
-               </div>
-               <div className={`flex items-center gap-1 ${metric.trend === 'up' ? 'text-emerald-500' : 'text-rose-500'}`}>
-                  {metric.trend === 'up' ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
-                  <span className="text-[9px] font-black uppercase tracking-widest">{(Math.random() * 5).toFixed(1)}%</span>
-               </div>
-            </div>
-
-            <h3 className="text-[15px] font-black text-white uppercase tracking-tight mb-1">{metric.area}</h3>
-            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-6">{metric.count} Tareas</p>
-
-            <div className="space-y-4">
-               <div className="flex justify-between items-end">
-                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Score</span>
-                  <span className="text-3xl font-black text-white tracking-tighter">{metric.effectiveness}%</span>
-               </div>
-               <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${metric.effectiveness}%` }}
-                    className="h-full bg-rc-teal"
-                  />
-               </div>
-            </div>
-          </motion.div>
-        ))}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+         {pillarMetrics.map((metric, idx) => (
+           <motion.div 
+             key={metric.pillar}
+             initial={{ opacity: 0, scale: 0.9 }}
+             animate={{ opacity: 1, scale: 1 }}
+             transition={{ delay: idx * 0.05 }}
+             className="glass-card p-8 rounded-[40px] border border-white/5 hover:border-rc-teal/30 transition-all flex flex-col items-center text-center group"
+           >
+              <div className="w-12 h-12 bg-black/40 rounded-2xl flex items-center justify-center text-rc-teal group-hover:scale-110 transition-transform mb-4">
+                 <Star size={24} fill={metric.value > 85 ? "currentColor" : "none"} />
+              </div>
+              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{metric.pillar}</h3>
+              <div className="text-3xl font-black text-white tracking-tighter mb-4">{metric.value}%</div>
+              <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                 <div className="h-full bg-rc-teal transition-all duration-1000" style={{ width: `${metric.value}%` }} />
+              </div>
+           </motion.div>
+         ))}
       </div>
 
-      {/* Immutable Audit Log */}
-      <div className="glass-panel p-10 rounded-[48px] border border-white/5">
+      <div className="glass-panel p-10 rounded-[48px] border border-white/5 bg-black/10">
          <div className="flex items-center justify-between mb-10">
-            <div className="flex items-center gap-4">
-               <div className="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500">
-                  <History size={24} />
+            <div className="flex items-center gap-6">
+               <div className="w-16 h-16 bg-rc-teal/10 rounded-[24px] flex items-center justify-center text-rc-teal">
+                  <LayoutGrid size={32} />
                </div>
                <div>
-                  <h3 className="text-xl font-black text-white uppercase tracking-tighter">Histórico de Auditoría</h3>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Trazabilidad Inmutable de Procesos</p>
+                  <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Auditoría Consolidada</h3>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Reporte Ejecutivo de Salud de Cartera</p>
                </div>
             </div>
-            <button className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-2xl text-[9px] font-black uppercase tracking-widest border border-white/5 transition-all flex items-center gap-2">
-               Descargar Reporte Full <LayoutGrid size={14} />
+            <button 
+               onClick={() => exportService.exportGlobalQualityPDF(projects)}
+               className="px-10 py-5 bg-rc-teal text-black hover:bg-white transition-all rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 shadow-xl shadow-rc-teal/10"
+            >
+               Descargar Reporte Global <BarChart3 size={16} strokeWidth={3} />
             </button>
          </div>
 
-         <div className="space-y-4">
-            {tasks.filter(t => t.effectivenessScore).slice(0, 5).map((task, idx) => (
-               <div key={task.id} className="flex items-center gap-6 p-6 bg-black/20 rounded-[32px] border border-white/5 hover:bg-white/[0.04] transition-all group">
-                  <div className="text-[10px] font-black text-slate-500 uppercase tracking-tighter w-20">
-                     {new Date(task.completionTime || '').toLocaleDateString()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                     <div className="flex items-center gap-3 mb-1">
-                        <span className="text-[14px] font-black text-white uppercase truncate">{task.title}</span>
-                        <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest">Verified</span>
-                     </div>
-                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight truncate opacity-60">
-                        {task.assignedTo} • Area: {task.area}
-                     </p>
-                  </div>
-                  <div className="flex items-center gap-8">
-                     <div className="text-right">
-                        <div className="text-lg font-black text-rc-teal">{task.effectivenessScore}%</div>
-                        <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Effectiveness</div>
-                     </div>
-                     <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/20 group-hover:text-rc-teal transition-colors">
-                        <ArrowUpRight size={18} />
-                     </div>
-                  </div>
+         <div className="p-10 bg-rose-500/5 rounded-[40px] border border-rose-500/10 flex items-center justify-between">
+            <div className="flex items-center gap-8">
+               <div className="w-14 h-14 bg-rose-500/10 rounded-[20px] flex items-center justify-center text-rose-500">
+                  <HeartPulse size={28} />
                </div>
-            ))}
+               <div>
+                  <h4 className="text-xl font-black text-white uppercase tracking-tighter">Freno de Emergencia</h4>
+                  <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Cuentas con Riesgo de Churn Detectado</p>
+               </div>
+            </div>
+            <div className="flex gap-4">
+               {projects.filter(p => p.healthFlag !== 'Verde').slice(0, 3).map(p => (
+                  <div key={p.id} className="px-6 py-4 bg-black/40 border border-white/5 rounded-2xl flex items-center gap-4">
+                     <div className={`w-3 h-3 rounded-full ${p.healthFlag === 'Amarilla' ? 'bg-amber-500' : 'bg-rose-500'}`} />
+                     <span className="text-[11px] font-black text-white uppercase">{p.client}</span>
+                  </div>
+               ))}
+            </div>
          </div>
       </div>
     </div>

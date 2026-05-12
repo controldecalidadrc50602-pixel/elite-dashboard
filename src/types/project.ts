@@ -116,6 +116,19 @@ export interface StrategySLA {
   responseSla: number; // Horas/Días
 }
 
+export interface QuarterlyAssessment {
+  responseTime: number;      // 1-5
+  communication: number;     // 1-5
+  resolution: number;        // 1-5
+  proactivity: number;       // 1-5
+  technicalKnowledge: number;// 1-5
+  reliability: number;       // 1-5
+  flexibility: number;       // 1-5
+  innovation: number;        // 1-5
+  documentation: number;     // 1-5
+  overallSatisfaction: number;// 1-5
+}
+
 export interface Project {
   id: string;
   client: string;
@@ -136,4 +149,5 @@ export interface Project {
   assets?: HardwareAsset[];
   strategy?: StrategySLA;
   clientEvaluation?: ClientEvaluation;
+  quarterlyAssessment?: QuarterlyAssessment;
 }

@@ -21,6 +21,16 @@ const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
   const clientHealthAlerts = projects.filter(p => p.clientEvaluation?.status === 'Roja' || p.clientEvaluation?.status === 'Negra');
   const allAlerts = [...criticalProjects.map(p => ({...p, alertType: 'Operation'})), ...clientHealthAlerts.map(p => ({...p, alertType: 'Client'}))];
 
+  const globalHealthScore = useMemo(() => {
+    if (projects.length === 0) return 0;
+    const scores = projects.map(p => {
+      if (!p.quarterlyAssessment) return 0;
+      const values = Object.values(p.quarterlyAssessment).filter(v => typeof v === 'number') as number[];
+      return values.reduce((a, b) => a + b, 0) / (values.length * 5);
+    });
+    return (scores.reduce((a, b) => a + b, 0) / projects.length) * 100;
+  }, [projects]);
+
   return (
     <aside className="w-[340px] h-full glass-panel border-l border-[var(--glass-border)] flex flex-col overflow-hidden relative z-40 transition-all duration-300">
       {/* Header */}
@@ -41,7 +51,7 @@ const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
            {[
              { label: 'Cuentas', value: projects.length, icon: Users, color: 'text-rc-teal' },
              { label: 'Críticas', value: criticalProjects.length, icon: ShieldAlert, color: 'text-rose-500' },
-             { label: 'Efectividad', value: '94%', icon: TrendingUp, color: 'text-rc-teal' },
+             { label: 'Calidad', value: `${Math.round(globalHealthScore)}%`, icon: TrendingUp, color: 'text-rc-teal' },
              { label: 'Pendientes', value: tasks.length, icon: Clock, color: 'text-amber-500' },
            ].map((kpi, idx) => {
              const Icon = kpi.icon;
@@ -80,8 +90,8 @@ const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
                     <div className={`w-1.5 h-8 rounded-full shadow-lg ${(project as any).alertType === 'Client' ? 'bg-amber-500 shadow-amber-500/40' : 'bg-rose-500 shadow-rose-500/40'}`} />
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-0.5">
-                          <span className="text-[12px] font-black text-[var(--text-primary)] uppercase truncate pr-2">{project.client}</span>
-                          <ArrowUpRight size={12} className="text-rc-teal opacity-0 group-hover:opacity-100 transition-all" />
+                           <span className="text-[12px] font-black text-[var(--text-primary)] uppercase truncate pr-2">{project.client}</span>
+                           <ArrowUpRight size={12} className="text-rc-teal opacity-0 group-hover:opacity-100 transition-all" />
                         </div>
                         <p className="text-[8px] text-slate-500 font-bold uppercase tracking-tight truncate">
                            {(project as any).alertType === 'Client' ? 'Salud del Cliente en Riesgo' : 'SLA en Riesgo Crítico'}
@@ -137,7 +147,7 @@ const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
             <span className="text-[8px] font-black text-rc-teal uppercase tracking-[0.2em]">Performance Index</span>
             <span className="px-2 py-0.5 bg-rc-teal text-black text-[7px] font-black rounded uppercase">Live</span>
           </div>
-          <div className="text-3xl font-black tracking-tighter text-[var(--text-primary)]">98.4%</div>
+          <div className="text-3xl font-black tracking-tighter text-[var(--text-primary)]">{globalHealthScore.toFixed(1)}%</div>
           <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">Eficiencia operativa global</p>
         </div>
       </div>

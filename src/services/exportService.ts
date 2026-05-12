@@ -180,72 +180,195 @@ export const exportService = {
   },
 
   /**
-   * EXPORT INDIVIDUAL PROJECT PDF
-   * Deep report for a single client.
+   * EXPORT GLOBAL QUALITY PDF (RC506 INTELLIGENCE CENTER)
+   * Consolidates the 10 pillars across all projects.
+   */
+  exportGlobalQualityPDF: (projects: Project[]) => {
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const applyBranding = (pdf: jsPDF) => {
+      pdf.setFillColor(10, 10, 11); // App dark background
+      pdf.rect(0, 0, pageWidth, 45, 'F');
+      
+      // RC506 Logo
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(22);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('RC', pageWidth - 35, 20);
+      pdf.setTextColor(59, 188, 169); // RC Teal
+      pdf.text('506', pageWidth - 23, 20);
+
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(14);
+      pdf.text('CENTRO DE INTELIGENCIA', 20, 20);
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(59, 188, 169);
+      pdf.text('REPORTE CONSOLIDADO DE CALIDAD ESTRATÉGICA', 20, 26);
+
+      // Footer
+      pdf.setFillColor(10, 10, 11);
+      pdf.rect(0, pageHeight - 15, pageWidth, 15, 'F');
+      pdf.setTextColor(255, 255, 255);
+      pdf.text('HC Rc506 - Gestión de Cartera Premium', 20, pageHeight - 6);
+      pdf.text(`Generado: ${new Date().toLocaleString()}`, pageWidth - 60, pageHeight - 6);
+    };
+
+    applyBranding(doc);
+
+    // Global Metrics Calculation
+    const pillars = [
+      { key: 'responseTime', label: 'Tiempo de Respuesta' },
+      { key: 'communication', label: 'Comunicación Fluida' },
+      { key: 'resolution', label: 'Capacidad de Resolución' },
+      { key: 'proactivity', label: 'Proactividad Operativa' },
+      { key: 'technicalKnowledge', label: 'Conocimiento Técnico' },
+      { key: 'reliability', label: 'Confiabilidad / Backup' },
+      { key: 'flexibility', label: 'Flexibilidad de Cambio' },
+      { key: 'innovation', label: 'Aporte de Innovación' },
+      { key: 'documentation', label: 'Reportes & Documentos' },
+      { key: 'overallSatisfaction', label: 'Satisfacción Global' }
+    ];
+
+    const globalPillarAverages = pillars.map(p => {
+      const valid = projects.filter(proj => proj.quarterlyAssessment?.[p.key as keyof typeof proj.quarterlyAssessment]);
+      const avg = valid.length > 0 
+        ? valid.reduce((acc, proj) => acc + (proj.quarterlyAssessment![p.key as keyof typeof proj.quarterlyAssessment] || 0), 0) / valid.length
+        : 0;
+      return { label: p.label, value: Math.round((avg / 5) * 100), raw: avg.toFixed(2) };
+    });
+
+    const globalScore = Math.round(globalPillarAverages.reduce((a, b) => a + b.value, 0) / pillars.length);
+
+    // Summary Hero Section
+    doc.setFillColor(59, 188, 169, 0.05);
+    doc.roundedRect(20, 55, pageWidth - 40, 40, 5, 5, 'F');
+    
+    doc.setTextColor(10, 10, 11);
+    doc.setFontSize(32);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${globalScore}%`, pageWidth / 2, 80, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setTextColor(100, 116, 139);
+    doc.text('HEALTH INDEX GLOBAL DE CARTERA', pageWidth / 2, 88, { align: 'center' });
+
+    // Detailed Pillars Table
+    autoTable(doc, {
+      startY: 105,
+      head: [['Pilar de Calidad', 'Score Global (%)', 'Promedio (1-5)']],
+      body: globalPillarAverages.map(m => [m.label, `${m.value}%`, m.raw]),
+      theme: 'grid',
+      headStyles: { fillColor: [10, 10, 11], textColor: [255, 255, 255], fontStyle: 'bold' },
+      styles: { fontSize: 9, cellPadding: 5 },
+      columnStyles: {
+        1: { halign: 'center', fontStyle: 'bold' },
+        2: { halign: 'center' }
+      }
+    });
+
+    // Alert Section
+    const finalY = (doc as any).lastAutoTable.finalY || 180;
+    doc.addPage();
+    applyBranding(doc);
+
+    doc.setTextColor(10, 10, 11);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('ANÁLISIS DE RIESGO Y CHURN', 20, 60);
+
+    const atRisk = projects.filter(p => p.healthFlag !== 'Verde');
+    
+    autoTable(doc, {
+      startY: 70,
+      head: [['Cliente', 'Estado de Salud', 'Evaluación Administrativa']],
+      body: atRisk.map(p => [
+        p.client.toUpperCase(),
+        p.healthFlag,
+        p.clientEvaluation?.status || 'N/A'
+      ]),
+      theme: 'striped',
+      headStyles: { fillColor: [244, 63, 94], textColor: [255, 255, 255] },
+      styles: { fontSize: 9 }
+    });
+
+    doc.save(`Reporte_Calidad_Global_Rc506_${new Date().toISOString().split('T')[0]}.pdf`);
+  },
+
+  /**
+   * EXPORT INDIVIDUAL PROJECT PDF (SMART VIEW ENHANCED)
    */
   exportIndividualPDF: (project: Project, t: any) => {
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    // Re-use branding logic (Simplified for consistency)
     const applyBranding = (pdf: jsPDF) => {
-      pdf.setFillColor(15, 23, 42);
-      pdf.rect(0, 0, pageWidth, 40, 'F');
-      pdf.setFillColor(255, 255, 255);
-      pdf.ellipse(pageWidth / 2, 45, pageWidth * 0.8, 15, 'F');
-      pdf.setFillColor(15, 23, 42); pdf.rect(0, pageHeight - 15, pageWidth, 15, 'F');
-      pdf.setTextColor(255, 255, 255); pdf.setFontSize(8);
-      pdf.text(`Elite Report: ${project.client}`, 10, pageHeight - 6);
+      pdf.setFillColor(10, 10, 11);
+      pdf.rect(0, 0, pageWidth, 45, 'F');
+      pdf.setTextColor(59, 188, 169);
+      pdf.setFontSize(22);
+      pdf.text('RC', pageWidth - 35, 20);
+      pdf.setTextColor(255, 255, 255);
+      pdf.text('506', pageWidth - 23, 20);
+      
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(14);
+      pdf.text(project.client.toUpperCase(), 20, 20);
+      pdf.setFontSize(8);
+      pdf.text('EXPEDIENTE CRM SMARTVIEW', 20, 26);
     };
 
     applyBranding(doc);
 
-    doc.setTextColor(15, 23, 42);
-    doc.setFontSize(22);
-    doc.setFont('helvetica', 'bold');
-    doc.text(project.client.toUpperCase(), 20, 60);
-    
-    doc.setFontSize(10);
-    doc.setTextColor(59, 199, 170); // RC Teal
-    doc.text(`REPORTE ESTRATÉGICO INDIVIDUAL | ID: ${project.id}`, 20, 68);
+    // Quarterly Assessment Data
+    const assessment = project.quarterlyAssessment || {
+      responseTime: 0, communication: 0, resolution: 0, proactivity: 0, technicalKnowledge: 0,
+      reliability: 0, flexibility: 0, innovation: 0, documentation: 0, overallSatisfaction: 0
+    };
 
-    // Current Performance Summary
+    const pillarData = [
+      ['Tiempo de Respuesta', assessment.responseTime],
+      ['Comunicación Fluida', assessment.communication],
+      ['Capacidad de Resolución', assessment.resolution],
+      ['Proactividad Operativa', assessment.proactivity],
+      ['Conocimiento Técnico', assessment.technicalKnowledge],
+      ['Confiabilidad / Backup', assessment.reliability],
+      ['Flexibilidad de Cambio', assessment.flexibility],
+      ['Aporte de Innovación', assessment.innovation],
+      ['Reportes & Documentos', assessment.documentation],
+      ['Satisfacción Global', assessment.overallSatisfaction]
+    ];
+
     autoTable(doc, {
-      startY: 85,
-      head: [['Indicador de Salud', 'Estado Actual']],
-      body: [
-        ['Puntaje Cuantitativo', `${project.evaluations[0]?.quantitative || '0'} / 5.0`],
-        ['Estatus Estratégico', project.evaluations[0]?.status || 'Stable'],
-        ['Fecha de Inicio de Relación', project.startDate],
-        ['Resumen de Gestión', project.evaluations[0]?.qualitative || 'No se han registrado auditorías recientes.']
-      ],
+      startY: 60,
+      head: [['Pilar Estratégico', 'Puntuación (1-5)']],
+      body: pillarData,
       theme: 'grid',
-      headStyles: { fillColor: [59, 199, 170], textColor: [255, 255, 255] },
-      styles: { fontSize: 10, cellPadding: 5 }
+      headStyles: { fillColor: [59, 188, 169] },
+      styles: { fontSize: 10 }
     });
 
-    // History Table
-    const finalY = (doc as any).lastAutoTable.finalY || 140;
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(15, 23, 42);
-    doc.text('HISTORIAL DE AUDITORÍAS', 20, finalY + 20);
+    const finalY = (doc as any).lastAutoTable.finalY + 20;
+    
+    doc.setFontSize(12);
+    doc.setTextColor(10, 10, 11);
+    doc.text('ADN TÉCNICO Y OPERATIVO', 20, finalY);
 
     autoTable(doc, {
-      startY: finalY + 25,
-      head: [['Fecha', 'Score', 'Estatus', 'Análisis Cualitativo']],
-      body: project.evaluations.map(e => [
-        `${e.month}/${e.year}`,
-        e.quantitative,
-        e.status,
-        e.qualitative
-      ]),
-      theme: 'striped',
-      headStyles: { fillColor: [15, 23, 42] },
-      styles: { fontSize: 8 }
+      startY: finalY + 5,
+      body: [
+        ['Modalidad', project.techDNA?.operationMode || 'N/A'],
+        ['País', project.techDNA?.country || 'N/A'],
+        ['Troncal Virtual', project.techDNA?.sipTrunkVirtual || 'N/A'],
+        ['Personal Real', `${project.opsPulse?.hcReal || 0} HC`],
+        ['Personal Contratado', `${project.opsPulse?.hcContracted || 0} HC`]
+      ],
+      theme: 'plain',
+      styles: { fontSize: 9 }
     });
 
-    doc.save(`Reporte_Elite_${project.client.replace(/\s+/g, '_')}.pdf`);
+    doc.save(`Expediente_SmartView_${project.client.replace(/\s+/g, '_')}.pdf`);
   }
 };

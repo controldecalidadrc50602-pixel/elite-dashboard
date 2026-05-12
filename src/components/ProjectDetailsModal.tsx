@@ -54,641 +54,260 @@ const ProjectDetailsModal: React.FC<Props> = ({
     }
   };
 
-  const flagStyles = getFlagColor(editedProject.healthFlag || 'Verde');
+  const getFlagColor = (flag: string) => {
+    switch(flag) {
+      case 'Verde': return 'text-emerald-500 border-emerald-500/30';
+      case 'Amarilla': return 'text-amber-500 border-amber-500/30';
+      case 'Roja': return 'text-rose-500 border-rose-500/30';
+      case 'Negra': return 'text-slate-900 border-slate-900/30';
+      default: return 'text-rc-teal border-rc-teal/30';
+    }
+  };
+
+  const calculateScore = (assessment: any) => {
+    if (!assessment) return 0;
+    const values = Object.values(assessment).filter(v => typeof v === 'number') as number[];
+    if (values.length === 0) return 0;
+    const sum = values.reduce((a, b) => a + b, 0);
+    return Math.round((sum / (values.length * 5)) * 100);
+  };
+
+  const currentScore = calculateScore(editedProject.quarterlyAssessment);
 
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-[100] p-4 md:p-8">
+        <div className="fixed inset-0 flex items-center justify-center z-[100] p-4">
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" 
+            className="absolute inset-0 bg-black/60 backdrop-blur-md" 
           />
           <motion.div 
-            initial={{ scale: 0.9, opacity: 0, y: 20 }} 
-            animate={{ scale: 1, opacity: 1, y: 0 }} 
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="relative w-full max-w-[85%] h-full max-h-[90vh] bg-[var(--bg-secondary)] border border-white/10 rounded-[48px] shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col z-[110]"
+            initial={{ scale: 0.95, opacity: 0 }} 
+            animate={{ scale: 1, opacity: 1 }} 
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="relative w-[95vw] h-[90vh] bg-[#0a0a0b] border border-white/10 rounded-[40px] shadow-2xl overflow-hidden flex flex-col z-[110]"
           >
-            {/* Top Navigation / Header */}
-            <div className="flex flex-col border-b border-white/5 bg-[var(--bg-primary)]/50">
-               <div className="p-8 pb-4 flex items-center justify-between">
-                  <div className="flex items-center gap-6">
-                     <div className="w-20 h-20 bg-black/40 rounded-[32px] border border-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-2xl">
-                        {editedProject.logoUrl ? (
-                           <img src={editedProject.logoUrl} alt={editedProject.client} className="w-12 h-12 object-contain" />
-                        ) : (
-                           <ShieldCheck size={40} className="text-rc-teal" />
-                        )}
-                     </div>
-                     <div>
-                        <div className="flex items-center gap-4">
-                           <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter uppercase leading-none">
-                              {editedProject.client}
-                           </h2>
-                           <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${flagStyles}`}>
-                              Bandera {editedProject.healthFlag}
-                           </div>
-                        </div>
-                        <div className="flex items-center gap-6 mt-3">
-                           <p className="text-[10px] text-[var(--text-secondary)] font-black uppercase tracking-widest flex items-center gap-2 opacity-60">
-                              <Calendar size={14} className="text-rc-teal" /> Onboarding: {editedProject.startDate}
-                           </p>
-                           <p className="text-[10px] text-[var(--text-secondary)] font-black uppercase tracking-widest flex items-center gap-2 opacity-60">
-                              <Users size={14} className="text-rc-teal" /> ID: {editedProject.id}
-                           </p>
-                        </div>
-                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                     {isEditing ? (
-                       <button 
-                         onClick={handleSave} 
-                         className="flex items-center gap-2 px-6 py-3 bg-rc-teal text-white rounded-2xl transition-all text-[10px] font-black uppercase tracking-widest border border-rc-teal/20 shadow-lg shadow-rc-teal/20"
-                       >
-                          <Save size={16} /> Guardar Cambios
-                       </button>
+            {/* Header Compacto */}
+            <div className="p-8 border-b border-white/5 flex items-center justify-between bg-black/20">
+               <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 bg-white/[0.03] rounded-2xl border border-white/10 flex items-center justify-center p-3 shadow-xl">
+                     {editedProject.logoUrl ? (
+                        <img src={editedProject.logoUrl} className="w-full h-full object-contain" />
                      ) : (
-                       <button 
-                         onClick={() => setIsEditing(true)} 
-                         className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-[var(--rc-turquoise)]/10 hover:text-rc-teal rounded-2xl transition-all text-[10px] font-black uppercase tracking-widest border border-white/5"
-                       >
-                          <Edit3 size={16} /> {t('common.edit')}
-                       </button>
+                        <Activity className="text-rc-teal opacity-20" size={24} />
                      )}
-                     <button onClick={() => exportService.exportIndividualPDF(editedProject, t)} className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-[var(--rc-turquoise)]/10 hover:text-rc-teal rounded-2xl transition-all text-[10px] font-black uppercase tracking-widest border border-white/5">
-                        <FileText size={16} /> {t('common.export')}
-                     </button>
-                     <button onClick={onClose} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all text-[var(--text-secondary)] border border-white/5">
-                        <X size={20} />
-                     </button>
+                  </div>
+                  <div>
+                     <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">{editedProject.client}</h2>
+                     <div className="flex items-center gap-4 mt-2">
+                        <span className="text-[10px] font-black text-rc-teal uppercase tracking-widest flex items-center gap-2">
+                           <ShieldCheck size={14} /> Expediente CRM SmartView
+                        </span>
+                        <div className={`w-2 h-2 rounded-full animate-pulse ${editedProject.healthFlag === 'Verde' ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                     </div>
                   </div>
                </div>
 
-               {/* Tabs */}
-               <div className="flex px-8 gap-10">
-                  {[
-                    { id: 'identity', label: 'Identidad', icon: User },
-                    { id: 'operations', label: 'Operaciones', icon: Activity },
-                    { id: 'services', label: 'Logbook', icon: Layers },
-                    { id: 'tech', label: 'Tech DNA', icon: Zap },
-                    { id: 'assets', label: 'Activos', icon: Headphones },
-                    { id: 'evaluation', label: 'Evaluación', icon: Activity },
-                  ].map(tab => (
-                    <button 
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id as any)}
-                      className={`py-6 text-[11px] font-black uppercase tracking-[0.2em] transition-all relative flex items-center gap-3 ${
-                         activeTab === tab.id ? 'text-rc-teal' : 'text-[var(--text-secondary)] opacity-40 hover:opacity-100'
-                      }`}
-                    >
-                       <tab.icon size={16} />
-                       {tab.label}
-                       {activeTab === tab.id && (
-                         <motion.div 
-                           layoutId="modal-tab-active" 
-                           className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--rc-turquoise)] rounded-t-full" 
-                         />
-                       )}
-                    </button>
-                  ))}
+               <div className="flex items-center gap-8">
+                  <div className="text-right">
+                     <div className="text-4xl font-black text-white tracking-tighter leading-none">{currentScore}%</div>
+                     <div className="text-[10px] font-black text-rc-teal uppercase tracking-[0.2em] mt-1">Calidad Global</div>
+                  </div>
+                  <div className="h-12 w-px bg-white/10" />
+                  <div className="flex items-center gap-3">
+                     <button onClick={() => exportService.exportIndividualPDF(editedProject, t)} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl text-white transition-all border border-white/5 premium-button">
+                        <FileText size={20} strokeWidth={1.5} />
+                     </button>
+                     <button onClick={onClose} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl text-white transition-all border border-white/5 premium-button">
+                        <X size={20} strokeWidth={1.5} />
+                     </button>
+                  </div>
                </div>
             </div>
 
-            {/* Main Content Area */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar bg-black/20 p-10">
-               <div className="max-w-7xl mx-auto">
-                  
-                  {/* TAB: IDENTIDAD */}
-                  {activeTab === 'identity' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                      <div className="lg:col-span-8 space-y-8">
-                         <div className="glass-card p-10 rounded-[48px] border border-white/5 space-y-10">
-                            <div className="flex items-center gap-4 border-b border-white/5 pb-6">
-                               <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal">
-                                  <User size={24} />
-                               </div>
-                               <div>
-                                  <h3 className="text-xl font-black text-white uppercase tracking-tighter">Perfiles de Enlace</h3>
-                                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gestión Humana y Onboarding</p>
-                               </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                               <div className="space-y-4">
-                                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Account Manager (Interno)</label>
-                                  <div className="relative group">
-                                     <User className="absolute left-6 top-1/2 -translate-y-1/2 text-rc-teal opacity-50 group-hover:opacity-100 transition-opacity" size={18} />
-                                     <input 
-                                       disabled={!isEditing}
-                                       value={editedProject.accountManager || ''}
-                                       onChange={(e) => setEditedProject({...editedProject, accountManager: e.target.value})}
-                                       className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 pl-16 pr-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50"
-                                       placeholder="Nombre del AM"
-                                     />
-                                  </div>
-                               </div>
-
-                               <div className="space-y-4">
-                                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Colaborador Enlace (Cliente)</label>
-                                  <div className="relative group">
-                                     <Users className="absolute left-6 top-1/2 -translate-y-1/2 text-rc-teal opacity-50 group-hover:opacity-100 transition-opacity" size={18} />
-                                     <input 
-                                       disabled={!isEditing}
-                                       value={editedProject.partnerLiaison?.name || ''}
-                                       onChange={(e) => setEditedProject({...editedProject, partnerLiaison: {...(editedProject.partnerLiaison || {email: ''}), name: e.target.value}})}
-                                       className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 pl-16 pr-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50"
-                                       placeholder="Nombre del Enlace"
-                                     />
-                                  </div>
-                               </div>
-
-                               <div className="space-y-4">
-                                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Email de Contacto</label>
-                                  <input 
-                                    disabled={!isEditing}
-                                    value={editedProject.partnerLiaison?.email || ''}
-                                    onChange={(e) => setEditedProject({...editedProject, partnerLiaison: {...(editedProject.partnerLiaison || {name: ''}), email: e.target.value}})}
-                                    className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 px-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50"
-                                    placeholder="ejemplo@cliente.com"
-                                  />
-                               </div>
-
-                               <div className="space-y-4">
-                                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Fecha de Onboarding</label>
-                                  <input 
-                                    type="date"
-                                    disabled={!isEditing}
-                                    value={editedProject.startDate}
-                                    onChange={(e) => setEditedProject({...editedProject, startDate: e.target.value})}
-                                    className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 px-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50"
-                                  />
-                               </div>
-                            </div>
-                         </div>
-                      </div>
-
-                      <div className="lg:col-span-4 space-y-6">
-                         <div className="glass-card p-8 rounded-[40px] border border-white/5 bg-rc-teal/5">
-                            <h4 className="text-[10px] font-black text-rc-teal uppercase tracking-[0.3em] mb-6">Resumen Ejecutivo</h4>
-                            <div className="space-y-6">
-                               <div className="flex flex-col gap-1">
-                                  <span className="text-[9px] font-bold text-slate-500 uppercase">Objetivo Estratégico</span>
-                                  <textarea 
-                                    disabled={!isEditing}
-                                    value={editedProject.strategicObjective || ''}
-                                    onChange={(e) => setEditedProject({...editedProject, strategicObjective: e.target.value})}
-                                    className="w-full bg-transparent border-none p-0 text-sm font-medium text-white resize-none h-32 focus:ring-0"
-                                    placeholder="Defina el objetivo principal..."
-                                  />
-                               </div>
-                            </div>
-                         </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* TAB: OPERACIONES */}
-                  {activeTab === 'operations' && (
-                    <div className="space-y-8 animate-in fade-in duration-500">
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                         <div className="glass-card p-10 rounded-[40px] border border-white/5 space-y-6">
-                            <h4 className="text-[10px] font-black text-rc-teal uppercase tracking-[0.3em]">Matriz de Contact Center</h4>
-                            <div className="space-y-4">
-                               <div className="p-6 bg-black/40 rounded-3xl border border-white/5 flex items-center justify-between">
-                                  <span className="text-[10px] font-black text-slate-500 uppercase">HC Contratado</span>
-                                  <input 
-                                    type="number"
-                                    disabled={!isEditing}
-                                    value={editedProject.opsPulse?.hcContracted || 0}
-                                    onChange={(e) => setEditedProject({...editedProject, opsPulse: {...(editedProject.opsPulse || {hcReal: 0, backupStatus: 'Disponible', operationType: 'Ventas'}), hcContracted: parseInt(e.target.value)}})}
-                                    className="bg-transparent border-none text-right w-20 text-xl font-black focus:ring-0"
-                                  />
-                               </div>
-                               <div className="p-6 bg-rc-teal/10 rounded-3xl border border-rc-teal/20 flex items-center justify-between">
-                                  <span className="text-[10px] font-black text-rc-teal uppercase">HC Real Asignado</span>
-                                  <input 
-                                    type="number"
-                                    disabled={!isEditing}
-                                    value={editedProject.opsPulse?.hcReal || 0}
-                                    onChange={(e) => setEditedProject({...editedProject, opsPulse: {...(editedProject.opsPulse || {hcContracted: 0, backupStatus: 'Disponible', operationType: 'Ventas'}), hcReal: parseInt(e.target.value)}})}
-                                    className="bg-transparent border-none text-right w-20 text-xl font-black text-rc-teal focus:ring-0"
-                                  />
-                               </div>
-                            </div>
-                         </div>
-
-                         <div className="glass-card p-10 rounded-[40px] border border-white/5 space-y-6">
-                            <h4 className="text-[10px] font-black text-rc-teal uppercase tracking-[0.3em]">Tipo de Gestión</h4>
-                            <div className="grid grid-cols-1 gap-4">
-                               <select 
-                                 disabled={!isEditing}
-                                 value={editedProject.opsPulse?.operationType || 'Ventas'}
-                                 onChange={(e) => setEditedProject({...editedProject, opsPulse: {...(editedProject.opsPulse || {hcContracted: 0, hcReal: 0, backupStatus: 'Disponible'}), operationType: e.target.value as any}})}
-                                 className="w-full bg-black/40 border border-white/5 rounded-3xl py-5 px-8 text-sm focus:border-rc-teal/50 outline-none transition-all appearance-none"
-                               >
-                                  <option value="Ventas">Ventas</option>
-                                  <option value="Servicio al Cliente">Servicio al Cliente</option>
-                                  <option value="Cobranza">Cobranza</option>
-                                  <option value="Soporte Técnico">Soporte Técnico</option>
-                               </select>
-                               <div className="p-6 bg-white/5 rounded-3xl border border-white/5">
-                                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Estado de Respaldo</p>
-                                  <span className="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase">
-                                     {editedProject.opsPulse?.backupStatus || 'Disponible'}
-                                  </span>
-                               </div>
-                            </div>
-                         </div>
-
-                         <div className="glass-card p-10 rounded-[40px] border border-white/5 flex flex-col justify-center text-center">
-                            <p className="text-5xl font-black text-white">{Math.round(((editedProject.opsPulse?.hcReal || 0) / (editedProject.opsPulse?.hcContracted || 1)) * 100)}%</p>
-                            <p className="text-[10px] font-black text-rc-teal uppercase tracking-widest mt-2">Eficiencia Operativa</p>
-                         </div>
-                      </div>
-
-                      {/* Turnos y Horarios Grid */}
-                      <div className="glass-card p-10 rounded-[48px] border border-white/5">
-                         <div className="flex items-center justify-between mb-8">
-                            <div>
-                               <h4 className="text-xl font-black text-white uppercase tracking-tighter">Matriz de Turnos</h4>
-                               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Configuración de Horarios y Dotación</p>
-                            </div>
-                            {isEditing && (
-                              <button className="px-6 py-3 bg-white/5 hover:bg-rc-teal/10 text-rc-teal rounded-2xl text-[9px] font-black uppercase tracking-widest border border-rc-teal/20 transition-all">
-                                 + Agregar Turno
+            {/* SmartView Grid: 3 Columnas */}
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 divide-x divide-white/5 overflow-hidden">
+               
+               {/* Col 1: Tech DNA & Identity */}
+               <div className="p-10 space-y-10 overflow-y-auto custom-scrollbar bg-black/10">
+                  <div className="space-y-6">
+                     <h3 className="text-meta">1. Identidad & Tech DNA</h3>
+                     
+                     <div className="space-y-4">
+                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Modalidad</label>
+                        <div className="grid grid-cols-2 gap-2">
+                           {['RC506', 'WYP', 'IPBX', 'HIBRIDO'].map(mode => (
+                              <button key={mode} className={`py-3 rounded-xl text-[9px] font-black border transition-all ${editedProject.techDNA?.operationMode === mode ? 'bg-rc-teal/20 border-rc-teal text-rc-teal' : 'bg-white/5 border-white/5 text-slate-500'}`}>
+                                 {mode}
                               </button>
-                            )}
-                         </div>
+                           ))}
+                        </div>
+                     </div>
 
-                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                            {editedProject.opsPulse?.shifts?.map(shift => (
-                               <div key={shift.id} className="p-8 bg-black/40 rounded-[32px] border border-white/5 relative group">
-                                  <Clock className="absolute right-6 top-6 text-rc-teal/20" size={24} />
-                                  <h5 className="text-[13px] font-black text-white uppercase mb-1">{shift.name}</h5>
-                                  <p className="text-[10px] font-bold text-rc-teal uppercase mb-4">{shift.timeRange}</p>
-                                  <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                                     <span className="text-[9px] font-black text-slate-500 uppercase">Personal</span>
-                                     <span className="text-lg font-black text-white">{shift.peopleCount} HC</span>
-                                  </div>
-                               </div>
-                            ))}
-                            {(!editedProject.opsPulse?.shifts || editedProject.opsPulse.shifts.length === 0) && (
-                               <div className="col-span-full py-16 text-center border-2 border-dashed border-white/5 rounded-[32px] opacity-20">
-                                  <p className="text-xs font-black uppercase tracking-widest">Sin turnos configurados</p>
-                                </div>
-                            )}
-                         </div>
-                      </div>
-                    </div>
-                  )}
+                     <div className="space-y-4 pt-4 border-t border-white/5">
+                        <div className="flex justify-between items-center px-2">
+                           <span className="text-[10px] font-bold text-slate-400 uppercase">Troncal Virtual</span>
+                           <span className="text-[10px] font-black text-white">{editedProject.techDNA?.sipTrunkVirtual || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between items-center px-2">
+                           <span className="text-[10px] font-bold text-slate-400 uppercase">País</span>
+                           <span className="text-[10px] font-black text-white">{editedProject.techDNA?.country || 'Costa Rica'}</span>
+                        </div>
+                        <div className="flex justify-between items-center px-2">
+                           <span className="text-[10px] font-bold text-slate-400 uppercase">Account Manager</span>
+                           <span className="text-[10px] font-black text-rc-teal">{editedProject.accountManager || 'No asignado'}</span>
+                        </div>
+                     </div>
 
-                  {/* TAB: LOGBOOK (SERVICES) */}
-                  {activeTab === 'services' && (
-                    <div className="space-y-8 animate-in fade-in duration-500">
-                      <div className="flex items-center justify-between mb-4">
-                         <div>
-                            <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Logbook de Servicios</h3>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Trazabilidad Técnica y Operativa</p>
-                         </div>
-                         {isEditing && (
-                           <button className="flex items-center gap-2 px-6 py-3 bg-rc-teal text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-rc-teal/20 hover:scale-105 transition-all">
-                              <Plus size={16} /> Agregar Servicio
-                           </button>
-                         )}
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                         {editedProject.services.map(service => (
-                           <div key={service.id} className="glass-card p-10 rounded-[48px] border border-white/5 hover:border-rc-teal/30 transition-all group flex flex-col h-full">
-                              <div className="flex items-center justify-between mb-8">
-                                 <div className={`w-14 h-14 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center text-rc-teal group-hover:bg-rc-teal group-hover:text-white transition-all`}>
-                                    {service.type === 'Botmaker' ? <MessageSquare size={28} /> : 
-                                     (service.type === 'Yeastar' || service.type === 'IPBX') ? <Phone size={28} /> : 
-                                     service.type === 'Servicios Web' ? <Globe size={28} /> : 
-                                     service.type === 'Capacitaciones' ? <Users size={28} /> : <Layers size={28} />}
-                                 </div>
-                                 <span className="text-[9px] font-black text-rc-teal bg-rc-teal/10 px-3 py-1 rounded-full uppercase tracking-widest">ACTIVO</span>
-                              </div>
-
-                              <h4 className="text-2xl font-black text-white uppercase tracking-tighter mb-2">{service.name}</h4>
-                              <p className="text-xs text-slate-500 font-medium mb-8 flex-1">{service.description}</p>
-
-                              <div className="space-y-4 pt-8 border-t border-white/5">
-                                 <div className="flex justify-between items-center">
-                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Categoría</span>
-                                    <span className="text-[11px] font-black text-rc-teal uppercase">{service.type || 'Estándar'}</span>
-                                 </div>
-
-                                 {service.type === 'Botmaker' && (
-                                    <div className="flex justify-between items-center">
-                                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Solución</span>
-                                       <span className="text-[11px] font-black text-white uppercase">{service.botmakerType}</span>
-                                    </div>
-                                 )}
-
-                                 {(service.type === 'Yeastar' || service.type === 'IPBX') && (
-                                    <>
-                                       <div className="flex justify-between items-center">
-                                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Extensiones</span>
-                                          <span className="text-[11px] font-black text-white uppercase">{service.extensionCount}</span>
-                                       </div>
-                                       <div className="flex justify-between items-center">
-                                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Fecha Inicio</span>
-                                          <span className="text-[11px] font-black text-white uppercase">{service.setupDate}</span>
-                                       </div>
-                                    </>
-                                 )}
-
-                                 {service.type === 'Servicios Web' && (
-                                    <div className="flex justify-between items-center">
-                                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Desarrollo</span>
-                                       <span className="text-[11px] font-black text-white uppercase">{service.webServiceType}</span>
-                                    </div>
-                                 )}
-
-                                 {service.type === 'Capacitaciones' && (
-                                    <div className="flex justify-between items-center">
-                                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Modalidad</span>
-                                       <span className="text-[11px] font-black text-white uppercase">{service.trainingType}</span>
-                                    </div>
-                                 )}
-
-                                 <div className="flex justify-between items-center">
-                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Contratado</span>
-                                    <span className="text-[11px] font-black text-rc-teal uppercase">{service.startDate || '---'}</span>
-                                 </div>
-                              </div>
-                              
-                              <button className="mt-8 w-full py-4 bg-white/5 hover:bg-white/10 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] transition-all">
-                                 Ver Detalle Logbook
-                              </button>
+                     <div className="p-6 bg-rc-teal/5 rounded-3xl border border-rc-teal/10 mt-8">
+                        <h4 className="text-[10px] font-black text-rc-teal uppercase tracking-widest mb-3 flex items-center gap-2">
+                           <Activity size={12} /> Pulso Operativo
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4">
+                           <div className="text-center">
+                              <div className="text-xl font-black text-white">{editedProject.opsPulse?.hcReal || 0}</div>
+                              <div className="text-[8px] font-bold text-slate-500 uppercase">HC Real</div>
                            </div>
-                         ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* TAB: TECH DNA */}
-                  {activeTab === 'tech' && (
-                    <div className="space-y-8 animate-in fade-in duration-500">
-                       <div className="glass-card p-10 rounded-[48px] border border-white/5 space-y-12">
-                          <div className="flex items-center gap-4">
-                             <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal">
-                                <Zap size={24} />
-                             </div>
-                             <div>
-                                <h3 className="text-xl font-black text-white uppercase tracking-tighter">Infraestructura Crítica</h3>
-                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Conectividad y Redundancia</p>
-                             </div>
-                          </div>
-
-                          <div className="space-y-4">
-                             <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Modalidad de Operación</label>
-                             <div className="flex gap-4">
-                                {['RC506', 'WYP', 'IPBX', 'HÍBRIDO'].map(mode => (
-                                  <button
-                                    key={mode}
-                                    type="button"
-                                    disabled={!isEditing}
-                                    onClick={() => setEditedProject({...editedProject, techDNA: { ...editedProject.techDNA!, operationMode: mode as any }})}
-                                    className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
-                                      editedProject.techDNA?.operationMode === mode 
-                                      ? 'bg-rc-teal text-[var(--bg-primary)] border-rc-teal shadow-lg' 
-                                      : 'bg-white/5 border-white/5 text-[var(--text-secondary)] hover:bg-white/10'
-                                    } disabled:opacity-50`}
-                                  >
-                                    {mode}
-                                  </button>
-                                ))}
-                             </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                             <div className="space-y-6">
-                                <div className="space-y-4">
-                                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">País de Operación</label>
-                                   <select 
-                                     disabled={!isEditing}
-                                     value={editedProject.techDNA?.country || 'Costa Rica'}
-                                     onChange={(e) => setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'RC506', phoneLine: ''}), country: e.target.value as any}})}
-                                     className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 px-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50 appearance-none"
-                                   >
-                                      <option value="Costa Rica">Costa Rica</option>
-                                      <option value="Venezuela">Venezuela</option>
-                                   </select>
-                                </div>
-                                <div className="space-y-4">
-                                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">SIP Trunk Virtual</label>
-                                   <select 
-                                     disabled={!isEditing}
-                                     value={editedProject.techDNA?.sipTrunkVirtual || 'N/A.'}
-                                     onChange={(e) => setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'RC506', phoneLine: ''}), sipTrunkVirtual: e.target.value as any}})}
-                                     className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 px-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50 appearance-none"
-                                   >
-                                      {['Navegalo', 'Vocex', 'ICE', 'Call My Way', 'Callcentric', 'Voip.ms', 'Movistar Vzla.', 'N/A.'].map(opt => (
-                                        <option key={opt} value={opt}>{opt}</option>
-                                      ))}
-                                   </select>
-                                </div>
-                                <div className="space-y-4">
-                                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Líneas Telefónicas / Troncales (ID Físico)</label>
-                                   <input 
-                                     disabled={!isEditing}
-                                     value={editedProject.techDNA?.phoneLine || ''}
-                                     onChange={(e) => setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'RC506', isp: ''}), phoneLine: e.target.value}})}
-                                     className="w-full bg-black/40 border border-white/5 rounded-3xl py-6 px-8 text-sm focus:border-rc-teal/50 outline-none transition-all disabled:opacity-50"
-                                     placeholder="Ej: +506 4000-0000"
-                                   />
-                                </div>
-                             </div>
-
-                             <div className="space-y-8">
-                                <div className="p-10 bg-black/40 rounded-[40px] border border-white/5 flex flex-col gap-6">
-                                   <div className="flex items-center justify-between">
-                                      <h5 className="text-[11px] font-black text-white uppercase tracking-widest">Redundancia de Red</h5>
-                                      <div 
-                                        onClick={() => isEditing && setEditedProject({...editedProject, techDNA: {...(editedProject.techDNA || {operationMode: 'RC506', isp: '', phoneLine: ''}), redundancy: !editedProject.techDNA?.redundancy}})}
-                                        className={`w-14 h-8 rounded-full transition-all cursor-pointer relative ${editedProject.techDNA?.redundancy ? 'bg-rc-teal' : 'bg-white/10'}`}
-                                      >
-                                         <motion.div 
-                                           animate={{ x: editedProject.techDNA?.redundancy ? 24 : 4 }}
-                                           className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-lg" 
-                                         />
-                                      </div>
-                                   </div>
-                                   <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
-                                      Indica si el cliente cuenta con un enlace secundario activo para asegurar la continuidad operativa.
-                                   </p>
-                                   {editedProject.techDNA?.redundancy && (
-                                     <div className="px-4 py-2 bg-rc-teal/10 rounded-xl border border-rc-teal/20 text-center">
-                                        <span className="text-[9px] font-black text-rc-teal uppercase">Certificado de Continuidad Activo</span>
-                                     </div>
-                                   )}
-                                </div>
-                             </div>
-                          </div>
-                       </div>
-                    </div>
-                  )}
-
-                  {/* TAB: ACTIVOS */}
-                  {activeTab === 'assets' && (
-                    <div className="space-y-8 animate-in fade-in duration-500">
-                       <div className="glass-card p-10 rounded-[48px] border border-white/5">
-                          <div className="flex items-center justify-between mb-10">
-                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal">
-                                   <Headphones size={24} />
-                                </div>
-                                <div>
-                                   <h3 className="text-xl font-black text-white uppercase tracking-tighter">Inventario de Hardware</h3>
-                                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Headsets y Equipamiento</p>
-                                </div>
-                             </div>
-                             {isEditing && (
-                               <button className="px-6 py-3 bg-rc-teal text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-rc-teal/20">
-                                  + Nuevo Activo
-                               </button>
-                             )}
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                             {editedProject.assets?.map(asset => (
-                               <div key={asset.id} className="p-8 bg-black/40 rounded-[40px] border border-white/5 hover:border-rc-teal/30 transition-all group">
-                                  <div className="flex items-center justify-between mb-6">
-                                     <div className="w-10 h-10 rounded-xl bg-rc-teal/5 flex items-center justify-center text-rc-teal">
-                                        <Headphones size={20} />
-                                     </div>
-                                     <span className="text-[10px] font-black text-slate-500 uppercase">#{asset.id.slice(-4)}</span>
-                                  </div>
-                                  <h5 className="text-[15px] font-black text-white uppercase mb-2">{asset.model}</h5>
-                                  <div className="space-y-3 mt-6">
-                                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                                        <span className="text-slate-500">Cantidad</span>
-                                        <span className="text-rc-teal">{asset.quantity} Unidades</span>
-                                     </div>
-                                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                                        <span className="text-slate-500">Asignación</span>
-                                        <span className="text-white">{asset.assignedPosition || 'Disponible'}</span>
-                                     </div>
-                                  </div>
-                               </div>
-                             ))}
-                             {(!editedProject.assets || editedProject.assets.length === 0) && (
-                               <div className="col-span-full py-24 text-center border-2 border-dashed border-white/5 rounded-[40px] opacity-20">
-                                  <p className="text-xs font-black uppercase tracking-widest">Sin activos registrados en inventario</p>
-                               </div>
-                             )}
-                          </div>
-                       </div>
-                    </div>
-                  )}
-
-                  {/* TAB: EVALUACIÓN */}
-                  {activeTab === 'evaluation' && (
-                    <div className="space-y-8 animate-in fade-in duration-500">
-                       <div className="glass-card p-10 rounded-[48px] border border-white/5 space-y-10">
-                          <div className="flex items-center justify-between">
-                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal">
-                                   <Star size={24} />
-                                </div>
-                                <div>
-                                   <h3 className="text-xl font-black text-white uppercase tracking-tighter">Evaluación del Cliente</h3>
-                                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Rúbricas de Salud y Compromiso</p>
-                                </div>
-                             </div>
-                             <div className={`px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest border transition-all ${
-                                editedProject.clientEvaluation?.status === 'Verde' ? 'bg-emerald-500 text-[var(--bg-primary)] border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]' :
-                                editedProject.clientEvaluation?.status === 'Amarilla' ? 'bg-amber-500 text-[var(--bg-primary)] border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]' :
-                                editedProject.clientEvaluation?.status === 'Roja' ? 'bg-rose-500 text-[var(--bg-primary)] border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]' :
-                                'bg-slate-900 text-white border-white/10'
-                             }`}>
-                                {editedProject.clientEvaluation?.status || 'SIN EVALUAR'}
-                             </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                             {[
-                               { id: 'projectLeader', label: 'Asignación de un líder de proyecto' },
-                               { id: 'documentation', label: 'Entrega oportuna de documentación' },
-                               { id: 'receptivity', label: 'Apertura y receptividad a asesoría' },
-                               { id: 'continuity', label: 'Uso efectivo y continuidad' },
-                               { id: 'reportValuation', label: 'Valoración del informe de gestión' },
-                               { id: 'paymentPunctuality', label: 'Puntualidad en el pago' },
-                             ].map(rubric => (
-                               <div key={rubric.id} className="p-6 bg-black/40 border border-white/5 rounded-3xl flex items-center justify-between">
-                                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{rubric.label}</span>
-                                  <div 
-                                    onClick={() => {
-                                      if (!isEditing) return;
-                                      const evalObj = (editedProject.clientEvaluation || { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' }) as any;
-                                      const newVal = !evalObj[rubric.id];
-                                      const newEval = { ...evalObj, [rubric.id]: newVal };
-                                      
-                                      const keys = ['projectLeader', 'documentation', 'receptivity', 'continuity', 'reportValuation', 'paymentPunctuality'];
-                                      const trueCount = keys.filter(k => newEval[k]).length;
-                                      
-                                      let status = 'Verde';
-                                      if (trueCount <= 2) status = 'Negra';
-                                      else if (trueCount <= 3) status = 'Roja';
-                                      else if (trueCount <= 5) status = 'Amarilla';
-                                      
-                                      newEval.status = status;
-                                      setEditedProject({...editedProject, clientEvaluation: newEval});
-                                    }}
-                                    className={`w-12 h-7 rounded-full transition-all relative ${isEditing ? 'cursor-pointer' : 'opacity-50'} ${editedProject.clientEvaluation?.[rubric.id as keyof typeof editedProject.clientEvaluation] ? 'bg-rc-teal' : 'bg-white/10'}`}
-                                  >
-                                     <motion.div 
-                                       animate={{ x: editedProject.clientEvaluation?.[rubric.id as keyof typeof editedProject.clientEvaluation] ? 22 : 4 }}
-                                       className="absolute top-1 w-5 h-5 bg-white rounded-full shadow-lg" 
-                                     />
-                                  </div>
-                               </div>
-                             ))}
-                          </div>
-                       </div>
-                    </div>
-                  )}
-
-               </div>
-            </div>
-
-            {/* Footer Status */}
-            <div className="p-8 border-t border-white/5 bg-[var(--bg-primary)]/90 backdrop-blur-md flex items-center justify-between">
-               <div className="flex items-center gap-10">
-                  <div className="flex items-center gap-4">
-                     <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 shadow-inner">
-                        <CheckCircle size={24} />
-                     </div>
-                     <div>
-                        <p className="text-sm font-black text-white uppercase tracking-widest">Status: Sincronizado</p>
-                        <p className="text-[9px] font-bold text-emerald-500/60 uppercase tracking-widest">Protocolo Elite V3.5 Activo</p>
+                           <div className="text-center">
+                              <div className="text-xl font-black text-white">{editedProject.opsPulse?.hcContracted || 0}</div>
+                              <div className="text-[8px] font-bold text-slate-500 uppercase">HC Contrato</div>
+                           </div>
+                        </div>
                      </div>
                   </div>
+               </div>
+
+               {/* Col 2: 10 Pilares de Calidad */}
+               <div className="p-10 space-y-8 overflow-y-auto custom-scrollbar bg-black/5">
+                  <h3 className="text-meta">2. Autoevaluación de Calidad (1-5)</h3>
+                  
+                  <div className="space-y-5">
+                     {[
+                        { key: 'responseTime', label: 'Tiempo de Respuesta' },
+                        { key: 'communication', label: 'Comunicación Fluida' },
+                        { key: 'resolution', label: 'Capacidad de Resolución' },
+                        { key: 'proactivity', label: 'Proactividad Operativa' },
+                        { key: 'technicalKnowledge', label: 'Conocimiento Técnico' },
+                        { key: 'reliability', label: 'Confiabilidad / Backup' },
+                        { key: 'flexibility', label: 'Flexibilidad de Cambio' },
+                        { key: 'innovation', label: 'Aporte de Innovación' },
+                        { key: 'documentation', label: 'Reportes & Documentos' },
+                        { key: 'overallSatisfaction', label: 'Satisfacción Global' }
+                     ].map((pillar) => (
+                        <div key={pillar.key} className="space-y-2 group">
+                           <div className="flex justify-between items-center mb-1">
+                              <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest group-hover:text-rc-teal transition-colors">
+                                 {pillar.label}
+                              </span>
+                              <span className="text-xs font-black text-rc-teal">
+                                 {editedProject.quarterlyAssessment?.[pillar.key as keyof typeof editedProject.quarterlyAssessment] || 0}/5
+                              </span>
+                           </div>
+                           <div className="flex gap-1.5">
+                              {[1, 2, 3, 4, 5].map((num) => (
+                                 <button
+                                    key={num}
+                                    onClick={() => {
+                                       const newAssessment = { 
+                                          ...(editedProject.quarterlyAssessment || {
+                                             responseTime: 0, communication: 0, resolution: 0, proactivity: 0,
+                                             technicalKnowledge: 0, reliability: 0, flexibility: 0, innovation: 0,
+                                             documentation: 0, overallSatisfaction: 0
+                                          }), 
+                                          [pillar.key]: num 
+                                       };
+                                       setEditedProject({ ...editedProject, quarterlyAssessment: newAssessment });
+                                    }}
+                                    className={`flex-1 h-1.5 rounded-full transition-all duration-300 ${
+                                       (editedProject.quarterlyAssessment?.[pillar.key as keyof typeof editedProject.quarterlyAssessment] || 0) >= num
+                                       ? 'bg-rc-teal shadow-[0_0_8px_rgba(59,188,169,0.4)]'
+                                       : 'bg-white/5'
+                                    }`}
+                                 />
+                              ))}
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+
+               {/* Col 3: Comportamiento Cliente */}
+               <div className="p-10 space-y-10 overflow-y-auto custom-scrollbar">
+                  <div className="space-y-6">
+                     <h3 className="text-meta">3. Evaluación Administrativa</h3>
+                     
+                     <div className="space-y-3">
+                        {[
+                           { id: 'projectLeader', label: 'Líder de Proyecto Asignado' },
+                           { id: 'documentation', label: 'Entrega Info Oportuna' },
+                           { id: 'receptivity', label: 'Apertura a Asesoría' },
+                           { id: 'continuity', label: 'Continuidad del Servicio' },
+                           { id: 'reportValuation', label: 'Valora Informes de Gestión' },
+                           { id: 'paymentPunctuality', label: 'Puntualidad en Pagos' }
+                        ].map(item => (
+                           <div 
+                              key={item.id} 
+                              onClick={() => {
+                                 const currentEval = editedProject.clientEvaluation || { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' };
+                                 const newVal = !currentEval[item.id as keyof typeof currentEval];
+                                 setEditedProject({
+                                    ...editedProject,
+                                    clientEvaluation: { ...currentEval, [item.id]: newVal }
+                                 });
+                              }}
+                              className="p-5 bg-white/[0.03] border border-white/5 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/5 transition-all group"
+                           >
+                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest group-hover:text-white transition-colors">{item.label}</span>
+                              <div className={`w-5 h-5 rounded-md flex items-center justify-center border transition-all ${
+                                 editedProject.clientEvaluation?.[item.id as keyof typeof editedProject.clientEvaluation] 
+                                 ? 'bg-rc-teal border-rc-teal text-black' 
+                                 : 'border-white/10 text-transparent'
+                              }`}>
+                                 <CheckCircle size={14} strokeWidth={3} />
+                              </div>
+                           </div>
+                        ))}
+                     </div>
+
+                     <div className="p-8 bg-rose-500/5 rounded-[32px] border border-rose-500/10 mt-10">
+                        <h4 className="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                           <AlertTriangle size={14} /> Notas de Auditoría
+                        </h4>
+                        <textarea 
+                           className="w-full bg-transparent border-none p-0 text-xs text-slate-400 leading-relaxed resize-none h-24 focus:ring-0"
+                           placeholder="Escriba observaciones críticas sobre la gestión de esta cuenta..."
+                        />
+                     </div>
+                  </div>
+               </div>
+
+            </div>
+
+            {/* Footer de Acciones */}
+            <div className="p-8 bg-black/40 border-t border-white/5 flex items-center justify-between">
+               <div className="flex items-center gap-4">
+                  <div className={`w-3 h-3 rounded-full ${editedProject.healthFlag === 'Verde' ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Estado de Registro Sincronizado</span>
                </div>
                <div className="flex items-center gap-4">
-                  {isEditing ? (
-                    <button 
-                      onClick={handleSave}
-                      className="px-12 py-5 rounded-3xl bg-rc-teal text-[var(--bg-primary)] text-xs font-black uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(59,188,169,0.3)] hover:scale-105 active:scale-95 transition-all"
-                    >
-                       Guardar Configuración
-                    </button>
-                  ) : (
-                    <button 
-                      onClick={onClose}
-                      className="px-12 py-5 rounded-3xl bg-[var(--rc-turquoise)] text-[var(--bg-primary)] text-xs font-black uppercase tracking-[0.3em] shadow-[0_20px_50px_rgba(59,188,169,0.3)] hover:scale-105 active:scale-95 transition-all"
-                    >
-                       Cerrar Centro de Mando
-                    </button>
-                  )}
+                  <button 
+                     onClick={handleSave}
+                     className="px-10 py-4 bg-rc-teal text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-rc-teal/20 transition-all hover:scale-105 active:scale-95 premium-button"
+                  >
+                     Guardar Cambios en CRM
+                  </button>
                </div>
             </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
+};
+export default ProjectDetailsModal;
           </motion.div>
         </div>
       )}
