@@ -10,13 +10,14 @@ const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({
   
   const getFlagStyles = (flag: string) => {
     switch (flag) {
-      case 'Verde': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/10';
-      case 'Amarilla': return 'text-amber-500 bg-amber-500/10 border-amber-500/20 shadow-amber-500/10';
-      case 'Roja': return 'text-rose-500 bg-rose-500/10 border-rose-500/20 shadow-rose-500/10';
-      case 'Negra': return 'text-slate-900 bg-slate-950/20 border-slate-900/30 shadow-slate-900/10';
-      default: return 'text-rc-teal bg-rc-teal/10 border-rc-teal/20 shadow-rc-teal/10';
+      case 'Verde': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.15)]';
+      case 'Amarilla': return 'text-amber-400 bg-amber-500/10 border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.15)]';
+      case 'Roja': return 'text-rose-400 bg-rose-500/10 border-rose-500/20 shadow-[0_0_20px_rgba(244,63,94,0.15)]';
+      case 'Negra': return 'text-slate-300 bg-black/60 border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.5)]';
+      default: return 'text-rc-teal bg-rc-teal/10 border-rc-teal/20 shadow-[0_0_20px_rgba(59,188,169,0.15)]';
     }
   };
+
 
   const flagStyle = getFlagStyles(project.healthFlag || 'Verde');
 

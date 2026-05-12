@@ -5,7 +5,6 @@ import {
   setDoc, 
   doc, 
   deleteDoc, 
-  query, 
   getDoc,
   writeBatch
 } from 'firebase/firestore';
@@ -13,6 +12,14 @@ import { Project } from '../types/project';
 
 const STORAGE_KEY = 'elite_projects';
 const PROJECTS_COLLECTION = 'projects';
+
+// Sanitiza los datos para Firestore (elimina undefined, que causa errores)
+const sanitizeForFirestore = (obj: any): any => {
+  return JSON.parse(JSON.stringify(obj, (key, value) => {
+    // Si el valor es undefined, lo omitimos del objeto resultante
+    return value === undefined ? undefined : value;
+  }));
+};
 
 export const projectService = {
   async getProjects(): Promise<Project[]> {
@@ -44,11 +51,10 @@ export const projectService = {
       try {
         const batch = writeBatch(db);
         
-        // Nota: En una app de producción real, querríamos guardar solo el proyecto que cambió.
-        // Pero para mantener la interfaz actual del servicio que recibe el array completo:
         for (const project of projects) {
           const docRef = doc(db, PROJECTS_COLLECTION, project.id);
-          batch.set(docRef, project, { merge: true });
+          const sanitizedProject = sanitizeForFirestore(project);
+          batch.set(docRef, sanitizedProject, { merge: true });
         }
         
         await batch.commit();
@@ -64,7 +70,8 @@ export const projectService = {
   async addProject(project: Project, allProjects: Project[]): Promise<Project[]> {
     if (isFirebaseConfigured) {
       try {
-        await setDoc(doc(db, PROJECTS_COLLECTION, project.id), project);
+        const sanitizedProject = sanitizeForFirestore(project);
+        await setDoc(doc(db, PROJECTS_COLLECTION, project.id), sanitizedProject);
       } catch (err) {
         console.error('Firestore add error:', err);
       }
@@ -78,7 +85,8 @@ export const projectService = {
   async updateProject(updatedProject: Project, allProjects: Project[]): Promise<Project[]> {
     if (isFirebaseConfigured) {
       try {
-        await setDoc(doc(db, PROJECTS_COLLECTION, updatedProject.id), updatedProject, { merge: true });
+        const sanitizedProject = sanitizeForFirestore(updatedProject);
+        await setDoc(doc(db, PROJECTS_COLLECTION, updatedProject.id), sanitizedProject, { merge: true });
       } catch (err) {
         console.error('Firestore update error:', err);
       }

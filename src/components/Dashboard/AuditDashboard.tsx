@@ -137,8 +137,8 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
                   <Activity size={20} />
                </div>
             </div>
-            <div className="flex-1 flex items-center justify-center">
-               <ResponsiveContainer width="100%" height={320}>
+            <div className="flex-1 flex items-center justify-center min-h-[320px]">
+               <ResponsiveContainer width="100%" height={320} minHeight={320}>
                   <RadarChart cx="50%" cy="50%" outerRadius="80%" data={pillarMetrics}>
                      <PolarGrid stroke="#ffffff10" />
                      <PolarAngleAxis dataKey="pillar" tick={{fill: '#6D6E71', fontSize: 8, fontWeight: 900}} />
@@ -178,8 +178,8 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
                </div>
             </div>
 
-            <div className="h-[340px] w-full">
-               <ResponsiveContainer width="100%" height="100%">
+            <div className="h-[340px] w-full min-h-[340px]">
+               <ResponsiveContainer width="100%" height="100%" minHeight={340}>
                   <AreaChart data={trendData}>
                      <defs>
                         <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
