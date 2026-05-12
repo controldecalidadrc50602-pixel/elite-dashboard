@@ -144,38 +144,38 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
             initial={{ opacity: 0, scale: 0.95, y: 20 }} 
             animate={{ opacity: 1, scale: 1, y: 0 }} 
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] shadow-2xl z-[110] rounded-[40px] overflow-hidden flex flex-col max-h-[90vh]"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-[var(--bg-card)] border border-[var(--border-thin)] shadow-2xl z-[110] rounded-[32px] overflow-hidden flex flex-col max-h-[90vh]"
           >
-            <div className="p-8 border-b border-[var(--glass-border)] flex items-center justify-between bg-[var(--bg-secondary)] shrink-0">
-              <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tighter uppercase">
+            <div className="p-8 border-b border-[var(--border-thin)] flex items-center justify-between bg-[var(--bg-card)] shrink-0">
+              <h3 className="text-xl font-bold text-white tracking-tight">
                 {task ? 'Editar Tarea' : 'Nueva Tarea Profesional'}
               </h3>
-              <button onClick={onClose} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors text-[var(--text-secondary)]">
+              <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-xl transition-colors text-slate-500">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8">
+            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto pr-2 p-8 space-y-8 scrollbar-hide">
               {/* Info Principal */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Título de la Tarea</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Título de la Tarea</label>
                   <input 
                     autoFocus
                     required
                     value={formData.title}
                     onChange={e => setFormData({...formData, title: e.target.value})}
                     placeholder="Ej: Auditoría de infraestructura crítica"
-                    className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-4 text-sm font-bold outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
+                    className="w-full glass-input px-5 py-4 text-sm font-bold outline-none"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Proyecto Cliente</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Proyecto Cliente</label>
                   <select 
                     value={formData.projectId}
                     onChange={e => setFormData({...formData, projectId: e.target.value})}
-                    className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-3.5 text-xs font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)] appearance-none cursor-pointer"
+                    className="w-full glass-input px-5 py-3.5 text-xs font-bold uppercase tracking-widest outline-none appearance-none cursor-pointer"
                   >
                     <option value="">Seleccionar Cliente</option>
                     {projects.map(p => <option key={p.id} value={p.id}>{p.client}</option>)}
@@ -183,11 +183,11 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Prioridad</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Prioridad</label>
                   <select 
                     value={formData.priority}
                     onChange={e => setFormData({...formData, priority: e.target.value as any})}
-                    className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-3.5 text-xs font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)] appearance-none cursor-pointer"
+                    className="w-full glass-input px-5 py-3.5 text-xs font-bold uppercase tracking-widest outline-none appearance-none cursor-pointer"
                   >
                     <option value="High">🚨 Alta</option>
                     <option value="Medium">⚡ Media</option>
@@ -196,14 +196,14 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-rc-teal uppercase tracking-widest ml-1">Valor Operativo (Peso 1-10)</label>
+                  <label className="text-[10px] font-bold text-rc-teal uppercase tracking-widest ml-1">Valor Operativo (Peso 1-10)</label>
                   <input 
                     type="number"
                     min="1"
                     max="10"
                     value={formData.operationalValue}
                     onChange={e => setFormData({...formData, operationalValue: parseInt(e.target.value) || 1})}
-                    className="w-full bg-[var(--bg-primary)] border border-rc-teal/30 rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
+                    className="w-full bg-[var(--bg-input)] border border-rc-teal/30 rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:border-rc-teal transition-all text-white"
                   />
                 </div>
               </div>
@@ -211,28 +211,28 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
               {/* Asignación y Áreas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Responsable Directo</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Responsable Directo</label>
                   <input 
                     value={formData.assignedTo}
                     onChange={e => setFormData({...formData, assignedTo: e.target.value})}
                     placeholder="Nombre del encargado"
-                    className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
+                    className="w-full glass-input px-5 py-3.5 text-xs font-bold outline-none"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Email del Responsable (Notificaciones)</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Email del Responsable</label>
                   <input 
                     type="email"
                     value={formData.responsibleEmail}
                     onChange={e => setFormData({...formData, responsibleEmail: e.target.value})}
                     placeholder="ejemplo@rc506.com"
-                    className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
+                    className="w-full glass-input px-5 py-3.5 text-xs font-bold outline-none"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Área / Departamento</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Área / Departamento</label>
                   {!useCustomArea ? (
                     <select 
                       value={formData.area}
@@ -243,7 +243,7 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
                            setFormData({...formData, area: e.target.value});
                         }
                       }}
-                      className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-3.5 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)] appearance-none cursor-pointer"
+                      className="w-full glass-input px-5 py-3.5 text-[10px] font-bold uppercase tracking-widest outline-none appearance-none cursor-pointer"
                     >
                       {AREAS.map(a => <option key={a} value={a}>{a}</option>)}
                     </select>
@@ -253,7 +253,7 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
                         value={customArea}
                         onChange={e => setCustomArea(e.target.value)}
                         placeholder="Especificar área..."
-                        className="w-full bg-[var(--bg-primary)] border border-rc-teal rounded-2xl px-5 py-3.5 text-[10px] font-black uppercase tracking-widest outline-none transition-all text-[var(--text-primary)] pr-10"
+                        className="w-full bg-[var(--bg-input)] border border-rc-teal rounded-2xl px-5 py-3.5 text-[10px] font-bold uppercase tracking-widest outline-none transition-all text-white pr-10"
                       />
                       <button 
                         type="button"
@@ -270,21 +270,21 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
               {/* Tiempos */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">T-Inicio (Apertura)</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">T-Inicio (Apertura)</label>
                   <input 
                     type="datetime-local"
                     value={formData.startTime}
                     onChange={e => setFormData({...formData, startTime: e.target.value})}
-                    className="w-full bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:ring-2 focus:ring-rc-teal/20 focus:border-rc-teal transition-all text-[var(--text-primary)]"
+                    className="w-full glass-input px-5 py-3.5 text-xs font-bold outline-none"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-rose-500 uppercase tracking-widest ml-1">T-Fin (Límite SLA)</label>
+                  <label className="text-[10px] font-bold text-rose-500 uppercase tracking-widest ml-1">T-Fin (Límite SLA)</label>
                   <input 
                     type="datetime-local"
                     value={formData.endTime}
                     onChange={e => setFormData({...formData, endTime: e.target.value})}
-                    className="w-full bg-[var(--bg-primary)] border border-rose-500/30 rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-[var(--text-primary)]"
+                    className="w-full bg-[var(--bg-input)] border border-rose-500/30 rounded-2xl px-5 py-3.5 text-xs font-bold outline-none focus:border-rose-500 transition-all text-white"
                   />
                 </div>
               </div>
@@ -292,11 +292,11 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
               {/* Subtareas */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest ml-1">Subtareas / Checklist</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Subtareas / Checklist</label>
                   <button 
                     type="button" 
                     onClick={addSubtask}
-                    className="text-[10px] font-black text-rc-teal uppercase tracking-widest flex items-center gap-1 hover:underline"
+                    className="text-[10px] font-bold text-rc-teal uppercase tracking-widest flex items-center gap-1 hover:underline"
                   >
                     <Plus size={14} /> Agregar
                   </button>
@@ -306,14 +306,14 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
                     <motion.div 
                        layout
                        key={st.id} 
-                       className="flex items-center gap-3 bg-[var(--bg-primary)] p-3 rounded-2xl border border-[var(--glass-border)] group"
+                       className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/5 group"
                     >
-                      <CheckCircle2 size={16} className={st.completed ? "text-rc-teal" : "text-[var(--text-secondary)] opacity-20"} />
+                      <CheckCircle2 size={16} className={st.completed ? "text-rc-teal" : "text-slate-600"} />
                       <input 
                         value={st.title}
                         onChange={e => updateSubtask(st.id, e.target.value)}
                         placeholder="Descripción de la subtarea..."
-                        className="flex-1 bg-transparent border-none text-[11px] font-bold outline-none text-[var(--text-primary)]"
+                        className="flex-1 bg-transparent border-none text-[11px] font-bold outline-none text-white"
                       />
                       <button 
                         type="button"
@@ -325,30 +325,31 @@ const TaskModal: React.FC<Props> = ({ isOpen, onClose, onSave, task }) => {
                     </motion.div>
                   ))}
                   {(!formData.subtasks || formData.subtasks.length === 0) && (
-                    <div className="py-6 text-center border-2 border-dashed border-[var(--glass-border)] rounded-3xl opacity-30">
-                       <p className="text-[9px] font-black uppercase tracking-widest">Sin subtareas asignadas</p>
+                    <div className="py-6 text-center border-2 border-dashed border-white/5 rounded-3xl opacity-30">
+                       <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Sin subtareas asignadas</p>
                     </div>
                   )}
                 </div>
               </div>
             </form>
 
-            <div className="p-8 border-t border-[var(--glass-border)] flex gap-4 bg-[var(--bg-secondary)] shrink-0">
+            <div className="p-8 border-t border-[var(--border-thin)] flex gap-4 bg-[var(--bg-card)] shrink-0">
                <button 
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:bg-black/5 transition-all"
+                className="flex-1 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-slate-500 hover:bg-white/5 transition-all"
               >
                 Cancelar
               </button>
               <button 
                 onClick={handleSubmit}
-                className="flex-[2] bg-[var(--rc-turquoise)] text-[var(--bg-primary)] py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-[var(--rc-turquoise)]/20 hover:scale-[1.05] transition-all flex items-center justify-center gap-2"
+                className="flex-[2] bg-rc-teal text-[#060910] py-4 rounded-2xl text-[11px] font-bold uppercase tracking-widest shadow-xl shadow-rc-teal/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
               >
-                <Save size={18} /> Cerrar Panel
+                <Save size={18} /> Guardar Cambios
               </button>
             </div>
           </motion.div>
+
         </>
       )}
     </AnimatePresence>,

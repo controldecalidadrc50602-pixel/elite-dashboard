@@ -1,21 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   ShieldCheck, Zap, Search, Bell, Database, 
   ArrowUpRight, Star, Inbox, History, LayoutGrid, List,
-  Calendar, ChevronDown, Filter, Archive
+  Calendar, ChevronDown, Filter, Archive, Activity, Users
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { AreaChart, Area, ResponsiveContainer } from 'recharts';
+import SkeletonDashboard from '../components/SkeletonDashboard';
 
 const Dashboard: React.FC<{ activeTab: string }> = ({ activeTab }) => {
+  const [loading, setLoading] = useState(true);
   const [activeSubTab, setActiveSubTab] = useState<'inbox' | 'history'>('inbox');
 
-  const stats = [
-    { label: 'TOTAL TRANSACCIONES', value: '12', change: '+12%', icon: Zap, color: 'text-rc-teal' },
-    { label: 'SCORE CALIDAD', value: '0%', change: '+2.4%', icon: Activity, color: 'text-rc-blue' },
-    { label: 'CSAT INDEX', value: '0.0', change: '+0.5', icon: Star, color: 'text-amber-400' }
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const sparklineData = [
+    { value: 400 }, { value: 300 }, { value: 500 }, { value: 450 }, 
+    { value: 600 }, { value: 550 }, { value: 700 }, { value: 650 }
   ];
 
-  const taxonomy = [
+  const stats = useMemo(() => [
+    { label: 'TOTAL TRANSACCIONES', value: '12', change: '+12%', icon: Zap, color: 'text-rc-teal', chartColor: '#3BC7AA' },
+    { label: 'SCORE CALIDAD', value: '0%', change: '+2.4%', icon: Activity, color: 'text-rc-blue', chartColor: '#3B82F6' },
+    { label: 'CSAT INDEX', value: '0.0', change: '+0.5', icon: Star, color: 'text-amber-400', chartColor: '#fbbf24' }
+  ], []);
+
+  const taxonomy = useMemo(() => [
     { label: 'NECESITA COACHING', color: 'bg-orange-500' },
     { label: 'ALERTA CRÍTICA', color: 'bg-red-500' },
     { label: 'MANEJO CLIENTE', color: 'bg-blue-500' },
@@ -30,10 +43,16 @@ const Dashboard: React.FC<{ activeTab: string }> = ({ activeTab }) => {
     { label: 'ESCALAMIENTO', color: 'bg-blue-600' },
     { label: 'MEJORA PROCESO', color: 'bg-indigo-500' },
     { label: 'SOLICITUD EMPLEO', color: 'bg-violet-500' },
-  ];
+  ], []);
+
+  if (loading) return <SkeletonDashboard />;
 
   return (
-    <div className="flex flex-col gap-8">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex flex-col gap-8"
+    >
       {/* Top Header */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
@@ -68,16 +87,40 @@ const Dashboard: React.FC<{ activeTab: string }> = ({ activeTab }) => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {stats.map((stat, i) => (
-          <div key={i} className="glow-card p-8 group hover:border-rc-teal/30 transition-all cursor-pointer">
-            <div className="flex justify-between items-start mb-4">
+          <div key={i} className="glow-card p-8 group hover:border-rc-teal/30 transition-all cursor-pointer flex flex-col">
+            <div className="flex justify-between items-start mb-6">
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{stat.label}</span>
               <stat.icon size={18} className={`${stat.color} opacity-50 group-hover:opacity-100 transition-opacity`} />
             </div>
-            <div className="flex items-end gap-3">
-              <h2 className="text-4xl font-bold text-white">{stat.value}</h2>
-              <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-500 mb-1">
-                <ArrowUpRight size={12} />
-                {stat.change}
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <h2 className="text-4xl font-bold text-white mb-1">{stat.value}</h2>
+                <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-500">
+                  <ArrowUpRight size={12} />
+                  {stat.change}
+                </div>
+              </div>
+              
+              {/* Mini Sparkline Chart */}
+              <div className="h-12 w-24">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={sparklineData}>
+                    <defs>
+                      <linearGradient id={`gradient-${i}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={stat.chartColor} stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor={stat.chartColor} stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <Area 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke={stat.chartColor} 
+                      strokeWidth={2} 
+                      fillOpacity={1} 
+                      fill={`url(#gradient-${i})`} 
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </div>
@@ -167,6 +210,22 @@ const Dashboard: React.FC<{ activeTab: string }> = ({ activeTab }) => {
           </div>
         </div>
       </div>
+
+      {/* Content Area (Empty State) */}
+      <div className="premium-card min-h-[400px] flex flex-col items-center justify-center text-center p-12">
+        <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center text-slate-600 mb-6">
+          <Archive size={40} />
+        </div>
+        <h3 className="text-xl font-bold text-white mb-2">No hay auditorías registradas</h3>
+        <p className="text-sm text-slate-500 max-w-sm">
+          Intenta ajustar los filtros de búsqueda o el período temporal para visualizar resultados.
+        </p>
+      </div>
+    </motion.div>
+  );
+};
+
+
 
       {/* Content Area (Empty State) */}
       <div className="premium-card min-h-[400px] flex flex-col items-center justify-center text-center p-12">

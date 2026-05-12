@@ -9,7 +9,8 @@ import {
   LogOut,
   ChevronRight,
   Monitor,
-  Archive
+  Archive,
+  Clock
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
