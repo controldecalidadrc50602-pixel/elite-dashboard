@@ -154,16 +154,16 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
             {/* Sidebar Tabs */}
             <div className="w-64 bg-black/20 border-r border-white/5 p-8 flex flex-col gap-2">
               <div className="mb-8 px-2">
-                <h3 className="text-rc-teal font-black text-xs uppercase tracking-[0.3em] mb-1">Elite V3.5</h3>
-                <p className="text-[var(--text-secondary)] text-[9px] font-bold uppercase opacity-50">Gestión de Cuenta</p>
+                <h3 className="text-rc-teal font-semibold text-xs uppercase tracking-[0.3em] mb-1">Elite V4.0</h3>
+                <p className="label-executive opacity-50">Gestión de Cuenta</p>
               </div>
               {tabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`flex items-center gap-3 px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={`flex items-center gap-3 px-5 py-4 rounded-2xl text-[10px] font-semibold uppercase tracking-widest transition-all ${
                     activeTab === tab.id 
-                    ? 'bg-rc-teal text-white shadow-lg shadow-rc-teal/20' 
+                    ? 'bg-rc-teal text-black shadow-lg shadow-rc-teal/30' 
                     : 'text-[var(--text-secondary)] hover:bg-white/5'
                   }`}
                 >
@@ -1007,19 +1007,13 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                 </AnimatePresence>
               </div>
 
-              <div className="p-10 border-t border-white/5 bg-black/20 flex justify-end gap-6 items-center">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-8 py-4 text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-all"
-                >
-                  Cancelar
-                </button>
-                <button
+              <div className="p-10 bg-black/40 border-t border-white/5 flex items-center justify-between backdrop-blur-3xl">
+                <button type="button" onClick={onClose} className="px-10 py-5 text-[10px] font-semibold text-slate-500 uppercase tracking-widest hover:text-white transition-colors">Cancelar</button>
+                <button 
                   type="submit"
-                  className="btn-premium px-12 py-4 rounded-2xl text-[11px] flex items-center gap-3"
+                  className="px-12 py-5 bg-rc-teal text-black text-[11px] font-semibold uppercase tracking-widest rounded-2xl shadow-[0_0_25px_rgba(59,188,169,0.2)] hover:scale-105 active:scale-95 transition-all"
                 >
-                  <Save size={18} /> {project ? 'Guardar Cambios' : 'Crear Proyecto Estratégico'}
+                  Sincronizar en Repositorio Central
                 </button>
               </div>
             </form>
