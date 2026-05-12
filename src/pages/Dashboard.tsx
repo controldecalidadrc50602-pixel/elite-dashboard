@@ -29,7 +29,9 @@ import ProjectDetailsModal from '../components/ProjectDetailsModal';
 import ProjectModal from '../components/Modals/ProjectModal';
 import SlaTimer from '../components/common/SlaTimer';
 
-const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'services' | 'tasks' }> = ({ activeTab }) => {
+type TabType = 'overview' | 'clients' | 'services' | 'tasks' | 'audits';
+
+const Dashboard: React.FC<{ activeTab: TabType }> = ({ activeTab }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -183,7 +185,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'services' | 'ta
                  </div>
               )}
 
-              {activeTab === 'status' && (
+              {(activeTab === 'audits' || activeTab === 'overview') && (
                 <div className="animate-in fade-in duration-700">
                    <AuditDashboard projects={projects} />
                 </div>

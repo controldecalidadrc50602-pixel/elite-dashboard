@@ -12,7 +12,7 @@ interface Props {
   project?: Project | null;
 }
 
-type TabType = 'basic' | 'ops' | 'tech' | 'services' | 'assets' | 'strategy' | 'evaluation';
+type TabType = 'basic' | 'ops' | 'tech' | 'services' | 'assets' | 'strategy' | 'evaluation' | 'quality';
 
 const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => {
   const { t } = useTranslation();
@@ -67,7 +67,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
         opsPulse: { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
         techDNA: { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false, sipTrunkVirtual: 'N/A.', country: 'Costa Rica' },
         assets: [],
-        strategy: project?.strategy || { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
+        strategy: { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
         adminStatus: 'En Proceso',
         clientEvaluation: { 
           projectLeader: false, timelyDocumentation: false, advisoryReceptivity: false, 

@@ -122,16 +122,16 @@ export interface StrategySLA {
 }
 
 export interface QuarterlyAssessment {
-  responseTime: number;      // ¿Qué tan rápido respondemos?
-  communicationQuality: number; // Tono, empatía, claridad, profesionalismo
-  effectiveResolution: number;  // Solución real, seguimiento, cierre
-  customerExperience: number;   // Facilidad, orden, confianza
-  operationalContinuity: number; // Estabilidad, cumplimiento, seguimiento
-  orderTraceability: number;    // Organización operativa
-  commercialConversion: number; // Resultados, reuniones, cierre, leads
-  adaptability: number;         // Personalización, flexibilidad, comprensión
-  serviceCulture: number;       // Actitud, disposición, colaboración interna
-  valuePerception: number;      // Posicionamiento, confianza profesional
+  responseTime: number;
+  communicationQuality: number;
+  effectiveResolution: number;
+  proactivity: number;
+  technicalKnowledge: number;
+  reliability: number;
+  flexibility: number;
+  innovation: number;
+  serviceCulture: number;
+  valuePerception: number;
 }
 
 export interface Project {
