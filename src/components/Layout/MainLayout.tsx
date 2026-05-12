@@ -8,7 +8,7 @@ import ServiceMonitor from '../../pages/ServiceMonitor';
 import ArchiveVault from '../../pages/ArchiveVault';
 import AiCopilot from '../../pages/AiCopilot';
 
-type TabType = 'overview' | 'clients' | 'services' | 'tasks' | 'settings' | 'audits' | 'reports' | 'ai-copilot' | 'archive';
+type TabType = 'overview' | 'morning' | 'audits' | 'reports-ia' | 'operations' | 'ai-copilot' | 'settings' | 'clients' | 'services' | 'tasks' | 'archive';
 
 const MainLayout: React.FC = () => {
   const { user, loading } = useAuth();
@@ -16,6 +16,22 @@ const MainLayout: React.FC = () => {
 
   if (loading) return null;
   if (!user) return <Navigate to="/login" />;
+  const getTabTitle = (tab: TabType): string => {
+    const titles: Record<TabType, string> = {
+      overview: 'CRM de Inteligencia',
+      morning: 'Mañana Ejecutiva',
+      audits: 'Auditorías de Calidad',
+      'reports-ia': 'Reportes de Inteligencia Artificial',
+      operations: 'Centro de Operaciones',
+      'ai-copilot': 'IA Copilot',
+      settings: 'Configuración de Sistema',
+      clients: 'Gestión de Clientes',
+      services: 'Monitor de Servicios',
+      tasks: 'Gestión de Tareas',
+      archive: 'Bóveda de Archivos'
+    };
+    return titles[tab] || 'Dashboard';
+  };
 
   return (
     <div className="flex h-screen app-container text-white overflow-hidden font-inter bg-[var(--bg-main)]">
@@ -38,7 +54,7 @@ const MainLayout: React.FC = () => {
               ) : activeTab === 'ai-copilot' ? (
                 <AiCopilot />
               ) : (
-                <Dashboard activeTab={activeTab as any} />
+                <Dashboard activeTab={activeTab} title={getTabTitle(activeTab)} />
               )}
             </motion.div>
           </AnimatePresence>

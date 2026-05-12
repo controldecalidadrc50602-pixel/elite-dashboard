@@ -8,7 +8,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import SkeletonDashboard from '../components/SkeletonDashboard';
 
-const Dashboard: React.FC<{ activeTab: string }> = ({ activeTab }) => {
+interface DashboardProps {
+  activeTab: string;
+  title: string;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ activeTab, title }) => {
   const [loading, setLoading] = useState(true);
   const [activeSubTab, setActiveSubTab] = useState<'inbox' | 'history'>('inbox');
 
@@ -60,7 +65,7 @@ const Dashboard: React.FC<{ activeTab: string }> = ({ activeTab }) => {
             <Database size={24} />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">CRM de Inteligencia</h1>
+            <h1 className="text-3xl font-bold text-white tracking-tight">{title}</h1>
             <div className="flex items-center gap-2 mt-1">
               <div className="w-2 h-2 rounded-full bg-rc-teal animate-pulse" />
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sincronización ACPIA activa</span>
