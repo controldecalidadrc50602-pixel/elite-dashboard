@@ -1,6 +1,6 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
+  "version": 2,
+  "framework": "vite",
   "rewrites": [
     {
       "source": "/assets/(.*)",
@@ -10,5 +10,6 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "cleanUrls": true
 }
