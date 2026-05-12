@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Dashboard from '../../pages/Dashboard';
 import ServiceMonitor from '../../pages/ServiceMonitor';
 import ArchiveVault from '../../pages/ArchiveVault';
+import AiCopilot from '../../pages/AiCopilot';
 
 type TabType = 'overview' | 'clients' | 'services' | 'tasks' | 'settings' | 'audits' | 'reports' | 'ai-copilot' | 'archive';
 
@@ -34,6 +35,8 @@ const MainLayout: React.FC = () => {
                 <ServiceMonitor />
               ) : activeTab === 'archive' ? (
                 <ArchiveVault />
+              ) : activeTab === 'ai-copilot' ? (
+                <AiCopilot />
               ) : (
                 <Dashboard activeTab={activeTab as any} />
               )}

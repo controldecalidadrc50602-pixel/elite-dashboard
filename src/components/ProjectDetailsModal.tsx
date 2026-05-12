@@ -71,7 +71,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
             initial={{ scale: 0.9, opacity: 0, y: 20 }} 
             animate={{ scale: 1, opacity: 1, y: 0 }} 
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative w-[95vw] h-[90vh] bg-[#0a0a0c] border border-white/10 rounded-[48px] shadow-2xl overflow-hidden flex flex-col z-[110]"
+            className="relative w-[95vw] h-[90vh] bg-[var(--bg-main)] border border-[var(--border-ultra-thin)] rounded-[32px] shadow-2xl overflow-hidden flex flex-col z-[110]"
           >
             {/* Action Bar Superior */}
             <div className="p-8 border-b border-white/5 flex items-center justify-between bg-black/40 backdrop-blur-3xl">
@@ -129,19 +129,19 @@ const ProjectDetailsModal: React.FC<Props> = ({
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex px-10 gap-2 border-b border-white/5 bg-black/20">
+            <div className="flex px-10 gap-2 border-b border-[var(--border-ultra-thin)] bg-[var(--bg-input)]/30 backdrop-blur-md">
                {tabs.map(tab => (
                   <button
                      key={tab.id}
                      onClick={() => setActiveTab(tab.id as any)}
-                     className={`flex items-center gap-3 px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative ${
-                        activeTab === tab.id ? 'text-rc-teal' : 'text-slate-500 hover:text-slate-300'
+                     className={`flex items-center gap-3 px-8 py-5 text-[11px] font-medium uppercase tracking-widest transition-all relative ${
+                        activeTab === tab.id ? 'text-rc-teal' : 'text-[var(--text-secondary)] hover:text-white'
                      }`}
                   >
-                     <tab.icon size={16} />
+                     <tab.icon size={15} />
                      {tab.label}
                      {activeTab === tab.id && (
-                        <motion.div layoutId="modal-tab-active" className="absolute bottom-0 left-0 right-0 h-1 bg-rc-teal rounded-t-full shadow-[0_0_15px_rgba(59,188,169,0.5)]" />
+                        <motion.div layoutId="modal-tab-active" className="absolute bottom-0 left-0 right-0 h-0.5 bg-rc-teal rounded-t-full shadow-[0_0_15px_rgba(59,188,169,0.5)]" />
                      )}
                   </button>
                ))}
@@ -185,13 +185,13 @@ const ProjectDetailsModal: React.FC<Props> = ({
                               <div className="grid grid-cols-2 gap-6">
                                  <div className="p-8 bg-white/[0.02] border border-white/5 rounded-[32px] flex flex-col items-center justify-center gap-4 group hover:border-rc-teal/30 transition-all">
                                     <div className="text-5xl font-black text-white tracking-tighter">
-                                       {Object.values(editedProject.quarterlyAssessment || {}).reduce((a: any, b: any) => a + (typeof b === 'number' ? b : 0), 0)}%
+                                       {Object.values(editedProject?.quarterlyAssessment || {}).reduce((a: any, b: any) => a + (typeof b === 'number' ? b : 0), 0)}%
                                     </div>
                                     <span className="text-[9px] font-black text-rc-teal uppercase tracking-[0.3em]">Health Index Global</span>
                                  </div>
                                  <div className="p-8 bg-white/[0.02] border border-white/5 rounded-[32px] flex flex-col items-center justify-center gap-4 group hover:border-rc-teal/30 transition-all">
                                     <div className="text-5xl font-black text-white tracking-tighter">
-                                       {editedProject.services.length}
+                                       {editedProject?.services?.length || 0}
                                     </div>
                                     <span className="text-[9px] font-black text-rc-teal uppercase tracking-[0.3em]">Servicios Activos</span>
                                  </div>

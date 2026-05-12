@@ -16,9 +16,9 @@ const IntelligenceDashboard: React.FC<{ activeTab: string }> = ({ activeTab }) =
   const globalQuality = 94; // Score estático para la visual según captura
 
   return (
-    <div className="flex h-full gap-8">
+    <div className="flex h-full gap-8 bg-[var(--bg-main)]">
       {/* Main Intelligence Center (Left) */}
-      <div className="flex-1 space-y-12">
+      <div className="flex-1 space-y-12 overflow-y-auto pr-4 scrollbar-hide">
         
         {/* Header Ejecutivo */}
         <header className="flex justify-between items-center">
@@ -46,8 +46,8 @@ const IntelligenceDashboard: React.FC<{ activeTab: string }> = ({ activeTab }) =
               </div>
            </div>
            <div className="flex items-center gap-4">
-              <button className="p-4 bg-white/5 rounded-2xl border border-white/5 text-slate-500 hover:text-white transition-all"><Bell size={20} /></button>
-              <button className="p-4 bg-white/5 rounded-2xl border border-white/5 text-slate-500 hover:text-white transition-all"><Search size={20} /></button>
+              <button className="p-3.5 bg-[var(--bg-input)] rounded-xl border border-[var(--border-ultra-thin)] text-[var(--text-secondary)] hover:text-white transition-all"><Bell size={18} /></button>
+              <button className="p-3.5 bg-[var(--bg-input)] rounded-xl border border-[var(--border-ultra-thin)] text-[var(--text-secondary)] hover:text-white transition-all"><Search size={18} /></button>
            </div>
         </header>
 
@@ -57,17 +57,17 @@ const IntelligenceDashboard: React.FC<{ activeTab: string }> = ({ activeTab }) =
               <h1 className="text-7xl font-black text-white tracking-tighter uppercase leading-none mb-4">CENTRO DE INTELIGENCIA</h1>
               <p className="text-rc-teal text-sm font-black uppercase tracking-[0.4em]">CALIDAD GLOBAL DE CARTERA RC506</p>
            </div>
-           <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[48px] flex items-center gap-10 shadow-2xl backdrop-blur-3xl relative overflow-hidden group">
+           <div className="p-10 glass-card flex items-center gap-10 shadow-2xl relative overflow-hidden group">
               <div className="absolute inset-0 bg-rc-teal/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-20 h-20 bg-rc-teal/10 rounded-[32px] flex items-center justify-center text-rc-teal shadow-2xl shadow-rc-teal/20">
+              <div className="w-20 h-20 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal shadow-2xl shadow-rc-teal/10">
                  <BrainCircuit size={40} />
               </div>
               <div className="text-right">
                  <div className="flex items-center gap-3 justify-end mb-1">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">HEALTH INDEX</span>
-                    <div className="w-2 h-2 rounded-full bg-rc-teal animate-pulse" />
+                    <span className="label-executive">HEALTH INDEX</span>
+                    <div className="w-1.5 h-1.5 rounded-full status-green" />
                  </div>
-                 <h3 className="text-6xl font-black text-white leading-none">{globalQuality}%</h3>
+                 <h3 className="text-6xl font-medium text-white leading-none">{globalQuality}%</h3>
               </div>
            </div>
         </div>
@@ -78,11 +78,11 @@ const IntelligenceDashboard: React.FC<{ activeTab: string }> = ({ activeTab }) =
            <div className="bg-white/[0.02] border border-white/5 rounded-[56px] p-12 relative overflow-hidden group hover:border-rc-teal/20 transition-all duration-500">
               <div className="flex items-center justify-between mb-12">
                  <div>
-                    <h3 className="text-3xl font-black text-white tracking-tighter uppercase mb-1">MATRIZ DE EXCELENCIA</h3>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Atributos de Valor Global</p>
+                    <h3 className="text-2xl font-semibold text-white tracking-tight uppercase mb-1">MATRIZ DE EXCELENCIA</h3>
+                    <p className="label-executive">Atributos de Valor Global</p>
                  </div>
-                 <div className="p-5 bg-rc-teal/10 rounded-3xl text-rc-teal shadow-xl">
-                    <Activity size={28} />
+                 <div className="p-4 bg-rc-teal/10 rounded-xl text-rc-teal">
+                    <Activity size={24} />
                  </div>
               </div>
               
@@ -145,61 +145,61 @@ const IntelligenceDashboard: React.FC<{ activeTab: string }> = ({ activeTab }) =
       </div>
 
       {/* Right Column: Live Health Panel */}
-      <div className="w-[400px] space-y-8 h-full overflow-y-auto pr-2 custom-scrollbar">
-         <div className="bg-white/[0.02] border border-white/5 rounded-[48px] p-10 flex flex-col min-h-full shadow-2xl backdrop-blur-3xl">
+      <div className="w-[380px] space-y-8 h-full overflow-y-auto pr-2 scrollbar-hide">
+         <div className="glass-card flex flex-col min-h-full">
             <div className="flex justify-between items-center mb-10">
-               <h3 className="text-lg font-black text-white uppercase tracking-tighter">LIVE HEALTH</h3>
+               <h3 className="text-base font-semibold text-white uppercase tracking-tight">LIVE HEALTH</h3>
                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">REAL-TIME</span>
+                  <div className="badge-dot status-green" />
+                  <span className="label-executive">REAL-TIME</span>
                </div>
             </div>
 
-            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-10 border-b border-white/5 pb-4">ESTADO OPERATIVO DE CUENTAS</p>
+            <p className="label-executive mb-8 border-b border-[var(--border-ultra-thin)] pb-4">ESTADO OPERATIVO DE CUENTAS</p>
 
-            <div className="grid grid-cols-2 gap-6 mb-12">
+            <div className="grid grid-cols-2 gap-4 mb-10">
                {[
                   { label: 'Cuentas', value: activeAccounts, icon: Users, color: 'text-white' },
                   { label: 'Críticas', value: criticalAccounts, icon: AlertCircle, color: 'text-rose-500' },
                   { label: 'Calidad', value: `${globalQuality}%`, icon: TrendingUp, color: 'text-rc-teal' },
                   { label: 'Pendientes', value: tasks.length, icon: Clock, color: 'text-amber-500' }
                ].map(stat => (
-                  <div key={stat.label} className="p-6 bg-white/[0.03] border border-white/5 rounded-3xl flex flex-col gap-4 group hover:border-white/10 transition-all">
+                  <div key={stat.label} className="p-5 bg-[var(--bg-input)] border border-[var(--border-ultra-thin)] rounded-xl flex flex-col gap-3 group hover:border-white/10 transition-all">
                      <div className="flex justify-between items-center">
-                        <stat.icon size={18} className={stat.color} />
-                        <h4 className="text-2xl font-black text-white leading-none">{stat.value}</h4>
+                        <stat.icon size={16} className={stat.color} />
+                        <h4 className="text-xl font-medium text-white leading-none">{stat.value}</h4>
                      </div>
-                     <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{stat.label}</span>
+                     <span className="label-executive">{stat.label}</span>
                   </div>
                ))}
             </div>
 
             <div className="space-y-8">
-               <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] flex items-center gap-3">
-                  ALERTAS ESTRATÉGICAS <div className="p-1 bg-rose-500/20 text-rose-500 rounded-md"><AlertCircle size={10} /></div>
+               <h3 className="label-executive flex items-center gap-3">
+                  ALERTAS ESTRATÉGICAS <div className="badge-dot status-red" />
                </h3>
                
-               <div className="h-24 border-2 border-dashed border-white/5 rounded-3xl flex items-center justify-center">
-                  <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">Sin alertas críticas</span>
+               <div className="h-24 border border-dashed border-[var(--border-ultra-thin)] rounded-2xl flex items-center justify-center bg-[var(--bg-input)]/50">
+                  <span className="text-[10px] font-medium text-slate-600 uppercase tracking-widest">Sin alertas críticas</span>
                </div>
 
-               <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] flex items-center gap-3 pt-6">
-                  ESTADO DEL EQUIPO <div className="p-1 bg-rc-teal/20 text-rc-teal rounded-md"><Activity size={10} /></div>
+               <h3 className="label-executive flex items-center gap-3 pt-6">
+                  ESTADO DEL EQUIPO <div className="badge-dot status-green" />
                </h3>
                
-               <div className="space-y-4">
+               <div className="space-y-5">
                   {[1, 2, 3].map(i => (
                      <div key={i} className="flex items-center gap-4 group">
-                        <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:text-rc-teal transition-colors uppercase">
+                        <div className="w-10 h-10 rounded-xl bg-[var(--bg-input)] border border-[var(--border-ultra-thin)] flex items-center justify-center text-[10px] font-semibold text-slate-400 group-hover:text-rc-teal transition-colors uppercase">
                            AD
                         </div>
                         <div className="flex-1">
-                           <div className="flex justify-between items-center">
-                              <p className="text-[10px] font-black text-slate-300 uppercase">Analista Técnico {i}</p>
-                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                           <div className="flex justify-between items-center mb-1.5">
+                              <p className="text-[11px] font-medium text-slate-300 uppercase tracking-tight">Analista Técnico {i}</p>
+                              <div className="w-1 h-1 rounded-full bg-emerald-500" />
                            </div>
-                           <div className="w-full h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
-                              <div className="h-full bg-rc-teal w-3/4 shadow-[0_0_8px_#3BC7AA]" />
+                           <div className="w-full h-1 bg-[var(--bg-input)] rounded-full overflow-hidden">
+                              <div className="h-full bg-rc-teal w-3/4 shadow-[0_0_8px_rgba(59,188,169,0.4)]" />
                            </div>
                         </div>
                      </div>

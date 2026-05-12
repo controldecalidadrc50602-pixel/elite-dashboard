@@ -17,10 +17,10 @@ const ServiceMonitor: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 bg-[var(--bg-main)]">
       <header>
-        <h1 className="text-4xl font-black text-white tracking-tighter uppercase mb-2">Monitor de Servicios</h1>
-        <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.3em]">Estado Técnico de Implementaciones Rc506</p>
+        <h1 className="text-4xl font-semibold text-white tracking-tight uppercase mb-2">Monitor de Servicios</h1>
+        <p className="label-executive">Estado Técnico de Implementaciones Rc506</p>
       </header>
 
       {/* Stats Grid */}
@@ -31,38 +31,40 @@ const ServiceMonitor: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
             key={stat.label} 
-            className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] flex items-center justify-between group hover:border-rc-teal/30 transition-all shadow-2xl"
+            className="p-8 glass-card flex items-center justify-between group hover:border-rc-teal/30 transition-all shadow-2xl"
           >
             <div>
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 group-hover:text-rc-teal transition-colors">{stat.label}</p>
-              <h3 className="text-4xl font-black text-white">{stat.value}</h3>
+              <p className="label-executive mb-2 group-hover:text-rc-teal transition-colors">{stat.label}</p>
+              <h3 className="text-4xl font-medium text-white">{stat.value}</h3>
             </div>
-            <div className={`p-4 rounded-3xl bg-white/[0.03] ${stat.color}`}>
-              <stat.icon size={28} />
+            <div className={`p-4 rounded-xl bg-[var(--bg-input)] border border-[var(--border-ultra-thin)] ${stat.color}`}>
+              <stat.icon size={24} />
             </div>
           </motion.div>
         ))}
       </div>
 
       {/* Services Table */}
-      <div className="bg-white/[0.02] border border-white/5 rounded-[48px] overflow-hidden shadow-2xl">
-        <div className="p-8 border-b border-white/5 bg-black/20 flex items-center justify-between">
-           <h3 className="text-xs font-black text-white uppercase tracking-[0.3em]">Inventario de Soluciones</h3>
-           <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-[9px] font-black text-slate-500 uppercase tracking-widest">
+      <div className="glass-card !p-0 overflow-hidden shadow-2xl">
+        <div className="p-8 border-b border-[var(--border-ultra-thin)] bg-[var(--bg-input)]/30 flex items-center justify-between">
+           <h3 className="text-xs font-semibold text-white uppercase tracking-widest">Inventario de Soluciones</h3>
+           <div className="px-4 py-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-ultra-thin)] text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-widest">
               Live Sync Active
            </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-white/5">
-                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">Cliente</th>
-                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">Servicio</th>
-                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">Tipo</th>
-                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">Configuración</th>
-                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">Estado</th>
-                <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Próximo Hito</th>
+             <thead>
+              <tr className="border-b border-[var(--border-ultra-thin)]">
+                <th className="px-10 py-6 label-executive">Cliente</th>
+                <th className="px-10 py-6 label-executive">Servicio</th>
+                <th className="px-10 py-6 label-executive">Tipo</th>
+                <th className="px-10 py-6 label-executive">Configuración</th>
+                <th className="px-10 py-6 label-executive">Estado</th>
+                <th className="px-10 py-6 label-executive text-right">Próximo Hito</th>
               </tr>
+            </thead>
             </thead>
             <tbody className="divide-y divide-white/[0.03]">
               {initialProjects.map((p) => (
@@ -78,7 +80,7 @@ const ServiceMonitor: React.FC = () => {
                              console.log('Opening project:', project.client);
                           }
                         }}
-                        className="text-sm font-black text-white uppercase tracking-tighter hover:text-rc-teal transition-colors cursor-pointer border-b border-transparent hover:border-rc-teal"
+                        className="text-[13px] font-semibold text-white uppercase tracking-tight hover:text-rc-teal transition-colors cursor-pointer border-b border-transparent hover:border-rc-teal"
                       >
                         {p.client}
                       </span>

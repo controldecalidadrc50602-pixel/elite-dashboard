@@ -1,276 +1,106 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-@theme {
-  --color-rc-teal: #3BC7AA;
-  --color-rc-gray: #6D6E71;
-  
-  /* Premium Gray Scale */
-  --color-slate-premium: #1E293B;
-  --color-charcoal: #121212;
-  --color-silver: #C0C0C0;
-  
-  --color-status-optimo: #10b981;
-  --color-status-aceptable: #0ea5e9;
-  --color-status-mejorable: #f59e0b;
-  --color-status-deficiente: #f43f5e;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --bg-primary: #050505;
-  --bg-secondary: #0a0a0b;
-  --glass-bg: rgba(10, 10, 11, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.05);
-  --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --rc-teal: #3bbca9;
-  --rc-turquoise: #4fd1c5;
-  --accent-glow: rgba(59, 188, 169, 0.15);
+  --bg-main: #0B0E14;
+  --bg-card: rgba(22, 27, 34, 0.95);
+  --bg-input: #0D1117;
+  --text-primary: #FFFFFF;
+  --text-secondary: #8B949E;
+  --rc-turquoise: #3BC7AA;
+  --border-ultra-thin: rgba(255, 255, 255, 0.05);
 }
 
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
-}
-
-.glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.glass-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(59, 188, 169, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 188, 169, 0.05);
-}
-
-.text-meta {
-  color: var(--text-secondary);
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-}
-
-.text-title {
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  color: white;
-}
-
-.btn-premium {
-  background: linear-gradient(135deg, var(--rc-teal), #2d9a8a);
-  color: #000;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  border: none;
-  box-shadow: 0 4px 15px rgba(59, 188, 169, 0.3);
-  transition: all 0.3s ease;
-}
-
-.btn-premium:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 25px rgba(59, 188, 169, 0.5);
-}
-
-/* Scrollbar Premium */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--rc-teal);
-}
-
-.light {
-  --bg-primary: #F5F7FA;
-  --bg-secondary: #FFFFFF;
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --text-primary: #1D1D1F;
-  --text-secondary: #424245;
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(0, 0, 0, 0.05);
-  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  --glow-teal: 0 0 15px rgba(59, 188, 169, 0.2);
-  --glow-optimal: 0 0 10px rgba(16, 185, 129, 0.2);
-}
-
-@layer base {
-  body {
-    @apply font-['Inter'] text-[var(--text-primary)] bg-[var(--bg-primary)] antialiased transition-colors duration-500;
-    height: 100vh;
-    overflow: hidden;
-    background: radial-gradient(circle at top right, #0d2b27 0%, #0a0a0b 45%, #0a0a0b 100%);
-    background-attachment: fixed;
-  }
-
-  .light body {
-    background: radial-gradient(circle at top right, #e2e8f0 0%, #F5F7FA 100%);
-  }
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-main);
+  background-image: radial-gradient(circle at center, #111420 0%, #0B0E14 100%);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
 }
 
 @layer components {
-  .glass-panel {
-    @apply bg-[var(--glass-bg)] backdrop-blur-[20px] border-[var(--glass-border)];
-  }
-
   .glass-card {
-    @apply bg-[var(--card-bg)] backdrop-blur-[15px] border border-[var(--glass-border)] shadow-[var(--card-shadow)] transition-all duration-500 ease-[var(--transition-premium)];
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-ultra-thin);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .premium-button {
-    @apply transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+  .glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
   }
 
-  .glow-optimal {
-    box-shadow: var(--glow-optimal);
+  .label-executive {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
-  .glow-hover:hover {
-    box-shadow: var(--glow-teal);
-    @apply border-rc-teal/30;
+  .input-executive {
+    background: var(--bg-input);
+    border: 1px solid var(--border-ultra-thin);
+    border-radius: 8px;
+    color: var(--text-primary);
+    padding: 10px 14px;
+    font-size: 13px;
+    transition: all 0.2s;
   }
-}
 
-/* Premium Inputs */
-input, select, textarea {
-  @apply bg-black/20 border border-[var(--glass-border)] rounded-2xl px-6 py-4 text-sm transition-all outline-none text-[var(--text-primary)];
-}
-
-.light input, .light select, .light textarea {
-  @apply bg-white border-black/5;
-}
-
-input:focus, select:focus, textarea:focus {
-  @apply border-[var(--rc-turquoise)]/50 ring-4 ring-[var(--rc-turquoise)]/10 bg-black/40 shadow-[0_0_20px_rgba(59,188,169,0.1)];
-}
-
-/* Custom Scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
-}
-
-.light .custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-black/10 hover:bg-black/20;
-}
-
-/* Utility for text hierarchy */
-.text-meta {
-  @apply text-[10px] font-light uppercase tracking-widest text-[var(--text-secondary)];
-}
-
-.text-title {
-  @apply font-black tracking-tighter text-[var(--text-primary)];
-}
-
-/* Animations */
-@keyframes pulse-neon {
-  0%, 100% { opacity: 1; filter: brightness(1); }
-  50% { opacity: 0.8; filter: brightness(1.2); }
-}
-
-.animate-neon {
-  animation: pulse-neon 2s infinite;
-}
-
-@keyframes pulse-red {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
-}
-
-.animate-pulse-red {
-  animation: pulse-red 1s infinite ease-in-out;
-}
-
-/* Layout Helpers */
-.layout-3-cols {
-  display: grid;
-  grid-template-columns: 88px 1fr 340px;
-  height: 100vh;
-  overflow: hidden;
-}
-
-@media (max-width: 1280px) {
-  .layout-3-cols {
-    grid-template-columns: 88px 1fr 300px;
+  .input-executive:focus {
+    outline: none;
+    border-color: var(--rc-turquoise);
+    box-shadow: 0 0 0 2px rgba(59, 188, 169, 0.1);
   }
-}
 
-@media (max-width: 1024px) {
-  .layout-3-cols {
-    grid-template-columns: 88px 1fr;
+  .btn-primary {
+    background: var(--rc-turquoise);
+    color: #000;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
   }
-  .right-panel-hide {
-    display: none;
+
+  .btn-primary:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 20px rgba(59, 188, 169, 0.3);
   }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+  }
+
+  .status-green { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+  .status-yellow { background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+  .status-red { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
 }
 
-/* --- ZOHO-ELITE PROFESSIONAL UTILITIES --- */
-@utility technical-grid {
-  display: grid;
-  grid-template-columns: 24px 2fr 1fr 1.5fr 120px 80px;
-  align-items: center;
-  gap: 1.5rem;
+/* Hide Scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
-
-@utility technical-grid-tasks {
-  display: grid;
-  grid-template-columns: 48px 3fr 1.5fr 1.2fr 1.5fr 80px;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-@utility technical-grid-audit {
-  display: grid;
-  grid-template-columns: 1.5fr 80px 2fr 120px;
-  align-items: center;
-  gap: 2rem;
-}
-
-.compact-row {
-  @apply py-4 px-6 transition-all duration-200 border-b border-[var(--glass-border)];
-}
-
-.elite-accent-line {
-  @apply relative overflow-hidden;
-}
-
-.elite-accent-line::before {
-  content: '';
-  @apply absolute left-0 top-0 bottom-0 w-0 bg-rc-teal transition-all duration-300;
-}
-
-.elite-accent-line:hover::before {
-  @apply w-1;
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

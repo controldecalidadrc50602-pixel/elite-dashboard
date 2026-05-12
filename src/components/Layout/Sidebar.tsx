@@ -14,7 +14,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
-  activeTab: 'overview' | 'clients' | 'services' | 'archive' | 'settings' | 'ai-copilot';
+  activeTab: 'overview' | 'clients' | 'services' | 'tasks' | 'settings' | 'audits' | 'reports' | 'ai-copilot' | 'archive';
   setActiveTab: (tab: any) => void;
 }
 
@@ -45,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <aside className="w-[240px] h-full bg-[#0a0a0c] border-r border-white/5 flex flex-col py-8 px-4 relative z-50 overflow-y-auto scrollbar-hide">
+    <aside className="w-[240px] h-full bg-[var(--bg-main)] border-r border-[var(--border-ultra-thin)] flex flex-col py-8 px-4 relative z-50 overflow-y-auto scrollbar-hide backdrop-blur-xl">
       {/* Branding */}
       <div className="px-4 mb-10">
         <div className="flex items-center gap-3">
@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
       <nav className="flex-1 space-y-8">
         {menuSections.map((section) => (
           <div key={section.title} className="space-y-2">
-            <h3 className="px-4 text-[9px] font-black text-slate-600 uppercase tracking-[0.2em]">{section.title}</h3>
+            <h3 className="px-4 label-executive opacity-60">{section.title}</h3>
             <div className="space-y-1">
               {section.items.map((item) => {
                 const Icon = item.icon;
@@ -79,8 +79,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon size={18} className={isActive ? 'text-rc-teal' : 'group-hover:text-white transition-colors'} />
-                      <span className={`text-[11px] font-bold tracking-tight ${isActive ? 'text-white' : ''}`}>
+                      <Icon size={16} className={isActive ? 'text-rc-teal' : 'group-hover:text-white transition-colors'} />
+                      <span className={`text-[12px] font-medium tracking-tight ${isActive ? 'text-white' : ''}`}>
                         {item.label}
                       </span>
                     </div>
@@ -104,12 +104,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
         </button>
 
         <div className="px-4 py-4 bg-white/[0.02] rounded-2xl flex items-center gap-3">
-           <div className="w-8 h-8 rounded-full bg-rc-teal/20 flex items-center justify-center text-rc-teal font-black text-xs uppercase">
+           <div className="w-8 h-8 rounded-lg bg-rc-teal/20 flex items-center justify-center text-rc-teal font-semibold text-xs uppercase">
               {user?.email?.substring(0, 2) || 'AD'}
            </div>
            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-black text-white truncate uppercase">{user?.email?.split('@')[0] || 'Admin'}</p>
-              <p className="text-[8px] font-bold text-rc-teal uppercase">RC506 Specialist</p>
+              <p className="text-[11px] font-semibold text-white truncate uppercase tracking-tight">{user?.email?.split('@')[0] || 'Admin'}</p>
+              <p className="text-[9px] font-medium text-rc-teal uppercase tracking-widest">Specialist</p>
            </div>
            <button onClick={logout} className="text-slate-600 hover:text-rose-500 transition-colors">
               <LogOut size={16} />
