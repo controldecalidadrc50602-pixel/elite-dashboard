@@ -33,7 +33,7 @@ export const brandingService = {
           return data;
         }
       } catch (err) {
-        console.error('Error fetching branding:', err);
+        // Silent fail for permissions
       }
     }
     

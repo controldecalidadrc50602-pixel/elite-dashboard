@@ -29,6 +29,21 @@ body {
   height: 100vh;
 }
 
+input, select, textarea {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: white;
+  -webkit-box-shadow: 0 0 0px 1000px #0d1117 inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 /* Fondo Global de Inteligencia */
 .app-container {
   width: 100vw;

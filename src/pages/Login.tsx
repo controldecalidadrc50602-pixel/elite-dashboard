@@ -45,7 +45,11 @@ const Login = () => {
     setError(null);
     const { error: authError } = await loginWithGoogle();
     if (authError) {
-      setError('Error al conectar con Google.');
+      if (authError.includes('popup-closed-by-user')) {
+        setError('El proceso de autenticación fue cancelado.');
+      } else {
+        setError('Error al conectar con Google. Verifique los pop-ups.');
+      }
       setLoading(false);
     }
   };
@@ -72,7 +76,7 @@ const Login = () => {
              {branding.logoUrl ? (
                <img src={branding.logoUrl} alt="Logo" className="w-16 h-16 object-contain relative z-10" />
              ) : (
-               <div className="w-14 h-14 bg-rc-teal rounded-3xl flex items-center justify-center text-white font-black text-2xl shadow-lg relative z-10">Rc</div>
+               <div className="w-14 h-14 bg-rc-teal rounded-3xl flex items-center justify-center text-black font-semibold text-2xl shadow-[0_0_20px_rgba(59,199,170,0.4)] relative z-10">Rc</div>
              )}
           </motion.div>
           
@@ -86,24 +90,24 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div className="relative group">
-              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-rc-teal transition-colors" />
+              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-rc-teal transition-colors z-10" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-900/50 border border-white/5 rounded-2xl py-5 pl-14 pr-6 text-white focus:outline-none focus:ring-2 focus:ring-rc-teal/40 transition-all text-sm font-semibold placeholder:text-slate-600 focus:bg-slate-900"
+                className="w-full bg-[#0d1117] border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-white focus:outline-none focus:ring-2 focus:ring-rc-teal/40 transition-all text-sm font-semibold placeholder:text-slate-600"
                 placeholder="Identificador Corporativo"
                 required
               />
             </div>
 
             <div className="relative group">
-              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-rc-teal transition-colors" />
+              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-rc-teal transition-colors z-10" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full bg-slate-900/50 border ${error ? 'border-rose-500/50' : 'border-white/5'} rounded-2xl py-5 pl-14 pr-6 text-white focus:outline-none focus:ring-2 focus:ring-rc-teal/40 transition-all text-sm font-semibold placeholder:text-slate-600 focus:bg-slate-900`}
+                className={`w-full bg-[#0d1117] border ${error ? 'border-rose-500/50' : 'border-white/10'} rounded-2xl py-5 pl-14 pr-6 text-white focus:outline-none focus:ring-2 focus:ring-rc-teal/40 transition-all text-sm font-semibold placeholder:text-slate-600`}
                 placeholder="Clave de Seguridad"
                 required
               />
