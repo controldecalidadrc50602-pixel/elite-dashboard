@@ -16,6 +16,7 @@ interface Props {
   onClose: () => void;
   onUpdate: (project: Project) => void;
   onDelete?: (id: string) => void;
+  onArchive?: (project: Project) => void;
   onEditRequest?: (project: Project) => void;
 }
 
@@ -25,6 +26,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
   onClose, 
   onUpdate, 
   onDelete, 
+  onArchive,
   onEditRequest 
 }) => {
   const { t } = useTranslation();
@@ -39,6 +41,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
 
   const handleSave = () => {
     onUpdate(editedProject);
+    onClose();
   };
 
   const getFlagColor = (flag: string) => {
@@ -114,7 +117,10 @@ const ProjectDetailsModal: React.FC<Props> = ({
                      <Edit3 size={18} />
                      <span className="label-executive text-[7px]">Editar</span>
                   </button>
-                  <button className="flex flex-col items-center gap-1 p-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 text-slate-400 hover:text-amber-400 transition-all">
+                  <button 
+                    onClick={() => onArchive?.(editedProject)}
+                    className="flex flex-col items-center gap-1 p-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 text-slate-400 hover:text-amber-400 transition-all"
+                  >
                      <Archive size={18} />
                      <span className="label-executive text-[7px]">Archivar</span>
                   </button>

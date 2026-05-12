@@ -17,19 +17,20 @@ interface LiveOpsPanelProps {
 }
 
 const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
-  const criticalProjects = projects.filter(p => p.healthFlag === 'Roja' || p.healthFlag === 'Negra');
-  const clientHealthAlerts = projects.filter(p => p.clientEvaluation?.status === 'Roja' || p.clientEvaluation?.status === 'Negra');
+  const activeProjects = projects.filter(p => p.adminStatus !== 'Archivado');
+  const criticalProjects = activeProjects.filter(p => p.healthFlag === 'Roja' || p.healthFlag === 'Negra');
+  const clientHealthAlerts = activeProjects.filter(p => p.clientEvaluation?.status === 'Roja' || p.clientEvaluation?.status === 'Negra');
   const allAlerts = [...criticalProjects.map(p => ({...p, alertType: 'Operation'})), ...clientHealthAlerts.map(p => ({...p, alertType: 'Client'}))];
 
   const globalHealthScore = useMemo(() => {
-    if (projects.length === 0) return 0;
-    const scores = projects.map(p => {
+    if (activeProjects.length === 0) return 0;
+    const scores = activeProjects.map(p => {
       if (!p.quarterlyAssessment) return 0;
       const values = Object.values(p.quarterlyAssessment).filter(v => typeof v === 'number') as number[];
       return values.reduce((a, b) => a + b, 0) / (values.length * 5);
     });
-    return (scores.reduce((a, b) => a + b, 0) / projects.length) * 100;
-  }, [projects]);
+    return (scores.reduce((a, b) => a + b, 0) / activeProjects.length) * 100;
+  }, [activeProjects]);
 
   return (
     <aside className="w-[340px] h-full glass-panel border-l border-[var(--glass-border)] flex flex-col overflow-hidden relative z-40 transition-all duration-300">

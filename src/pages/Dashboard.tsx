@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { projectService } from '../services/projectService';
 import { taskService } from '../services/taskService';
 import { initialProjects } from '../lib/mockData';
+import ArchiveVault from './ArchiveVault';
 import { Project } from '../types/project';
 import StoriesBar from '../components/Dashboard/StoriesBar';
 import LiveOpsPanel from '../components/Dashboard/LiveOpsPanel';
@@ -29,7 +30,7 @@ import ProjectDetailsModal from '../components/ProjectDetailsModal';
 import ProjectModal from '../components/Modals/ProjectModal';
 import SlaTimer from '../components/common/SlaTimer';
 
-const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'tasks' }> = ({ activeTab }) => {
+const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'tasks' | 'archive' }> = ({ activeTab }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -74,10 +75,11 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
   }, [projects]);
 
   const filteredProjects = useMemo(() => {
-    return projects.filter(p => 
-      p.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.services.some(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    return projects.filter(p => {
+      const matchesSearch = p.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           p.services.some(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()));
+      return p.adminStatus !== 'Archivado' && matchesSearch;
+    });
   }, [projects, searchQuery]);
 
   if (loading) return (
@@ -183,6 +185,12 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
                  </div>
               )}
 
+              {activeTab === 'archive' && (
+                <div className="animate-in fade-in duration-700 h-full overflow-y-auto custom-scrollbar px-10 pb-10">
+                   <ArchiveVault projects={projects} setProjects={setProjects} />
+                </div>
+              )}
+
               {activeTab === 'status' && (
                 <div className="animate-in fade-in duration-700">
                    <AuditDashboard projects={projects} />
@@ -203,14 +211,19 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
          isOpen={isSlideoverOpen}
          onClose={() => setIsSlideoverOpen(false)}
          onUpdate={async (p) => setProjects(await projectService.updateProject(p, projects))}
+         onArchive={async (p) => {
+            const archived = { ...p, adminStatus: 'Archivado' as any };
+            setProjects(await projectService.updateProject(archived, projects));
+            setIsSlideoverOpen(false);
+         }}
          onEditRequest={(p) => { setEditingProject(p); setIsProjectModalOpen(true); setIsSlideoverOpen(false); }}
-         onDelete={async (id) => { if(confirm('Eliminar?')) setProjects(await projectService.deleteProject(id, projects)); setIsSlideoverOpen(false); }}
+         onDelete={async (id) => { if(confirm('¿Eliminar permanentemente?')) setProjects(await projectService.deleteProject(id, projects)); setIsSlideoverOpen(false); }}
       />
 
       <ProjectModal 
          isOpen={isProjectModalOpen}
          onClose={() => setIsProjectModalOpen(false)}
-         onSave={async (p) => setProjects(p.id ? await projectService.updateProject(p, projects) : await projectService.addProject(p, projects))}
+         onSave={async (p) => setProjects(editingProject ? await projectService.updateProject(p, projects) : await projectService.addProject(p, projects))}
          project={editingProject}
       />
     </div>

@@ -9,7 +9,8 @@ import {
   LogOut,
   Sun,
   Moon,
-  Languages
+  Languages,
+  Archive
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
@@ -43,6 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
           { id: 'overview', icon: LayoutGrid, label: 'Audit' },
           { id: 'clients', icon: Users, label: 'Cartera' },
           { id: 'status', icon: ShieldCheck, label: 'Reportes' },
+          { id: 'archive', icon: Archive, label: 'Bóveda' },
         ].map(item => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;

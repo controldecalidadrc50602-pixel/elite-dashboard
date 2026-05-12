@@ -8,7 +8,7 @@ import { LayoutGrid, Users, CheckSquare, ShieldCheck } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
   const { user, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'clients' | 'status'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'clients' | 'status' | 'archive'>('overview');
 
   if (loading) return (
     <div className="h-screen w-full flex items-center justify-center bg-[#050505]">
