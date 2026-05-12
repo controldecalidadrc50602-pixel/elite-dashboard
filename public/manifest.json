@@ -1,25 +1,16 @@
 {
-  "short_name": "Elite Status",
-  "name": "Elite Status | Rc506 Dashboard",
+  "name": "RC506 Gestión Elite",
+  "short_name": "RC506",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0E14",
+  "theme_color": "#3BC7AA",
+  "description": "Dashboard Ejecutivo de Inteligencia RC506",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
     }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#3BBCA9",
-  "background_color": "#050505"
+  ]
 }
