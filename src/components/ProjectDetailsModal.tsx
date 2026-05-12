@@ -100,9 +100,22 @@ const ProjectDetailsModal: React.FC<Props> = ({
                             }`} />
                             Bandera {editedProject.healthFlag}
                          </div>
-                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                            <ShieldCheck size={14} className="text-rc-teal" /> F1 Performance View
-                         </span>
+                         <div className="h-4 w-px bg-white/10" />
+                         <div className="flex gap-1">
+                            {['En Proceso', 'Prueba', 'Activo', 'Inactivo'].map(status => (
+                               <button
+                                  key={status}
+                                  onClick={() => setEditedProject({ ...editedProject, adminStatus: status as any })}
+                                  className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${
+                                     editedProject.adminStatus === status 
+                                     ? 'bg-rc-teal text-black shadow-lg shadow-rc-teal/20' 
+                                     : 'bg-white/5 text-slate-500 hover:text-white'
+                                  }`}
+                               >
+                                  {status}
+                               </button>
+                            ))}
+                         </div>
                       </div>
                   </div>
                </div>
@@ -176,59 +189,94 @@ const ProjectDetailsModal: React.FC<Props> = ({
                   </div>
                </div>
 
-               {/* Col 2: 10 Pilares de Calidad */}
-               <div className="p-10 space-y-8 overflow-y-auto custom-scrollbar bg-black/5">
-                  <h3 className="text-meta">2. Autoevaluación de Calidad (1-5)</h3>
-                  
-                  <div className="space-y-5">
-                     {[
-                        { key: 'responseTime', label: 'Tiempo de Respuesta' },
-                        { key: 'communication', label: 'Comunicación Fluida' },
-                        { key: 'resolution', label: 'Capacidad de Resolución' },
-                        { key: 'proactivity', label: 'Proactividad Operativa' },
-                        { key: 'technicalKnowledge', label: 'Conocimiento Técnico' },
-                        { key: 'reliability', label: 'Confiabilidad / Backup' },
-                        { key: 'flexibility', label: 'Flexibilidad de Cambio' },
-                        { key: 'innovation', label: 'Aporte de Innovación' },
-                        { key: 'documentation', label: 'Reportes & Documentos' },
-                        { key: 'overallSatisfaction', label: 'Satisfacción Global' }
-                     ].map((pillar) => (
-                        <div key={pillar.key} className="space-y-2 group">
-                           <div className="flex justify-between items-center mb-1">
-                              <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest group-hover:text-rc-teal transition-colors">
-                                 {pillar.label}
-                              </span>
-                              <span className="text-xs font-black text-rc-teal">
-                                 {editedProject.quarterlyAssessment?.[pillar.key as keyof typeof editedProject.quarterlyAssessment] || 0}/5
-                              </span>
-                           </div>
-                           <div className="flex gap-1.5">
-                              {[1, 2, 3, 4, 5].map((num) => (
-                                 <button
-                                    key={num}
-                                    onClick={() => {
-                                       const newAssessment = { 
-                                          ...(editedProject.quarterlyAssessment || {
-                                             responseTime: 0, communication: 0, resolution: 0, proactivity: 0,
-                                             technicalKnowledge: 0, reliability: 0, flexibility: 0, innovation: 0,
-                                             documentation: 0, overallSatisfaction: 0
-                                          }), 
-                                          [pillar.key]: num 
-                                       };
-                                       setEditedProject({ ...editedProject, quarterlyAssessment: newAssessment });
-                                    }}
-                                    className={`flex-1 h-1.5 rounded-full transition-all duration-300 ${
-                                       (editedProject.quarterlyAssessment?.[pillar.key as keyof typeof editedProject.quarterlyAssessment] || 0) >= num
-                                       ? 'bg-rc-teal shadow-[0_0_8px_rgba(59,188,169,0.4)]'
-                                       : 'bg-white/5'
-                                    }`}
-                                 />
-                              ))}
-                           </div>
-                        </div>
-                     ))}
-                  </div>
-               </div>
+                {/* Col 2: 10 Pilares de Calidad */}
+                <div className="p-10 space-y-8 overflow-y-auto custom-scrollbar bg-black/5">
+                   <div className="flex items-center justify-between">
+                      <h3 className="text-meta">2. Autoevaluación Trimestral</h3>
+                      <div className="flex gap-1">
+                         {[1, 2, 3, 4, 5].map(n => (
+                            <Star key={n} size={10} className="text-rc-teal opacity-40" />
+                         ))}
+                      </div>
+                   </div>
+                   
+                   <div className="space-y-6">
+                      {[
+                         { key: 'responseTime', label: 'Tiempo de Respuesta', desc: '¿Qué tan rápido respondemos?' },
+                         { key: 'communicationQuality', label: 'Calidad Comunicación', desc: 'Tono, empatía y claridad' },
+                         { key: 'effectiveResolution', label: 'Resolución Efectiva', desc: 'Solución real y cierre' },
+                         { key: 'customerExperience', label: 'Experiencia Cliente', desc: 'Confianza, facilidad y orden' },
+                         { key: 'operationalContinuity', label: 'Continuidad Operativa', desc: 'Estabilidad y cumplimiento' },
+                         { key: 'orderTraceability', label: 'Orden y Trazabilidad', desc: 'Organización operativa' },
+                         { key: 'commercialConversion', label: 'Conversión Comercial', desc: 'Resultados y reuniones' },
+                         { key: 'adaptability', label: 'Capacidad Adaptación', desc: 'Flexibilidad y personalización' },
+                         { key: 'serviceCulture', label: 'Cultura de Servicio', desc: 'Actitud y disposición' },
+                         { key: 'valuePerception', label: 'Percepción de Valor', desc: 'Posicionamiento y confianza' }
+                      ].map((pillar) => {
+                         const score = (editedProject.quarterlyAssessment as any)?.[pillar.key] || 0;
+                         const getStatusLabel = (s: number) => {
+                            switch(s) {
+                               case 1: return 'CRÍTICO';
+                               case 2: return 'DEBE MEJORAR';
+                               case 3: return 'ACEPTABLE';
+                               case 4: return 'BUENO';
+                               case 5: return 'ÓPTIMO';
+                               default: return 'SIN EVALUAR';
+                            }
+                         };
+
+                         return (
+                            <div key={pillar.key} className="space-y-3 group bg-white/[0.02] p-4 rounded-2xl border border-transparent hover:border-white/5 transition-all">
+                               <div className="flex justify-between items-start">
+                                  <div>
+                                     <span className="text-[10px] font-black text-white uppercase tracking-tighter group-hover:text-rc-teal transition-colors">
+                                        {pillar.label}
+                                     </span>
+                                     <p className="text-[8px] text-slate-500 font-bold uppercase tracking-widest mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        {pillar.desc}
+                                     </p>
+                                  </div>
+                                  <div className="text-right">
+                                     <span className={`text-[8px] font-black px-2 py-0.5 rounded-full ${
+                                        score <= 1 ? 'bg-rose-500/10 text-rose-500' :
+                                        score <= 3 ? 'bg-amber-500/10 text-amber-500' :
+                                        'bg-rc-teal/10 text-rc-teal'
+                                     }`}>
+                                        {getStatusLabel(score)}
+                                     </span>
+                                  </div>
+                               </div>
+                               
+                               <div className="flex gap-2">
+                                  {[1, 2, 3, 4, 5].map((num) => (
+                                     <button
+                                        key={num}
+                                        onClick={() => {
+                                           const newAssessment = { 
+                                              ...(editedProject.quarterlyAssessment || {
+                                                 responseTime: 0, communicationQuality: 0, effectiveResolution: 0,
+                                                 customerExperience: 0, operationalContinuity: 0, orderTraceability: 0,
+                                                 commercialConversion: 0, adaptability: 0, serviceCulture: 0, valuePerception: 0
+                                              }), 
+                                              [pillar.key]: num 
+                                           };
+                                           setEditedProject({ ...editedProject, quarterlyAssessment: newAssessment as any });
+                                        }}
+                                        className="flex-1 group/star"
+                                     >
+                                        <div className={`h-1.5 rounded-full transition-all duration-500 ${
+                                           score >= num
+                                           ? 'bg-rc-teal shadow-[0_0_12px_rgba(59,188,169,0.4)]'
+                                           : 'bg-white/5 group-hover/star:bg-white/10'
+                                        }`} />
+                                     </button>
+                                  ))}
+                               </div>
+                            </div>
+                         );
+                      })}
+                   </div>
+                </div>
 
                {/* Col 3: Comportamiento Cliente */}
                <div className="p-10 space-y-10 overflow-y-auto custom-scrollbar">
@@ -238,16 +286,18 @@ const ProjectDetailsModal: React.FC<Props> = ({
                      <div className="space-y-3">
                         {[
                            { id: 'projectLeader', label: 'Líder de Proyecto Asignado' },
-                           { id: 'documentation', label: 'Entrega Info Oportuna' },
-                           { id: 'receptivity', label: 'Apertura a Asesoría' },
-                           { id: 'continuity', label: 'Continuidad del Servicio' },
+                           { id: 'timelyDocumentation', label: 'Entrega Info Oportuna' },
+                           { id: 'advisoryReceptivity', label: 'Receptivo a Asesoría' },
+                           { id: 'effectiveServiceUse', label: 'Uso Efectivo del Servicio' },
+                           { id: 'serviceContinuity', label: 'Continuidad en el Uso' },
                            { id: 'reportValuation', label: 'Valora Informes de Gestión' },
                            { id: 'paymentPunctuality', label: 'Puntualidad en Pagos' }
                         ].map(item => (
                            <div 
                               key={item.id} 
                               onClick={() => {
-                                 const currentEval = editedProject.clientEvaluation || { projectLeader: false, documentation: false, receptivity: false, continuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' };
+                                                                   const currentEval = (editedProject.clientEvaluation as any) || { projectLeader: false, timelyDocumentation: false, advisoryReceptivity: false, effectiveServiceUse: false, serviceContinuity: false, reportValuation: false, paymentPunctuality: false, status: 'Verde' };
+
                                  const newVal = !currentEval[item.id as keyof typeof currentEval];
                                  setEditedProject({
                                     ...editedProject,

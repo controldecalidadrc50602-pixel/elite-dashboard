@@ -98,9 +98,10 @@ export interface TechDNA {
 
 export interface ClientEvaluation {
   projectLeader: boolean;
-  documentation: boolean;
-  receptivity: boolean;
-  continuity: boolean;
+  timelyDocumentation: boolean;
+  advisoryReceptivity: boolean;
+  effectiveServiceUse: boolean;
+  serviceContinuity: boolean;
   reportValuation: boolean;
   paymentPunctuality: boolean;
   status: 'Verde' | 'Amarilla' | 'Roja' | 'Negra';
@@ -121,16 +122,16 @@ export interface StrategySLA {
 }
 
 export interface QuarterlyAssessment {
-  responseTime: number;      // 1-5
-  communication: number;     // 1-5
-  resolution: number;        // 1-5
-  proactivity: number;       // 1-5
-  technicalKnowledge: number;// 1-5
-  reliability: number;       // 1-5
-  flexibility: number;       // 1-5
-  innovation: number;        // 1-5
-  documentation: number;     // 1-5
-  overallSatisfaction: number;// 1-5
+  responseTime: number;      // ¿Qué tan rápido respondemos?
+  communicationQuality: number; // Tono, empatía, claridad, profesionalismo
+  effectiveResolution: number;  // Solución real, seguimiento, cierre
+  customerExperience: number;   // Facilidad, orden, confianza
+  operationalContinuity: number; // Estabilidad, cumplimiento, seguimiento
+  orderTraceability: number;    // Organización operativa
+  commercialConversion: number; // Resultados, reuniones, cierre, leads
+  adaptability: number;         // Personalización, flexibilidad, comprensión
+  serviceCulture: number;       // Actitud, disposición, colaboración interna
+  valuePerception: number;      // Posicionamiento, confianza profesional
 }
 
 export interface Project {
@@ -145,6 +146,7 @@ export interface Project {
   };
   strategicObjective?: string;
   services: ClientService[];
+  adminStatus: 'En Proceso' | 'Prueba' | 'Activo' | 'Inactivo';
   evaluations: Evaluation[];
   alerts?: Alert[];
   healthFlag: 'Verde' | 'Amarilla' | 'Roja' | 'Negra';
