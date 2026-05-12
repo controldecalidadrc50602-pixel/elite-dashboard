@@ -77,8 +77,8 @@ export const brandingService = {
           }
         },
         (error) => {
-          console.error('🔥 Branding Sync Error:', error);
-          // Fallback to local storage if server fails
+          // Silently handle permission errors and use local fallback
+          console.warn('Branding Sync: Using local fallback due to restricted permissions.');
           this.getBranding().then(callback);
         }
       );

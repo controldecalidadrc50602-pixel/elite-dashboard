@@ -85,8 +85,9 @@ const ProjectDetailsModal: React.FC<Props> = ({
                   </div>
                   <div>
                      <div className="flex items-center gap-3">
-                        <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">{editedProject.client}</h2>
-                        <div className={`px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${getFlagColor(editedProject.healthFlag)}`}>
+                        <h2 className="text-3xl font-semibold text-white tracking-tight uppercase leading-none">{editedProject.client}</h2>
+                        <div className={`px-3 py-1 rounded-full border text-[9px] font-semibold uppercase tracking-widest flex items-center gap-2 ${getFlagColor(editedProject.healthFlag)}`}>
+                           <div className={`w-1.5 h-1.5 rounded-full ${editedProject.healthFlag === 'Verde' ? 'bg-emerald-400' : editedProject.healthFlag === 'Amarilla' ? 'bg-amber-400' : 'bg-rose-500'}`} />
                            Bandera {editedProject.healthFlag}
                         </div>
                      </div>
@@ -95,7 +96,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                            <button
                               key={status}
                               onClick={() => setEditedProject({ ...editedProject, adminStatus: status as any })}
-                              className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                              className={`px-4 py-1.5 rounded-xl text-[9px] font-semibold uppercase tracking-widest transition-all ${
                                  editedProject.adminStatus === status 
                                  ? 'bg-rc-teal text-black shadow-lg shadow-rc-teal/30' 
                                  : 'bg-white/5 text-slate-500 hover:text-white'
@@ -111,15 +112,15 @@ const ProjectDetailsModal: React.FC<Props> = ({
                <div className="flex items-center gap-3">
                   <button onClick={() => onEditRequest?.(editedProject)} className="flex flex-col items-center gap-1 p-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 text-slate-400 hover:text-white transition-all group">
                      <Edit3 size={18} />
-                     <span className="text-[7px] font-black uppercase tracking-widest">Editar</span>
+                     <span className="label-executive text-[7px]">Editar</span>
                   </button>
                   <button className="flex flex-col items-center gap-1 p-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 text-slate-400 hover:text-amber-400 transition-all">
                      <Archive size={18} />
-                     <span className="text-[7px] font-black uppercase tracking-widest">Archivar</span>
+                     <span className="label-executive text-[7px]">Archivar</span>
                   </button>
                   <button onClick={() => onDelete?.(editedProject.id)} className="flex flex-col items-center gap-1 p-3 bg-rose-500/10 hover:bg-rose-500/20 rounded-2xl border border-rose-500/20 text-rose-500 transition-all">
                      <Trash size={18} />
-                     <span className="text-[7px] font-black uppercase tracking-widest">Eliminar</span>
+                     <span className="label-executive text-[7px]">Eliminar</span>
                   </button>
                   <div className="h-10 w-px bg-white/10 mx-2" />
                   <button onClick={onClose} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl text-white transition-all border border-white/5">

@@ -76,10 +76,10 @@ const Login = () => {
              )}
           </motion.div>
           
-          <h1 className="text-4xl font-black text-white tracking-tighter uppercase mb-2">Elite Access</h1>
+          <h1 className="text-4xl font-semibold text-white tracking-tight uppercase mb-2">Elite Access</h1>
           <div className="flex items-center gap-2">
             <ShieldCheck size={14} className="text-rc-teal" />
-            <p className="text-slate-400 font-black text-[10px] uppercase tracking-[0.4em]">{branding.companyName}</p>
+            <p className="label-executive">{branding.companyName}</p>
           </div>
         </div>
 
@@ -137,8 +137,8 @@ const Login = () => {
 
         <div className="relative my-10">
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
-          <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-600">
-            <span className="bg-[#0f172a] px-6">Direct Login</span>
+          <div className="relative flex justify-center">
+            <span className="bg-[#020617] px-6 label-executive">Direct Login</span>
           </div>
         </div>
 
@@ -153,8 +153,8 @@ const Login = () => {
         </button>
 
         <div className="mt-12 text-center opacity-40 hover:opacity-100 transition-opacity">
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.4em]">
-            Elite Dashboard V3.5 • Executive Edition
+          <p className="label-executive">
+            Elite Dashboard V4.0 • Executive Edition
           </p>
         </div>
       </motion.div>
