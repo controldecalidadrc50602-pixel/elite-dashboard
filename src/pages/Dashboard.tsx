@@ -23,7 +23,7 @@ const IntelligenceDashboard: React.FC<{ activeTab: string }> = ({ activeTab }) =
         {/* Header Ejecutivo */}
         <header className="flex justify-between items-center">
            <div>
-              <h2 className="text-sm font-black text-slate-500 uppercase tracking-[0.3em] mb-1">RESUMEN EJECUTIVO V3.5</h2>
+              <h2 className="label-executive mb-1">RESUMEN ESTRATÉGICO V4.0</h2>
               <div className="flex items-center gap-6 mt-6">
                  <button 
                     onClick={() => setViewMode('global')}
@@ -54,22 +54,22 @@ const IntelligenceDashboard: React.FC<{ activeTab: string }> = ({ activeTab }) =
         {/* Intelligence Title & Health Index */}
         <div className="flex justify-between items-end pt-4">
            <div>
-              <h1 className="text-7xl font-black text-white tracking-tighter uppercase leading-none mb-4">CENTRO DE INTELIGENCIA</h1>
-              <p className="text-rc-teal text-sm font-black uppercase tracking-[0.4em]">CALIDAD GLOBAL DE CARTERA RC506</p>
+              <h1 className="text-7xl heading-premium tracking-tighter uppercase leading-none mb-4">CENTRO DE INTELIGENCIA</h1>
+              <p className="text-rc-teal text-sm font-semibold uppercase tracking-[0.4em] opacity-80">CALIDAD GLOBAL DE CARTERA RC506</p>
            </div>
-           <div className="p-10 glass-card flex items-center gap-10 shadow-2xl relative overflow-hidden group">
-              <div className="absolute inset-0 bg-rc-teal/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="w-20 h-20 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal shadow-2xl shadow-rc-teal/10">
-                 <BrainCircuit size={40} />
-              </div>
-              <div className="text-right">
-                 <div className="flex items-center gap-3 justify-end mb-1">
-                    <span className="label-executive">HEALTH INDEX</span>
-                    <div className="w-1.5 h-1.5 rounded-full status-green" />
-                 </div>
-                 <h3 className="text-6xl font-medium text-white leading-none">{globalQuality}%</h3>
-              </div>
-           </div>
+            <div className="p-10 glass-card flex items-center gap-10 shadow-2xl relative overflow-hidden group">
+               <div className="absolute inset-0 bg-rc-teal/[0.03] opacity-0 group-hover:opacity-100 transition-opacity" />
+               <div className="w-20 h-20 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal shadow-2xl shadow-rc-teal/10 neon-glow">
+                  <BrainCircuit size={40} />
+               </div>
+               <div className="text-right">
+                  <div className="flex items-center gap-3 justify-end mb-1">
+                     <span className="label-executive">HEALTH INDEX</span>
+                     <div className="status-dot status-green" />
+                  </div>
+                  <h3 className="text-6xl heading-premium leading-none">{globalQuality}%</h3>
+               </div>
+            </div>
         </div>
 
         {/* Charts Matrix */}
@@ -164,10 +164,10 @@ const IntelligenceDashboard: React.FC<{ activeTab: string }> = ({ activeTab }) =
                   { label: 'Calidad', value: `${globalQuality}%`, icon: TrendingUp, color: 'text-rc-teal' },
                   { label: 'Pendientes', value: tasks.length, icon: Clock, color: 'text-amber-500' }
                ].map(stat => (
-                  <div key={stat.label} className="p-5 bg-[var(--bg-input)] border border-[var(--border-ultra-thin)] rounded-xl flex flex-col gap-3 group hover:border-white/10 transition-all">
+                  <div key={stat.label} className="p-6 bg-[var(--bg-input)] border border-[var(--border-ultra-thin)] rounded-2xl flex flex-col gap-4 group hover:border-rc-teal/30 transition-all shadow-lg">
                      <div className="flex justify-between items-center">
-                        <stat.icon size={16} className={stat.color} />
-                        <h4 className="text-xl font-medium text-white leading-none">{stat.value}</h4>
+                        <stat.icon size={18} className={stat.color} />
+                        <h4 className="text-2xl heading-premium leading-none">{stat.value}</h4>
                      </div>
                      <span className="label-executive">{stat.label}</span>
                   </div>

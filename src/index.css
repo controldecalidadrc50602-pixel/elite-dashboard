@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,85 +6,109 @@
 
 :root {
   --bg-main: #0B0E14;
-  --bg-card: rgba(22, 27, 34, 0.95);
+  --bg-card: rgba(13, 17, 23, 0.8);
   --bg-input: #0D1117;
   --rc-teal: #3BC7AA;
+  --rc-purple: #7C3AED;
   --text-secondary: #8B949E;
-  --border-ultra-thin: rgba(255, 255, 255, 0.05);
+  --border-ultra-thin: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
   margin: 0;
+  padding: 0;
   font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-main);
   color: white;
   overflow: hidden;
+  height: 100vh;
 }
 
-/* Fondo Global con Gradiente Radial */
+/* Fondo Global de Inteligencia */
 .app-container {
-  min-height: 100vh;
-  background: radial-gradient(circle at center, #111420 0%, #0B0E14 100%);
+  width: 100vw;
+  height: 100vh;
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(59, 199, 170, 0.05) 0%, transparent 50%),
+    #0B0E14;
+  position: relative;
+  display: flex;
+}
+
+/* Glassmorphism V2: Profundidad Máxima */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--border-ultra-thin);
+  border-radius: 24px;
+  box-shadow: 
+    0 10px 40px -10px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.02);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(59, 199, 170, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 50px -15px rgba(0, 0, 0, 0.6);
+}
+
+/* Typography Hierarchy */
+.heading-premium {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+}
+
+.label-executive {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.8;
+}
+
+/* Neon Elements */
+.neon-glow {
+  box-shadow: 0 0 20px rgba(59, 199, 170, 0.2);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
   position: relative;
 }
 
-/* Glassmorphism Card System */
-.glass-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-ultra-thin);
-  border-radius: 24px;
-  padding: 24px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+.status-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.3;
+  animation: pulse 2s infinite;
 }
 
-/* Executive Labels */
-.label-executive {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(2); opacity: 0; }
+  100% { transform: scale(1); opacity: 0.3; }
 }
 
-/* Neon Status Dots */
-.badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 9999px;
-}
-
-.status-green { background-color: #3BC7AA; box-shadow: 0 0 10px #3BC7AA; }
-.status-yellow { background-color: #FBBF24; box-shadow: 0 0 10px #FBBF24; }
-.status-red { background-color: #F43F5E; box-shadow: 0 0 10px #F43F5E; }
-
-/* Custom Scrollbar Premium */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--rc-teal);
-}
-
-/* Utility to hide scrollbar but keep functionality */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
+/* Custom Scrollbar */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
