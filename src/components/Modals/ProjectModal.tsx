@@ -312,19 +312,21 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                             </div>
                             <div className="grid grid-cols-2 gap-6">
                                <div className="space-y-2">
-                                 <label>HC Contratado</label>
+                                 <label>Personal Contratado (Plan)</label>
                                  <input 
                                    type="number" value={formData.opsPulse?.hcContracted}
                                    onChange={e => setFormData({...formData, opsPulse: { ...formData.opsPulse!, hcContracted: parseInt(e.target.value) || 0 }})}
                                    className="w-full text-lg font-black"
+                                   placeholder="Cant. según contrato"
                                  />
                                </div>
                                <div className="space-y-2">
-                                 <label>HC Real (Asignado)</label>
+                                 <label>Personal Real (En Piso)</label>
                                  <input 
                                    type="number" value={formData.opsPulse?.hcReal}
                                    onChange={e => setFormData({...formData, opsPulse: { ...formData.opsPulse!, hcReal: parseInt(e.target.value) || 0 }})}
                                    className="w-full text-lg font-black"
+                                   placeholder="Cant. actual"
                                  />
                                </div>
                             </div>
@@ -810,8 +812,8 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
                       <header className="flex justify-between items-end">
                         <div>
-                          <h2 className="section-title">Activos</h2>
-                          <p className="text-[var(--text-secondary)] text-xs font-medium">Inventario de hardware y trazabilidad por posición.</p>
+                          <h2 className="section-title">Inventario de Equipos</h2>
+                          <p className="text-[var(--text-secondary)] text-xs font-medium">Control de hardware asignado a esta operación.</p>
                         </div>
                         <button 
                           type="button"
@@ -823,7 +825,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                               assignedPosition: ''
                             }]
                           })}
-                          className="bg-[var(--rc-turquoise)]/10 text-[var(--rc-turquoise)] px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[var(--rc-turquoise)]/20 transition-all flex items-center gap-2"
+                          className="bg-rc-teal/10 text-rc-teal px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rc-teal/20 transition-all flex items-center gap-2"
                         >
                           <Plus size={16} /> Registrar Activo
                         </button>
@@ -907,31 +909,32 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                         <p className="text-[var(--text-secondary)] text-xs font-medium">Configuración de SLA y automatización de tareas base.</p>
                       </header>
 
-                      <div className="grid grid-cols-2 gap-8">
-                         <div className="p-8 bg-black/10 border border-white/5 rounded-[40px] space-y-6">
-                            <label>Parámetros Globales de SLA</label>
-                            <div className="space-y-6">
-                               <div className="space-y-2">
-                                  <div className="flex justify-between items-center">
-                                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Peso Default Tarea</span>
-                                     <span className="text-xl font-black text-[var(--rc-turquoise)]">{formData.strategy?.defaultTaskWeight}/10</span>
-                                  </div>
-                                  <input 
-                                    type="range" min="1" max="10" step="1"
-                                    value={formData.strategy?.defaultTaskWeight}
-                                    onChange={e => setFormData({...formData, strategy: { ...formData.strategy!, defaultTaskWeight: parseInt(e.target.value) }})}
-                                    className="w-full accent-[var(--rc-turquoise)]"
-                                  />
+                      <div className="grid grid-cols-[1.5fr,2fr] gap-12">
+                         <div className="p-8 bg-black/10 border border-white/5 rounded-[40px] space-y-8">
+                            <div className="space-y-2">
+                               <div className="flex justify-between items-center">
+                                  <label>Parámetros Globales de SLA</label>
+                                  <span className="text-2xl font-black text-rc-teal">{formData.strategy?.defaultTaskWeight}/10</span>
                                </div>
-                               <div className="space-y-2">
-                                  <label>SLA de Respuesta (Horas)</label>
+                               <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-4">Importancia promedio de las tareas</p>
+                               <input 
+                                 type="range" min="1" max="10" step="1"
+                                 value={formData.strategy?.defaultTaskWeight}
+                                 onChange={e => setFormData({...formData, strategy: { ...formData.strategy!, defaultTaskWeight: parseInt(e.target.value) }})}
+                                 className="w-full accent-rc-teal"
+                               />
+                            </div>
+                            <div className="space-y-4 pt-6 border-t border-white/5">
+                               <label>SLA de Respuesta (Horas)</label>
+                               <div className="relative">
                                   <input 
                                     type="number" value={formData.strategy?.responseSla}
                                     onChange={e => setFormData({...formData, strategy: { ...formData.strategy!, responseSla: parseInt(e.target.value) || 0 }})}
-                                    className="w-full text-lg font-black"
+                                    className="w-full pl-6 pr-20 py-4 text-xl font-black"
                                   />
-                                  <p className="text-[9px] text-slate-500 font-medium italic">Tiempo máximo esperado para la resolución de tickets de soporte.</p>
+                                  <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-500 uppercase tracking-widest">Horas</span>
                                </div>
+                               <p className="text-[9px] text-slate-500 font-medium italic leading-relaxed">Tiempo máximo prometido al cliente para resolver incidencias técnicas.</p>
                             </div>
                          </div>
 
