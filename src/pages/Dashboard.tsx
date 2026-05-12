@@ -1,13 +1,12 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   ShieldCheck, Zap, Search,
   Database, ArrowUpRight, Star,
-  LayoutGrid, List, Calendar,
-  ChevronDown, Filter, Archive, Activity, Users
+  LayoutGrid, LayoutList, Calendar,
+  ChevronDown, Filter, Archive, Activity, Users,
+  TrendingUp
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { AreaChart, Area, ResponsiveContainer } from 'recharts';
-import SkeletonDashboard from '../components/SkeletonDashboard';
 import { TabType } from '../types/navigation';
 
 interface DashboardProps {
@@ -15,222 +14,305 @@ interface DashboardProps {
   title: string;
 }
 
+// Mini sparkline SVG puro — sin dependencia de recharts para evitar problemas de render
+const Sparkline: React.FC<{ color: string }> = ({ color }) => (
+  <svg width="80" height="32" viewBox="0 0 80 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id={`sg-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+        <stop offset="100%" stopColor={color} stopOpacity="0" />
+      </linearGradient>
+    </defs>
+    <path
+      d="M0 24 L13 18 L26 22 L40 10 L53 14 L66 6 L80 2"
+      stroke={color}
+      strokeWidth="1.5"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M0 24 L13 18 L26 22 L40 10 L53 14 L66 6 L80 2 L80 32 L0 32Z"
+      fill={`url(#sg-${color.replace('#', '')})`}
+    />
+  </svg>
+);
+
 const Dashboard: React.FC<DashboardProps> = ({ activeTab, title }) => {
-  const [loading, setLoading] = useState(true);
   const [activeSubTab, setActiveSubTab] = useState<'inbox' | 'history'>('inbox');
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1200);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const sparklineData = [
-    { value: 400 }, { value: 300 }, { value: 500 }, { value: 450 }, 
-    { value: 600 }, { value: 550 }, { value: 700 }, { value: 650 }
-  ];
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const stats = useMemo(() => [
-    { label: 'TOTAL TRANSACCIONES', value: '12', change: '+12%', icon: Zap, color: 'text-rc-teal', chartColor: '#3BC7AA' },
-    { label: 'SCORE CALIDAD', value: '0%', change: '+2.4%', icon: Activity, color: 'text-rc-blue', chartColor: '#3B82F6' },
-    { label: 'CSAT INDEX', value: '0.0', change: '+0.5', icon: Star, color: 'text-amber-400', chartColor: '#fbbf24' }
+    {
+      label: 'TOTAL TRANSACCIONES',
+      value: '12',
+      change: '+12%',
+      icon: Zap,
+      color: '#3BC7AA',
+      textColor: 'text-[#3BC7AA]',
+    },
+    {
+      label: 'SCORE CALIDAD',
+      value: '0%',
+      change: '+2.4%',
+      icon: TrendingUp,
+      color: '#60A5FA',
+      textColor: 'text-blue-400',
+    },
+    {
+      label: 'CSAT INDEX',
+      value: '0.0',
+      change: '+0.5',
+      icon: Star,
+      color: '#FBBF24',
+      textColor: 'text-amber-400',
+    },
   ], []);
 
   const taxonomy = useMemo(() => [
-    { label: 'NECESITA COACHING', color: 'bg-orange-500' },
-    { label: 'ALERTA CRÍTICA', color: 'bg-red-500' },
-    { label: 'MANEJO CLIENTE', color: 'bg-blue-500' },
-    { label: 'NO RELEVANTE', color: 'bg-slate-400' },
-    { label: 'OFRECIMIENTO ADICIONAL', color: 'bg-sky-500' },
-    { label: 'NO USO EMOJIS', color: 'bg-emerald-500' },
-    { label: 'APOYO VISUAL', color: 'bg-yellow-500' },
-    { label: 'RIESGO CHURN', color: 'bg-rose-500' },
-    { label: 'UPSELL/VENTA', color: 'bg-purple-500' },
-    { label: 'WOW MOMENT', color: 'bg-orange-400' },
-    { label: 'ERROR TÉCNICO', color: 'bg-yellow-600' },
-    { label: 'ESCALAMIENTO', color: 'bg-blue-600' },
-    { label: 'MEJORA PROCESO', color: 'bg-indigo-500' },
-    { label: 'SOLICITUD EMPLEO', color: 'bg-violet-500' },
+    { label: 'NECESITA COACHING',    dot: 'bg-orange-500' },
+    { label: 'ALERTA CRÍTICA',       dot: 'bg-red-500' },
+    { label: 'MANEJO CLIENTE',       dot: 'bg-blue-500' },
+    { label: 'NO RELEVANTE',         dot: 'bg-slate-400' },
+    { label: 'OFRECIMIENTO ADICIONAL', dot: 'bg-sky-400' },
+    { label: 'NO USO EMOJIS',        dot: 'bg-emerald-500' },
+    { label: 'APOYO VISUAL',         dot: 'bg-yellow-400' },
+    { label: 'RIESGO CHURN',         dot: 'bg-rose-500' },
+    { label: 'UPSELL/VENTA',         dot: 'bg-purple-500' },
+    { label: 'WOW MOMENT',           dot: 'bg-orange-400' },
+    { label: 'ERROR TÉCNICO',        dot: 'bg-yellow-600' },
+    { label: 'ESCALAMIENTO',         dot: 'bg-blue-600' },
+    { label: 'MEJORA PROCESO',       dot: 'bg-indigo-500' },
+    { label: 'SOLICITUD EMPLEO',     dot: 'bg-violet-500' },
   ], []);
 
-  if (loading) return <SkeletonDashboard />;
-
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-col gap-8"
+      transition={{ duration: 0.3 }}
+      className="flex flex-col gap-6"
     >
-      {/* Top Header */}
-      <div className="flex justify-between items-center">
+      {/* ── HEADER ────────────────────────────────────────────────── */}
+      <div className="flex items-center justify-between">
+        {/* Left: title */}
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 premium-card flex items-center justify-center text-rc-blue">
-            <Database size={24} />
+          <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+            <Database size={20} className="text-blue-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">{title}</h1>
-            <div className="flex items-center gap-2 mt-1">
-              <div className="w-2 h-2 rounded-full bg-rc-teal animate-pulse" />
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sincronización ACPIA activa</span>
+            <h1 className="text-2xl font-bold text-white leading-none">{title}</h1>
+            <div className="flex items-center gap-1.5 mt-1.5">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#3BC7AA] animate-pulse" />
+              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
+                Sincronización ACPIA activa
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/5">
-           <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-white text-xs font-bold transition-all">
-              <ShieldCheck size={14} className="text-rc-teal" />
-              AUDITORÍAS
-           </button>
-           <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all">
-              <Users size={14} />
-              AGENTES
-           </button>
-           <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all">
-              <Archive size={14} />
-              PROYECTOS
-           </button>
+        {/* Right: pills nav */}
+        <div className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.06] rounded-2xl p-1">
+          <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white text-[11px] font-bold tracking-wide">
+            <ShieldCheck size={13} className="text-[#3BC7AA]" />
+            AUDITORÍAS
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-slate-500 hover:text-white text-[11px] font-bold tracking-wide transition-colors">
+            <Users size={13} />
+            AGENTES
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-slate-500 hover:text-white text-[11px] font-bold tracking-wide transition-colors">
+            <Archive size={13} />
+            PROYECTOS
+          </button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {stats.map((stat, i) => (
-          <div key={i} className="glow-card p-8 group hover:border-rc-teal/30 transition-all cursor-pointer flex flex-col">
-            <div className="flex justify-between items-start mb-6">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{stat.label}</span>
-              <stat.icon size={18} className={`${stat.color} opacity-50 group-hover:opacity-100 transition-opacity`} />
-            </div>
-            <div className="flex items-end justify-between gap-3">
+      {/* ── KPI CARDS ─────────────────────────────────────────────── */}
+      <div className="grid grid-cols-3 gap-4">
+        {stats.map((stat, i) => {
+          const Icon = stat.icon;
+          return (
+            <div
+              key={i}
+              className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0D1321] p-6 flex items-center justify-between group hover:border-white/10 transition-colors cursor-pointer"
+            >
+              {/* left */}
               <div>
-                <h2 className="text-4xl font-bold text-white mb-1">{stat.value}</h2>
-                <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-500">
-                  <ArrowUpRight size={12} />
-                  {stat.change}
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">
+                  {stat.label}
+                </p>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-bold text-white">{stat.value}</span>
+                  <span className="flex items-center gap-0.5 text-[11px] font-bold text-emerald-400">
+                    <ArrowUpRight size={11} />
+                    {stat.change}
+                  </span>
                 </div>
               </div>
-              
-              {/* Mini Sparkline Chart */}
-              <div className="h-12 w-24">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={sparklineData}>
-                    <defs>
-                      <linearGradient id={`gradient-${i}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={stat.chartColor} stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor={stat.chartColor} stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <Area 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke={stat.chartColor} 
-                      strokeWidth={2} 
-                      fillOpacity={1} 
-                      fill={`url(#gradient-${i})`} 
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+              {/* right: sparkline + icon */}
+              <div className="flex flex-col items-end gap-2">
+                <Icon size={16} className={`${stat.textColor} opacity-40 group-hover:opacity-100 transition-opacity`} />
+                <Sparkline color={stat.color} />
               </div>
+              {/* top gradient line */}
+              <div
+                className="absolute top-0 left-0 right-0 h-px"
+                style={{ background: `linear-gradient(90deg, transparent, ${stat.color}44, transparent)` }}
+              />
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Search and Main Filters */}
-      <div className="premium-card p-8 space-y-8">
-        <div className="flex items-center gap-6">
-          <div className="flex-1 relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-rc-teal transition-colors" size={18} />
-            <input 
-              type="text" 
-              placeholder="Buscar por ID, Agente o Proyecto..." 
-              className="w-full h-14 pl-12 pr-4 glass-input text-sm font-medium"
+      {/* ── FILTER PANEL ──────────────────────────────────────────── */}
+      <div className="rounded-2xl border border-white/[0.06] bg-[#0D1321] p-6 flex flex-col gap-6">
+
+        {/* Row 1: search + tabs + view toggle */}
+        <div className="flex items-center gap-3">
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              type="text"
+              placeholder="Buscar por ID, Agente o Proyecto..."
+              className="w-full h-11 pl-10 pr-4 bg-white/[0.04] border border-white/[0.06] rounded-xl text-sm text-white placeholder:text-slate-600 outline-none focus:border-[#3BC7AA]/50 transition-colors"
             />
           </div>
-          <div className="flex bg-white/5 p-1 rounded-xl border border-white/5">
-            <button 
+
+          {/* Inbox / Historial tabs */}
+          <div className="flex bg-white/[0.04] border border-white/[0.06] rounded-xl p-0.5">
+            <button
               onClick={() => setActiveSubTab('inbox')}
-              className={`px-6 py-2.5 rounded-lg text-[11px] font-bold transition-all ${activeSubTab === 'inbox' ? 'bg-white/10 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
+              className={`px-5 py-2 rounded-[10px] text-[11px] font-bold tracking-wide transition-all ${
+                activeSubTab === 'inbox'
+                  ? 'bg-white/10 text-white'
+                  : 'text-slate-500 hover:text-white'
+              }`}
             >
               INBOX
             </button>
-            <button 
+            <button
               onClick={() => setActiveSubTab('history')}
-              className={`px-6 py-2.5 rounded-lg text-[11px] font-bold transition-all ${activeSubTab === 'history' ? 'bg-white/10 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
+              className={`px-5 py-2 rounded-[10px] text-[11px] font-bold tracking-wide transition-all ${
+                activeSubTab === 'history'
+                  ? 'bg-white/10 text-white'
+                  : 'text-slate-500 hover:text-white'
+              }`}
             >
               HISTORIAL
             </button>
           </div>
-          <div className="flex gap-2">
-             <button className="w-12 h-12 premium-card flex items-center justify-center text-slate-400 hover:text-white transition-all">
-                <LayoutGrid size={18} />
-             </button>
-             <button className="w-12 h-12 premium-card flex items-center justify-center text-slate-400 hover:text-white transition-all">
-                <List size={18} />
-             </button>
+
+          {/* View mode */}
+          <div className="flex bg-white/[0.04] border border-white/[0.06] rounded-xl p-0.5">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all ${
+                viewMode === 'grid' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'
+              }`}
+            >
+              <LayoutGrid size={15} />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all ${
+                viewMode === 'list' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'
+              }`}
+            >
+              <LayoutList size={15} />
+            </button>
           </div>
         </div>
 
-        {/* Secondary Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">MES OPERATIVO</label>
-            <div className="h-12 glass-input px-4 flex items-center justify-between cursor-pointer group">
-              <span className="text-xs text-slate-400">---------- de ----</span>
-              <Calendar size={14} className="text-slate-500 group-hover:text-rc-teal" />
+        {/* Row 2: date filters */}
+        <div className="grid grid-cols-4 gap-3">
+          {/* Mes operativo */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+              MES OPERATIVO
+            </label>
+            <div className="h-10 bg-white/[0.04] border border-white/[0.06] rounded-xl px-3 flex items-center justify-between cursor-pointer hover:border-white/10 transition-colors">
+              <span className="text-xs text-slate-600">---------- de ----</span>
+              <Calendar size={13} className="text-slate-600" />
             </div>
           </div>
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">ESTADO TRANSACCIÓN</label>
-            <div className="h-12 glass-input px-4 flex items-center justify-between cursor-pointer group">
-              <span className="text-xs text-white font-medium uppercase">Todos los estados</span>
-              <ChevronDown size={14} className="text-slate-500 group-hover:text-rc-teal" />
+
+          {/* Estado transacción */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+              ESTADO TRANSACCIÓN
+            </label>
+            <div className="h-10 bg-white/[0.04] border border-white/[0.06] rounded-xl px-3 flex items-center justify-between cursor-pointer hover:border-white/10 transition-colors">
+              <span className="text-xs font-semibold text-white uppercase">TODOS LOS ESTADOS</span>
+              <ChevronDown size={13} className="text-slate-600" />
             </div>
           </div>
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">RANGO DE FECHAS (AUDITORÍA)</label>
-            <div className="h-12 glass-input px-4 flex items-center justify-between cursor-pointer group">
-              <span className="text-xs text-slate-400">dd/mm/aaaa</span>
-              <Calendar size={14} className="text-slate-500 group-hover:text-rc-teal" />
+
+          {/* Rango de fechas — desde */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+              RANGO DE FECHAS (AUDITORÍA)
+            </label>
+            <div className="h-10 bg-white/[0.04] border border-white/[0.06] rounded-xl px-3 flex items-center justify-between cursor-pointer hover:border-white/10 transition-colors">
+              <span className="text-xs text-slate-600">dd/mm/aaaa</span>
+              <Calendar size={13} className="text-slate-600" />
             </div>
           </div>
-          <div className="space-y-2 pt-6">
-            <div className="h-12 glass-input px-4 flex items-center justify-between cursor-pointer group">
-              <span className="text-xs text-slate-400">dd/mm/aaaa</span>
-              <Calendar size={14} className="text-slate-500 group-hover:text-rc-teal" />
+
+          {/* Rango de fechas — hasta */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest opacity-0 pointer-events-none">
+              —
+            </label>
+            <div className="h-10 bg-white/[0.04] border border-white/[0.06] rounded-xl px-3 flex items-center justify-between cursor-pointer hover:border-white/10 transition-colors">
+              <span className="text-xs text-slate-600">dd/mm/aaaa</span>
+              <Calendar size={13} className="text-slate-600" />
             </div>
           </div>
         </div>
 
-        {/* Taxonomy */}
-        <div className="space-y-4 pt-4">
-          <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Taxonomía de Inteligencia</h3>
-          <div className="flex flex-wrap gap-2">
+        {/* Row 3: taxonomy chips */}
+        <div className="flex flex-col gap-3">
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+            TAXONOMÍA DE INTELIGENCIA
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
             {taxonomy.map((item, i) => (
-              <div key={i} className="status-chip group cursor-pointer hover:bg-white/10 transition-all border border-white/5 hover:border-white/10">
-                <div className={`status-dot ${item.color}`} />
-                <span className="text-[9px] font-bold uppercase">{item.label}</span>
-              </div>
+              <button
+                key={i}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] hover:border-white/10 transition-all"
+              >
+                <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${item.dot}`} />
+                <span className="text-[9px] font-bold uppercase tracking-wide text-slate-300">
+                  {item.label}
+                </span>
+              </button>
             ))}
-            <button className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-700/50 text-[10px] font-bold text-slate-400 hover:text-white transition-all ml-auto">
-               <Filter size={12} />
-               FILTRAR HALLAZGOS CRÍTICOS
+
+            {/* Filter button pushed to the right */}
+            <button className="ml-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-white/[0.08] text-slate-400 hover:text-white hover:border-white/20 transition-all text-[9px] font-bold uppercase tracking-wide">
+              <Filter size={11} />
+              FILTRAR HALLAZGOS CRÍTICOS
             </button>
           </div>
         </div>
       </div>
 
-      {/* Content Area (Empty State) */}
-      <div className="premium-card min-h-[400px] flex flex-col items-center justify-center text-center p-12">
-        <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center text-slate-600 mb-6">
-          <Archive size={40} />
+      {/* ── EMPTY STATE ───────────────────────────────────────────── */}
+      <div className="rounded-2xl border border-white/[0.06] bg-[#0D1321] min-h-[300px] flex flex-col items-center justify-center gap-4 p-12">
+        <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+          <Archive size={24} className="text-slate-600" />
         </div>
-        <h3 className="text-xl font-bold text-white mb-2">No hay auditorías registradas</h3>
-        <p className="text-sm text-slate-500 max-w-sm">
-          Intenta ajustar los filtros de búsqueda o el período temporal para visualizar resultados.
-        </p>
+        <div className="text-center">
+          <h3 className="text-base font-bold text-white mb-1">No hay auditorías registradas</h3>
+          <p className="text-xs text-slate-500 max-w-xs leading-relaxed">
+            Intenta ajustar los filtros de búsqueda o el período temporal para visualizar resultados.
+          </p>
+        </div>
       </div>
     </motion.div>
   );
 };
 
 export default Dashboard;
-
