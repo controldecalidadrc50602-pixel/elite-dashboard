@@ -40,10 +40,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
       {/* Navigation Links */}
       <nav className="flex flex-col gap-5">
         {[
-          { id: 'overview', icon: LayoutGrid, label: 'Feed' },
-          { id: 'clients', icon: Users, label: 'Clientes' },
-          { id: 'tasks', icon: CheckSquare, label: 'Tareas' },
-          { id: 'status', icon: ShieldCheck, label: 'Audit' },
+          { id: 'overview', icon: LayoutGrid, label: 'Audit' },
+          { id: 'clients', icon: Users, label: 'Cartera' },
+          { id: 'status', icon: ShieldCheck, label: 'Reportes' },
         ].map(item => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;

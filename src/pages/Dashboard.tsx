@@ -113,80 +113,11 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
            <div className="max-w-5xl mx-auto">
               
               {activeTab === 'overview' && (
-                <div className="space-y-10 animate-in fade-in duration-500">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <StatCard title="Cuentas" value={stats.total} icon={<Users />} color="rc-teal" trend="+2" />
-                    <StatCard title="Salud Cliente" value={stats.clientRisk} icon={<Star />} color={stats.clientRisk > 0 ? "rose" : "emerald"} trend="Alertas" />
-                    <StatCard title="Riesgo Op." value={stats.riesgo} icon={<AlertCircle />} color="rose" trend="-2" />
-                    <StatCard title="Global" value={stats.avgScore + '%'} icon={<TrendingUp />} color="amber" trend="+0.5" />
-                  </div>
-
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                       <h3 className="text-meta">Activity Stream</h3>
-                       <span className="text-[10px] text-rc-teal font-black uppercase tracking-widest cursor-pointer hover:opacity-70 transition-opacity">Full History</span>
-                    </div>
-                    
-                    {tasks.filter(t => t.status !== 'Closed').slice(0, 5).map((task, idx) => (
-                      <motion.div 
-                        key={task.id}
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.05 }}
-                        className="glass-card p-8 rounded-[40px] group relative"
-                      >
-                         <div className="flex items-center gap-4 mb-6">
-                            <div className="w-10 h-10 rounded-2xl bg-rc-teal/10 flex items-center justify-center text-rc-teal text-[11px] font-black">
-                               {task.assignedTo?.charAt(0)}
-                            </div>
-                            <div className="flex-1">
-                               <div className="flex items-center gap-1.5">
-                                  <span className="text-[13px] font-bold text-[var(--text-primary)]">{task.assignedTo}</span>
-                                  <span className="text-[11px] text-[var(--text-secondary)] font-light">actualizó tarea en</span>
-                                  <span className="text-[11px] font-bold text-rc-teal uppercase tracking-widest">{task.projectName}</span>
-                               </div>
-                               <span className="text-[9px] text-[var(--text-secondary)] font-light uppercase tracking-widest opacity-60">Just now</span>
-                            </div>
-                            <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                               task.priority === 'High' ? 'bg-rose-500/10 text-rose-500' : 'bg-rc-teal/10 text-rc-teal'
-                            } animate-neon`}>
-                               {task.priority}
-                            </div>
-                         </div>
-
-                         <h4 className="text-xl font-black text-[var(--text-primary)] leading-tight mb-4 tracking-tighter group-hover:text-rc-teal transition-colors">
-                            {task.title}
-                         </h4>
-                         
-                         {task.description && (
-                            <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed mb-6 font-medium line-clamp-2">
-                               {task.description}
-                            </p>
-                         )}
-
-                         <div className="flex items-center justify-between pt-6 border-t border-[var(--glass-border)]">
-                            <div className="flex items-center gap-6">
-                               <div className="flex items-center gap-2 text-[var(--text-secondary)]">
-                                  <CheckCircle2 size={16} strokeWidth={2} />
-                                  <span className="text-meta">{task.status}</span>
-                               </div>
-                            </div>
-                            <div className="flex items-center gap-6">
-                               <SlaTimer startTime={task.startTime} endTime={task.endTime} status={task.status} />
-                               <button 
-                                 onClick={() => { setSelectedProject(projects.find(p => p.id === task.projectId) || null); setIsSlideoverOpen(true); }}
-                                 className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-rc-teal transition-colors premium-button"
-                               >
-                                  <ArrowRight size={16} />
-                                  <span className="text-meta">Detalle</span>
-                               </button>
-                            </div>
-                         </div>
-                      </motion.div>
-                    ))}
-                  </div>
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                   <AuditDashboard projects={projects} />
                 </div>
               )}
+
 
               {activeTab === 'clients' && (
                  <div className="space-y-12 animate-in fade-in duration-700 h-full flex flex-col">
@@ -252,8 +183,11 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
                  </div>
               )}
 
-              {activeTab === 'status' && <AuditDashboard projects={projects} />}
-              {activeTab === 'tasks' && <TaskManager />}
+              {activeTab === 'status' && (
+                <div className="animate-in fade-in duration-700">
+                   <AuditDashboard projects={projects} />
+                </div>
+              )}
 
            </div>
         </div>

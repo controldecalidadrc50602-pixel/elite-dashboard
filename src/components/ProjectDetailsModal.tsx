@@ -46,11 +46,11 @@ const ProjectDetailsModal: React.FC<Props> = ({
 
   const getFlagColor = (flag: string) => {
     switch(flag) {
-      case 'Verde': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
-      case 'Amarilla': return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-      case 'Roja': return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
-      case 'Negra': return 'text-slate-900 bg-slate-950/20 border-slate-900/30';
-      default: return 'text-rc-teal bg-[var(--rc-turquoise)]/10 border-rc-teal/20';
+      case 'Verde': return 'text-emerald-400 bg-emerald-400/5 border-emerald-400/10 shadow-[0_0_15px_rgba(52,211,153,0.1)]';
+      case 'Amarilla': return 'text-amber-400 bg-amber-400/5 border-amber-400/10 shadow-[0_0_15px_rgba(251,191,36,0.1)]';
+      case 'Roja': return 'text-rose-500 bg-rose-500/5 border-rose-500/10 shadow-[0_0_15px_rgba(244,63,94,0.15)]';
+      case 'Negra': return 'text-slate-200 bg-slate-900 border-white/10';
+      default: return 'text-rc-teal bg-rc-teal/5 border-rc-teal/10';
     }
   };
 
@@ -92,12 +92,18 @@ const ProjectDetailsModal: React.FC<Props> = ({
                   </div>
                   <div>
                      <h2 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">{editedProject.client}</h2>
-                     <div className="flex items-center gap-4 mt-2">
-                        <span className="text-[10px] font-black text-rc-teal uppercase tracking-widest flex items-center gap-2">
-                           <ShieldCheck size={14} /> Expediente CRM SmartView
-                        </span>
-                        <div className={`w-2 h-2 rounded-full animate-pulse ${editedProject.healthFlag === 'Verde' ? 'bg-emerald-500' : 'bg-rose-500'}`} />
-                     </div>
+                      <div className="flex items-center gap-4 mt-2">
+                         <div className={`px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${getFlagColor(editedProject.healthFlag)}`}>
+                            <div className={`w-1.5 h-1.5 rounded-full ${
+                               editedProject.healthFlag === 'Verde' ? 'bg-emerald-400' : 
+                               editedProject.healthFlag === 'Amarilla' ? 'bg-amber-400' : 'bg-rose-500'
+                            }`} />
+                            Bandera {editedProject.healthFlag}
+                         </div>
+                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                            <ShieldCheck size={14} className="text-rc-teal" /> F1 Performance View
+                         </span>
+                      </div>
                   </div>
                </div>
 
@@ -124,7 +130,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                {/* Col 1: Tech DNA & Identity */}
                <div className="p-10 space-y-10 overflow-y-auto custom-scrollbar bg-black/10">
                   <div className="space-y-6">
-                     <h3 className="text-meta">1. Identidad & Tech DNA</h3>
+                      <h3 className="text-meta">2. Pilares de Calidad Trimestral (Q1 - Q4)</h3>
                      
                      <div className="space-y-4">
                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Modalidad</label>

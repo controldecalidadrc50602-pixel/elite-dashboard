@@ -8,7 +8,7 @@ import { LayoutGrid, Users, CheckSquare, ShieldCheck } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
   const { user, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'clients' | 'status' | 'tasks'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'clients' | 'status'>('overview');
 
   if (loading) return (
     <div className="h-screen w-full flex items-center justify-center bg-[#050505]">
@@ -49,10 +49,9 @@ const MainLayout: React.FC = () => {
       {/* Mobile Bottom Tab Bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-black/40 backdrop-blur-3xl border-t border-white/5 flex items-center justify-around px-4 z-[90]">
          {[
-           { id: 'overview', icon: LayoutGrid, label: 'Feed' },
-           { id: 'clients', icon: Users, label: 'Clientes' },
-           { id: 'tasks', icon: CheckSquare, label: 'Tareas' },
-           { id: 'status', icon: ShieldCheck, label: 'Auditoría' },
+           { id: 'overview', icon: LayoutGrid, label: 'Audit' },
+           { id: 'clients', icon: Users, label: 'Cartera' },
+           { id: 'status', icon: ShieldCheck, label: 'Reportes' },
          ].map(tab => {
            const Icon = tab.icon;
            const isActive = activeTab === tab.id;
