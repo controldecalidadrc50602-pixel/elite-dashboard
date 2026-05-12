@@ -4,7 +4,6 @@ import {
   Users, 
   ShieldCheck, 
   Activity,
-  FileBarChart,
   BrainCircuit,
   Settings,
   LogOut,
@@ -15,8 +14,8 @@ import {
 import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
-  activeTab: 'overview' | 'clients' | 'services' | 'tasks' | 'settings' | 'audits' | 'reports' | 'ai-copilot' | 'archive';
-  setActiveTab: (tab: 'overview' | 'clients' | 'services' | 'tasks' | 'settings' | 'audits' | 'reports' | 'ai-copilot' | 'archive') => void;
+  activeTab: 'overview' | 'clients' | 'services' | 'archive' | 'settings' | 'ai-copilot';
+  setActiveTab: (tab: any) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
@@ -35,13 +34,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
         { id: 'clients', icon: Users, label: 'Clientes' },
         { id: 'services', icon: Monitor, label: 'Servicios' },
         { id: 'archive', icon: Archive, label: 'Bóveda' }
-      ]
-    },
-    {
-      title: 'Operaciones',
-      items: [
-        { id: 'audits', icon: Activity, label: 'Auditorías' },
-        { id: 'reports', icon: FileBarChart, label: 'Reportes IA' }
       ]
     },
     {
