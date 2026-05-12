@@ -1,17 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RC506 | Gestión Elite V4.0</title>
-    <!-- Google Fonts: Outfit & Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Elite Dashboard | RC506 Intelligence</title>
+    
+    <!-- ANTI-CACHE SCRIPT (Emergency Purge) -->
+    <script>
+      // Destruir Service Workers viejos que causan error MIME
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+            console.log('SW Unregistered for Clean Load');
+          }
+        });
+      }
+      // Limpiar caché de la aplicación
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          for (let name of names) caches.delete(name);
+        });
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- Usamos ruta absoluta con timestamp para forzar recarga fresca -->
+    <script type="module" src="/src/main.tsx?v=4.0.0"></script>
   </body>
 </html>
