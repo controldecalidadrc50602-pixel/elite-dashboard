@@ -25,15 +25,21 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
     {
       title: 'General',
       items: [
-        { id: 'overview', icon: LayoutGrid, label: 'Dashboard' }
+        { id: 'overview', icon: LayoutGrid, label: 'Dashboard' },
+        { id: 'morning', icon: Clock, label: 'Mañana Ejecutiva' }
       ]
     },
     {
-      title: 'Cartera',
+      title: 'Soporte',
       items: [
-        { id: 'clients', icon: Users, label: 'Clientes' },
-        { id: 'services', icon: Monitor, label: 'Servicios' },
-        { id: 'archive', icon: Archive, label: 'Bóveda' }
+        { id: 'audits', icon: ShieldCheck, label: 'CRM Auditorías' },
+        { id: 'reports-ia', icon: BrainCircuit, label: 'Reportes IA' }
+      ]
+    },
+    {
+      title: 'History',
+      items: [
+        { id: 'operations', icon: Activity, label: 'Operaciones' }
       ]
     },
     {
@@ -41,30 +47,36 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
       items: [
         { id: 'ai-copilot', icon: BrainCircuit, label: 'IA Copilot' }
       ]
+    },
+    {
+      title: 'Settings',
+      items: [
+        { id: 'settings', icon: Settings, label: 'Configuración' }
+      ]
     }
   ];
 
   return (
-    <aside className="w-[240px] h-full bg-[var(--bg-main)] border-r border-[var(--border-ultra-thin)] flex flex-col py-8 px-4 relative z-50 overflow-y-auto scrollbar-hide backdrop-blur-xl">
+    <aside className="w-[280px] h-full bg-[var(--bg-side)] border-r border-[var(--border-thin)] flex flex-col py-6 px-4 relative z-50">
       {/* Branding */}
-      <div className="px-4 mb-10">
+      <div className="px-4 mb-8">
         <div className="flex items-center gap-3">
-           <div className="w-10 h-10 bg-rc-teal/10 rounded-xl flex items-center justify-center text-rc-teal shadow-2xl shadow-rc-teal/20">
-              <ShieldCheck size={24} />
+           <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal shadow-lg shadow-rc-teal/5">
+              <ShieldCheck size={28} />
            </div>
            <div>
-              <h2 className="text-sm font-black text-white leading-none uppercase tracking-tighter">RC506 | GESTIÓN</h2>
-              <span className="text-[9px] font-black text-rc-teal uppercase tracking-[0.2em]">Elite V3.6</span>
+              <h2 className="text-sm font-bold text-white leading-none uppercase tracking-tight">RC506 | GESTIÓN DE CAL...</h2>
+              <span className="text-[10px] font-medium text-rc-teal uppercase tracking-widest mt-1 block">Elite V3</span>
            </div>
         </div>
       </div>
       
       {/* Navigation Groups */}
-      <nav className="flex-1 space-y-8">
+      <nav className="flex-1 space-y-6 overflow-y-auto pr-2 scrollbar-hide">
         {menuSections.map((section) => (
-          <div key={section.title} className="space-y-2">
-            <h3 className="px-4 label-executive opacity-60">{section.title}</h3>
-            <div className="space-y-1">
+          <div key={section.title} className="space-y-1">
+            <h3 className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">{section.title}</h3>
+            <div className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -72,10 +84,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id as any)}
-                    className={`w-full h-11 px-4 rounded-xl flex items-center justify-between transition-all group ${
+                    className={`w-full h-10 px-4 rounded-xl flex items-center justify-between transition-all group ${
                       isActive 
-                        ? 'bg-rc-teal/10 text-rc-teal' 
-                        : 'text-slate-500 hover:text-white hover:bg-white/5'
+                        ? 'bg-rc-teal/10 text-rc-teal border border-rc-teal/20' 
+                        : 'text-slate-400 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -84,7 +96,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
                         {item.label}
                       </span>
                     </div>
-                    {isActive && <ChevronRight size={14} className="opacity-50" />}
                   </button>
                 );
               })}
@@ -93,30 +104,33 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
         ))}
       </nav>
 
-      {/* User & Settings */}
-      <div className="mt-auto space-y-4 pt-6 border-t border-white/5">
-        <button 
-          onClick={() => setActiveTab('settings' as any)}
-          className="w-full h-11 px-4 rounded-xl flex items-center gap-3 text-slate-500 hover:text-white hover:bg-white/5 transition-all"
-        >
-          <Settings size={18} />
-          <span className="text-[11px] font-bold tracking-tight">Configuración</span>
-        </button>
-
-        <div className="px-4 py-4 bg-white/[0.02] rounded-2xl flex items-center gap-3">
-           <div className="w-8 h-8 rounded-lg bg-rc-teal/20 flex items-center justify-center text-rc-teal font-semibold text-xs uppercase">
-              {user?.email?.substring(0, 2) || 'AD'}
+      {/* User & Bottom Controls */}
+      <div className="mt-auto pt-6 space-y-4">
+        <div className="flex items-center gap-3 px-2">
+           <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-slate-800 to-slate-700 border border-white/10 flex items-center justify-center text-white text-xs font-bold shadow-inner">
+              {user?.email?.substring(0, 2).toUpperCase() || 'BR'}
            </div>
            <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-semibold text-white truncate uppercase tracking-tight">{user?.email?.split('@')[0] || 'Admin'}</p>
-              <p className="text-[9px] font-medium text-rc-teal uppercase tracking-widest">Specialist</p>
+              <p className="text-[12px] font-bold text-white truncate">{user?.email?.split('@')[0] || 'Braily Rodríguez'}</p>
+              <p className="text-[10px] font-medium text-rc-teal uppercase tracking-widest">Rc506</p>
            </div>
-           <button onClick={logout} className="text-slate-600 hover:text-rose-500 transition-colors">
-              <LogOut size={16} />
+        </div>
+
+        <div className="flex items-center gap-2">
+           <button className="flex-1 h-10 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl flex items-center justify-center gap-2 text-slate-400 hover:text-white transition-all text-xs">
+              <Settings size={14} />
+           </button>
+           <button 
+             onClick={logout}
+             className="px-4 h-10 bg-white/5 hover:bg-rose-500/10 border border-white/5 rounded-xl flex items-center justify-center gap-2 text-slate-400 hover:text-rose-500 transition-all text-[11px] font-bold"
+           >
+              <LogOut size={14} />
+              Cerrar Sesión
            </button>
         </div>
       </div>
     </aside>
+
   );
 };
 
