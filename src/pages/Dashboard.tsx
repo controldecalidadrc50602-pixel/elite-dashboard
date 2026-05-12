@@ -1,267 +1,215 @@
-import React, { useState, useMemo } from 'react';
-import {
-  ShieldCheck, Zap, Search,
-  Database, ArrowUpRight, Star,
-  LayoutGrid, List, Calendar,
-  ChevronDown, Filter, Archive,
-  Activity, Users, TrendingUp
+import React, { useState } from 'react';
+import { initialProjects, initialTasks } from '../lib/mockData';
+import { 
+  Activity, TrendingUp, Users, AlertCircle, Clock, CheckCircle, 
+  ShieldCheck, Zap, Globe, MessageSquare, BrainCircuit, Search, Bell
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { TabType } from '../types/navigation';
 
-interface DashboardProps {
-  activeTab: TabType;
-  title: string;
-}
+const IntelligenceDashboard: React.FC<{ activeTab: string }> = ({ activeTab }) => {
+  const [projects] = useState(initialProjects);
+  const [tasks] = useState(initialTasks);
+  const [viewMode, setViewMode] = useState<'global' | 'rc506'>('rc506');
 
-// Sparkline SVG inline — sin dependencias externas
-const Sparkline: React.FC<{ color: string }> = ({ color }) => (
-  <svg width="72" height="28" viewBox="0 0 72 28" fill="none">
-    <defs>
-      <linearGradient id={`g${color.replace('#','')}`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={color} stopOpacity="0.35" />
-        <stop offset="100%" stopColor={color} stopOpacity="0" />
-      </linearGradient>
-    </defs>
-    <path
-      d="M0 22 L12 16 L24 19 L36 8 L48 12 L60 4 L72 1"
-      stroke={color} strokeWidth="1.5" fill="none"
-      strokeLinecap="round" strokeLinejoin="round"
-    />
-    <path
-      d="M0 22 L12 16 L24 19 L36 8 L48 12 L60 4 L72 1 L72 28 L0 28Z"
-      fill={`url(#g${color.replace('#','')})`}
-    />
-  </svg>
-);
-
-const Dashboard: React.FC<DashboardProps> = ({ title }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'inbox' | 'history'>('inbox');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
-  const stats = useMemo(() => [
-    { label: 'TOTAL TRANSACCIONES', value: '12',  change: '+12%', Icon: Zap,        color: '#3BC7AA' },
-    { label: 'SCORE CALIDAD',       value: '0%',  change: '+2.4%', Icon: TrendingUp, color: '#60A5FA' },
-    { label: 'CSAT INDEX',          value: '0.0', change: '+0.5',  Icon: Star,       color: '#FBBF24' },
-  ], []);
-
-  const taxonomy = useMemo(() => [
-    { label: 'NECESITA COACHING',     dot: '#F97316' },
-    { label: 'ALERTA CRÍTICA',        dot: '#EF4444' },
-    { label: 'MANEJO CLIENTE',        dot: '#3B82F6' },
-    { label: 'NO RELEVANTE',          dot: '#94A3B8' },
-    { label: 'OFRECIMIENTO ADICIONAL',dot: '#38BDF8' },
-    { label: 'NO USO EMOJIS',         dot: '#10B981' },
-    { label: 'APOYO VISUAL',          dot: '#FACC15' },
-    { label: 'RIESGO CHURN',          dot: '#F43F5E' },
-    { label: 'UPSELL/VENTA',          dot: '#A855F7' },
-    { label: 'WOW MOMENT',            dot: '#FB923C' },
-    { label: 'ERROR TÉCNICO',         dot: '#CA8A04' },
-    { label: 'ESCALAMIENTO',          dot: '#2563EB' },
-    { label: 'MEJORA PROCESO',        dot: '#6366F1' },
-    { label: 'SOLICITUD EMPLEO',      dot: '#7C3AED' },
-  ], []);
+  const activeAccounts = projects.filter(p => p.adminStatus === 'Activo').length;
+  const criticalAccounts = projects.filter(p => p.healthFlag === 'Roja').length;
+  const globalQuality = 94; // Score estático para la visual según captura
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.25 }}
-      className="flex flex-col gap-6"
-    >
-      {/* ── HEADER ────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
-            <Database size={20} className="text-blue-400" />
-          </div>
-          <div>
-            <h1 className="text-[22px] font-bold text-white leading-none tracking-tight">{title}</h1>
-            <div className="flex items-center gap-1.5 mt-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#3BC7AA] animate-pulse inline-block" />
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
-                Sincronización ACPIA activa
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center p-1 gap-1 bg-white/[0.04] rounded-2xl border border-white/[0.06]">
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white text-[11px] font-bold tracking-wide">
-            <ShieldCheck size={13} className="text-[#3BC7AA]" /> AUDITORÍAS
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-slate-500 hover:text-white text-[11px] font-bold tracking-wide transition-colors">
-            <Users size={13} /> AGENTES
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-slate-500 hover:text-white text-[11px] font-bold tracking-wide transition-colors">
-            <Archive size={13} /> PROYECTOS
-          </button>
-        </div>
-      </div>
-
-      {/* ── KPI CARDS ─────────────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-4">
-        {stats.map(({ label, value, change, Icon, color }, i) => (
-          <div
-            key={i}
-            className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0D1321] px-7 py-6 flex items-center justify-between group hover:border-white/10 transition-all duration-200 cursor-pointer"
-          >
-            {/* shimmer top line */}
-            <div
-              className="absolute inset-x-0 top-0 h-px"
-              style={{ background: `linear-gradient(90deg, transparent, ${color}55, transparent)` }}
-            />
-
-            {/* Left: metric */}
-            <div className="flex flex-col gap-3">
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{label}</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-[32px] font-bold text-white leading-none">{value}</span>
-                <span className="flex items-center gap-0.5 text-[11px] font-bold text-emerald-400">
-                  <ArrowUpRight size={11} /> {change}
-                </span>
+    <div className="flex h-full gap-8 bg-[var(--bg-main)]">
+      {/* Main Intelligence Center (Left) */}
+      <div className="flex-1 space-y-12 overflow-y-auto pr-4 scrollbar-hide">
+        
+        {/* Header Ejecutivo */}
+        <header className="flex justify-between items-center">
+           <div>
+              <h2 className="label-executive mb-1">RESUMEN ESTRATÉGICO V4.0</h2>
+              <div className="flex items-center gap-6 mt-6">
+                 <button 
+                    onClick={() => setViewMode('global')}
+                    className={`flex flex-col items-center gap-3 transition-all ${viewMode === 'global' ? 'opacity-100 scale-110' : 'opacity-30 grayscale hover:opacity-50'}`}
+                 >
+                    <div className="w-14 h-14 rounded-full border-2 border-white/10 flex items-center justify-center p-3">
+                       <Globe size={24} className="text-white" />
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-white">Global</span>
+                 </button>
+                 <button 
+                    onClick={() => setViewMode('rc506')}
+                    className={`flex flex-col items-center gap-3 transition-all ${viewMode === 'rc506' ? 'opacity-100 scale-110' : 'opacity-30 grayscale hover:opacity-50'}`}
+                 >
+                    <div className="w-14 h-14 rounded-full border-2 border-rc-teal flex items-center justify-center p-3 bg-rc-teal/10 shadow-[0_0_20px_rgba(59,188,169,0.3)]">
+                       <ShieldCheck size={24} className="text-rc-teal" />
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-white">RC506</span>
+                 </button>
               </div>
+           </div>
+           <div className="flex items-center gap-4">
+              <button className="p-3.5 bg-[var(--bg-input)] rounded-xl border border-[var(--border-ultra-thin)] text-[var(--text-secondary)] hover:text-white transition-all"><Bell size={18} /></button>
+              <button className="p-3.5 bg-[var(--bg-input)] rounded-xl border border-[var(--border-ultra-thin)] text-[var(--text-secondary)] hover:text-white transition-all"><Search size={18} /></button>
+           </div>
+        </header>
+
+        {/* Intelligence Title & Health Index */}
+        <div className="flex justify-between items-end pt-4">
+           <div>
+              <h1 className="text-7xl heading-premium tracking-tighter uppercase leading-none mb-4">CENTRO DE INTELIGENCIA</h1>
+              <p className="text-rc-teal text-sm font-semibold uppercase tracking-[0.4em] opacity-80">CALIDAD GLOBAL DE CARTERA RC506</p>
+           </div>
+            <div className="p-10 glass-card flex items-center gap-10 shadow-2xl relative overflow-hidden group">
+               <div className="absolute inset-0 bg-rc-teal/[0.03] opacity-0 group-hover:opacity-100 transition-opacity" />
+               <div className="w-20 h-20 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal shadow-2xl shadow-rc-teal/10 neon-glow">
+                  <BrainCircuit size={40} />
+               </div>
+               <div className="text-right">
+                  <div className="flex items-center gap-3 justify-end mb-1">
+                     <span className="label-executive">HEALTH INDEX</span>
+                     <div className="status-dot status-green" />
+                  </div>
+                  <h3 className="text-6xl heading-premium leading-none">{globalQuality}%</h3>
+               </div>
             </div>
-
-            {/* Right: icon + sparkline */}
-            <div className="flex flex-col items-end gap-2">
-              <Icon
-                size={16}
-                style={{ color }}
-                className="opacity-40 group-hover:opacity-100 transition-opacity"
-              />
-              <Sparkline color={color} />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── FILTER PANEL ──────────────────────────────────────── */}
-      <div className="rounded-2xl border border-white/[0.06] bg-[#0D1321] p-6 flex flex-col gap-5">
-
-        {/* Row 1: search + tabs + view toggle */}
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1">
-            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
-            <input
-              type="text"
-              placeholder="Buscar por ID, Agente o Proyecto..."
-              className="w-full h-11 pl-10 pr-4 bg-white/[0.04] border border-white/[0.06] rounded-xl text-sm text-white placeholder:text-slate-600 outline-none focus:border-[#3BC7AA]/40 transition-colors"
-            />
-          </div>
-
-          <div className="flex bg-white/[0.04] border border-white/[0.06] rounded-xl p-0.5 shrink-0">
-            {(['inbox','history'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveSubTab(tab)}
-                className={`px-5 py-2 rounded-[10px] text-[11px] font-bold tracking-wide transition-all ${
-                  activeSubTab === tab ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'
-                }`}
-              >
-                {tab === 'inbox' ? 'INBOX' : 'HISTORIAL'}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex bg-white/[0.04] border border-white/[0.06] rounded-xl p-0.5 shrink-0">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all ${
-                viewMode === 'grid' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'
-              }`}
-            >
-              <LayoutGrid size={15} />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all ${
-                viewMode === 'list' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'
-              }`}
-            >
-              <List size={15} />
-            </button>
-          </div>
         </div>
 
-        {/* Row 2: date / status filters */}
-        <div className="grid grid-cols-4 gap-3">
-          {/* Mes operativo */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">MES OPERATIVO</label>
-            <div className="h-10 bg-white/[0.04] border border-white/[0.06] rounded-xl px-3 flex items-center justify-between cursor-pointer hover:border-[#3BC7AA]/30 transition-colors">
-              <span className="text-[11px] text-slate-600">---------- de ----</span>
-              <Calendar size={13} className="text-slate-600" />
-            </div>
-          </div>
+        {/* Charts Matrix */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+           {/* Matrix of Excellence (Radar) */}
+           <div className="bg-white/[0.02] border border-white/5 rounded-[56px] p-12 relative overflow-hidden group hover:border-rc-teal/20 transition-all duration-500">
+              <div className="flex items-center justify-between mb-12">
+                 <div>
+                    <h3 className="text-2xl font-semibold text-white tracking-tight uppercase mb-1">MATRIZ DE EXCELENCIA</h3>
+                    <p className="label-executive">Atributos de Valor Global</p>
+                 </div>
+                 <div className="p-4 bg-rc-teal/10 rounded-xl text-rc-teal">
+                    <Activity size={24} />
+                 </div>
+              </div>
+              
+              {/* Radar Chart Visual */}
+              <div className="aspect-square flex items-center justify-center relative p-8">
+                 {[0.2, 0.4, 0.6, 0.8, 1].map(scale => (
+                    <div key={scale} className="absolute border-[0.5px] border-white/5 rounded-full" style={{ width: `${scale * 100}%`, height: `${scale * 100}%` }} />
+                 ))}
+                 
+                 {[0, 36, 72, 108, 144, 180, 216, 252, 288, 324].map(deg => (
+                    <div key={deg} className="absolute w-[0.5px] h-full bg-white/5" style={{ transform: `rotate(${deg}deg)` }} />
+                 ))}
 
-          {/* Estado transacción */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">ESTADO TRANSACCIÓN</label>
-            <div className="h-10 bg-white/[0.04] border border-white/[0.06] rounded-xl px-3 flex items-center justify-between cursor-pointer hover:border-[#3BC7AA]/30 transition-colors">
-              <span className="text-[11px] font-semibold text-white uppercase">TODOS LOS ESTADOS</span>
-              <ChevronDown size={13} className="text-slate-600" />
-            </div>
-          </div>
+                 <div className="absolute top-0 text-[9px] font-black text-slate-400 uppercase tracking-widest">T. Respuesta</div>
+                 <div className="absolute top-[15%] right-[5%] text-[9px] font-black text-slate-400 uppercase tracking-widest">Comunicación</div>
+                 <div className="absolute top-[45%] right-0 text-[9px] font-black text-slate-400 uppercase tracking-widest">Resolución</div>
+                 <div className="absolute bottom-[15%] right-[10%] text-[9px] font-black text-slate-400 uppercase tracking-widest">Proactividad</div>
+                 <div className="absolute bottom-0 text-[9px] font-black text-slate-400 uppercase tracking-widest">Tech DNA</div>
+                 <div className="absolute bottom-[15%] left-[10%] text-[9px] font-black text-slate-400 uppercase tracking-widest">Confiabilidad</div>
+                 <div className="absolute top-[45%] left-0 text-[9px] font-black text-slate-400 uppercase tracking-widest">Flexibilidad</div>
+                 <div className="absolute top-[15%] left-[5%] text-[9px] font-black text-slate-400 uppercase tracking-widest">Innovación</div>
 
-          {/* Rango desde */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">RANGO DE FECHAS (AUDITORÍA)</label>
-            <div className="h-10 bg-white/[0.04] border border-white/[0.06] rounded-xl px-3 flex items-center justify-between cursor-pointer hover:border-[#3BC7AA]/30 transition-colors">
-              <span className="text-[11px] text-slate-600">dd/mm/aaaa</span>
-              <Calendar size={13} className="text-slate-600" />
-            </div>
-          </div>
+                 <svg className="w-full h-full relative z-10 drop-shadow-[0_0_30px_rgba(59,188,169,0.4)]">
+                    <path 
+                      d="M150,60 L210,100 L240,160 L200,220 L130,240 L70,210 L50,140 L90,80 Z" 
+                      fill="rgba(59,188,169,0.15)" 
+                      stroke="#3BC7AA" 
+                      strokeWidth="3"
+                    />
+                 </svg>
+              </div>
+           </div>
 
-          {/* Rango hasta */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest invisible">—</label>
-            <div className="h-10 bg-white/[0.04] border border-white/[0.06] rounded-xl px-3 flex items-center justify-between cursor-pointer hover:border-[#3BC7AA]/30 transition-colors">
-              <span className="text-[11px] text-slate-600">dd/mm/aaaa</span>
-              <Calendar size={13} className="text-slate-600" />
-            </div>
-          </div>
-        </div>
+           {/* Quarterly Evolution */}
+           <div className="bg-white/[0.02] border border-white/5 rounded-[56px] p-12 relative overflow-hidden flex flex-col group hover:border-rc-teal/20 transition-all duration-500">
+              <div className="flex items-center justify-between mb-12">
+                 <div>
+                    <h3 className="text-3xl font-black text-white tracking-tighter uppercase mb-1">EVOLUCIÓN TRIMESTRAL</h3>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Satisfacción del Cliente Proyectada</p>
+                 </div>
+                 <div className="px-6 py-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.2em]">Tendencia al Alza</span>
+                 </div>
+              </div>
 
-        {/* Row 3: taxonomy chips */}
-        <div className="flex flex-col gap-2.5">
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">TAXONOMÍA DE INTELIGENCIA</p>
-          <div className="flex flex-wrap items-center gap-2">
-            {taxonomy.map((item, i) => (
-              <button
-                key={i}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.07] hover:border-white/10 transition-all"
-              >
-                <span
-                  className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: item.dot }}
-                />
-                <span className="text-[9px] font-bold uppercase tracking-wide text-slate-400">
-                  {item.label}
-                </span>
-              </button>
-            ))}
-            <button className="ml-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-white/[0.08] text-slate-400 hover:text-white hover:border-white/20 transition-all text-[9px] font-bold uppercase tracking-wide shrink-0">
-              <Filter size={11} /> FILTRAR HALLAZGOS CRÍTICOS
-            </button>
-          </div>
+              <div className="flex-1 flex flex-col justify-end gap-2">
+                 <div className="w-full h-64 bg-gradient-to-t from-rc-teal/20 to-transparent border-b border-rc-teal/30 relative overflow-hidden rounded-t-[40px]">
+                    <svg className="w-full h-full" viewBox="0 0 600 200" preserveAspectRatio="none">
+                       <path d="M0,160 Q100,150 200,130 T400,90 T600,70 L600,200 L0,200 Z" fill="rgba(59,188,169,0.1)" />
+                       <path d="M0,160 Q100,150 200,130 T400,90 T600,70" fill="none" stroke="#3BC7AA" strokeWidth="4" />
+                    </svg>
+                 </div>
+                 <div className="flex justify-between px-6 pt-6 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">
+                    {['Feb', 'Mar', 'Abr', 'May', 'Jun'].map(m => <span key={m}>{m}</span>)}
+                 </div>
+              </div>
+           </div>
         </div>
       </div>
 
-      {/* ── EMPTY STATE ───────────────────────────────────────── */}
-      <div className="rounded-2xl border border-white/[0.06] bg-[#0D1321] min-h-[280px] flex flex-col items-center justify-center gap-4 p-12">
-        <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-          <Archive size={24} className="text-slate-600" />
-        </div>
-        <div className="text-center">
-          <h3 className="text-base font-bold text-white mb-1">No hay auditorías registradas</h3>
-          <p className="text-xs text-slate-500 max-w-xs leading-relaxed">
-            Intenta ajustar los filtros de búsqueda o el período temporal para visualizar resultados.
-          </p>
-        </div>
+      {/* Right Column: Live Health Panel */}
+      <div className="w-[380px] space-y-8 h-full overflow-y-auto pr-2 scrollbar-hide">
+         <div className="glass-card flex flex-col min-h-full">
+            <div className="flex justify-between items-center mb-10">
+               <h3 className="text-base font-semibold text-white uppercase tracking-tight">LIVE HEALTH</h3>
+               <div className="flex items-center gap-2">
+                  <div className="badge-dot status-green" />
+                  <span className="label-executive">REAL-TIME</span>
+               </div>
+            </div>
+
+            <p className="label-executive mb-8 border-b border-[var(--border-ultra-thin)] pb-4">ESTADO OPERATIVO DE CUENTAS</p>
+
+            <div className="grid grid-cols-2 gap-4 mb-10">
+               {[
+                  { label: 'Cuentas', value: activeAccounts, icon: Users, color: 'text-white' },
+                  { label: 'Críticas', value: criticalAccounts, icon: AlertCircle, color: 'text-rose-500' },
+                  { label: 'Calidad', value: `${globalQuality}%`, icon: TrendingUp, color: 'text-rc-teal' },
+                  { label: 'Pendientes', value: tasks.length, icon: Clock, color: 'text-amber-500' }
+               ].map(stat => (
+                  <div key={stat.label} className="p-6 bg-[var(--bg-input)] border border-[var(--border-ultra-thin)] rounded-2xl flex flex-col gap-4 group hover:border-rc-teal/30 transition-all shadow-lg">
+                     <div className="flex justify-between items-center">
+                        <stat.icon size={18} className={stat.color} />
+                        <h4 className="text-2xl heading-premium leading-none">{stat.value}</h4>
+                     </div>
+                     <span className="label-executive">{stat.label}</span>
+                  </div>
+               ))}
+            </div>
+
+            <div className="space-y-8">
+               <h3 className="label-executive flex items-center gap-3">
+                  ALERTAS ESTRATÉGICAS <div className="badge-dot status-red" />
+               </h3>
+               
+               <div className="h-24 border border-dashed border-[var(--border-ultra-thin)] rounded-2xl flex items-center justify-center bg-[var(--bg-input)]/50">
+                  <span className="text-[10px] font-medium text-slate-600 uppercase tracking-widest">Sin alertas críticas</span>
+               </div>
+
+               <h3 className="label-executive flex items-center gap-3 pt-6">
+                  ESTADO DEL EQUIPO <div className="badge-dot status-green" />
+               </h3>
+               
+               <div className="space-y-5">
+                  {[1, 2, 3].map(i => (
+                     <div key={i} className="flex items-center gap-4 group">
+                        <div className="w-10 h-10 rounded-xl bg-[var(--bg-input)] border border-[var(--border-ultra-thin)] flex items-center justify-center text-[10px] font-semibold text-slate-400 group-hover:text-rc-teal transition-colors uppercase">
+                           AD
+                        </div>
+                        <div className="flex-1">
+                           <div className="flex justify-between items-center mb-1.5">
+                              <p className="text-[11px] font-medium text-slate-300 uppercase tracking-tight">Analista Técnico {i}</p>
+                              <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                           </div>
+                           <div className="w-full h-1 bg-[var(--bg-input)] rounded-full overflow-hidden">
+                              <div className="h-full bg-rc-teal w-3/4 shadow-[0_0_8px_rgba(59,188,169,0.4)]" />
+                           </div>
+                        </div>
+                     </div>
+                  ))}
+               </div>
+            </div>
+         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
-export default Dashboard;
+export default IntelligenceDashboard;

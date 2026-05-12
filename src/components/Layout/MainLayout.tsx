@@ -7,7 +7,8 @@ import Dashboard from '../../pages/Dashboard';
 import ServiceMonitor from '../../pages/ServiceMonitor';
 import ArchiveVault from '../../pages/ArchiveVault';
 import AiCopilot from '../../pages/AiCopilot';
-import { TabType, TAB_TITLES } from '../../types/navigation';
+
+type TabType = 'overview' | 'clients' | 'services' | 'tasks' | 'settings' | 'audits' | 'reports' | 'ai-copilot' | 'archive';
 
 const MainLayout: React.FC = () => {
   const { user, loading } = useAuth();
@@ -17,18 +18,18 @@ const MainLayout: React.FC = () => {
   if (!user) return <Navigate to="/login" />;
 
   return (
-    <div className="flex h-screen app-container text-white overflow-hidden font-inter bg-[var(--bg-main)]">
+    <div className="flex h-screen app-container text-white overflow-hidden font-inter">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       
-      <main className="flex-1 overflow-y-auto relative scrollbar-hide bg-[var(--bg-main)]">
-        <div className="p-8 max-w-[1700px] mx-auto">
+      <main className="flex-1 overflow-y-auto relative scrollbar-hide">
+        <div className="p-10 max-w-[1600px] mx-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             >
               {activeTab === 'services' ? (
                 <ServiceMonitor />
@@ -37,7 +38,7 @@ const MainLayout: React.FC = () => {
               ) : activeTab === 'ai-copilot' ? (
                 <AiCopilot />
               ) : (
-                <Dashboard activeTab={activeTab} title={TAB_TITLES[activeTab]} />
+                <Dashboard activeTab={activeTab as any} />
               )}
             </motion.div>
           </AnimatePresence>
