@@ -225,25 +225,5 @@ const Dashboard: React.FC<{ activeTab: string }> = ({ activeTab }) => {
   );
 };
 
-
-
-      {/* Content Area (Empty State) */}
-      <div className="premium-card min-h-[400px] flex flex-col items-center justify-center text-center p-12">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center text-slate-600 mb-6"
-        >
-          <Archive size={40} />
-        </motion.div>
-        <h3 className="text-xl font-bold text-white mb-2">No hay auditorías registradas</h3>
-        <p className="text-sm text-slate-500 max-w-sm">
-          Intenta ajustar los filtros de búsqueda o el período temporal para visualizar resultados.
-        </p>
-      </div>
-    </div>
-  );
-};
-
 export default Dashboard;
 
