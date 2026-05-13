@@ -864,7 +864,35 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                )}
 
                                {service.type === 'Contact Center' && (
-                                  <p className="text-[9px] font-medium text-slate-500 italic">Configure los detalles de HC en la pestaña de Operaciones.</p>
+                                  <div className="grid grid-cols-2 gap-6">
+                                     <div className="space-y-1">
+                                        <label className="text-[8px] opacity-60">Cantidad de Posiciones</label>
+                                        <input 
+                                          type="number"
+                                          placeholder="Ej: 12"
+                                          value={service.positionsCount || ''}
+                                          onChange={e => {
+                                             const s = [...(formData.services || [])];
+                                             s[index].positionsCount = parseInt(e.target.value) || 0;
+                                             setFormData({...formData, services: s});
+                                          }}
+                                          className="w-full py-2 px-3 text-[10px]"
+                                        />
+                                     </div>
+                                     <div className="space-y-1">
+                                        <label className="text-[8px] opacity-60">Horarios de Posiciones</label>
+                                        <input 
+                                          placeholder="Ej: 24/7 o L-V 08:00-17:00"
+                                          value={service.shiftMatrix || ''}
+                                          onChange={e => {
+                                             const s = [...(formData.services || [])];
+                                             s[index].shiftMatrix = e.target.value;
+                                             setFormData({...formData, services: s});
+                                          }}
+                                          className="w-full py-2 px-3 text-[10px]"
+                                        />
+                                     </div>
+                                  </div>
                                )}
 
                                {service.type === 'Other' && (
