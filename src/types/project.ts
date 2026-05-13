@@ -81,7 +81,7 @@ export interface OperationPulse {
   hcContracted: number;
   hcReal: number;
   backupStatus: 'Disponible' | 'En Uso' | 'Crítico';
-  operationType: 'Servicio al Cliente' | 'Ventas' | 'Cobranza' | 'Soporte Técnico';
+  operationType: string;
   shifts?: Shift[];
 }
 
@@ -112,7 +112,7 @@ export interface HardwareAsset {
   category?: string; // Ej: Hardware, Sistema, Conectividad
   model: string;
   quantity: number;
-  purchaseDate: string;
+  purchaseDate?: string;
   assignedPosition?: string;
   notes?: string; // Para opciones libres como VPN, detalles de sistema, etc.
 }

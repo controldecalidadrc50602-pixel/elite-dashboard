@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, Trash2, Plus, Upload, Activity, Globe, Layers, Headphones, Settings, Shield } from 'lucide-react';
+import { X, Save, Trash2, Plus, Upload, Activity, Globe, Layers, Headphones, Settings, Shield, CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project, ClientService, OperationPulse, TechDNA, HardwareAsset, StrategySLA } from '../../types/project';
@@ -281,13 +281,13 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                              <input 
                                placeholder="Nombre"
                                value={formData.partnerLiaison?.name}
-                               onChange={e => setFormData({...formData, partnerLiaison: { ...formData.partnerLiaison!, name: e.target.value }})}
+                               onChange={e => setFormData({...formData, partnerLiaison: { ...formData.partnerLiaison!, name: e.target.value } })}
                                className="w-full"
                              />
                              <input 
                                placeholder="Correo"
                                value={formData.partnerLiaison?.email}
-                               onChange={e => setFormData({...formData, partnerLiaison: { ...formData.partnerLiaison!, email: e.target.value }})}
+                               onChange={e => setFormData({...formData, partnerLiaison: { ...formData.partnerLiaison!, email: e.target.value } })}
                                className="w-full"
                              />
                           </div>
@@ -333,25 +333,52 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
 
                       <div className="grid grid-cols-2 gap-8">
                          <div className="space-y-6">
-                            <div className="space-y-2">
-                               <label>Tipo de Operación (Mandatorio)</label>
-                               <select 
-                                 value={formData.opsPulse?.operationType}
-                                 onChange={e => setFormData({...formData, opsPulse: { ...formData.opsPulse!, operationType: e.target.value as any }})}
-                                 className="w-full font-black uppercase tracking-widest cursor-pointer"
-                               >
-                                 <option value="Servicio al Cliente">Servicio al Cliente</option>
-                                 <option value="Ventas">Ventas</option>
-                                 <option value="Cobranza">Cobranza</option>
-                                 <option value="Soporte Técnico">Soporte Técnico</option>
-                               </select>
-                            </div>
+                            <div className="space-y-4">
+                                <label>Tipo de Operación (Selección Múltiple)</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                  {['Servicio al Cliente', 'Ventas', 'Cobranza', 'Soporte Técnico'].map(type => {
+                                    const currentTypes = (formData.opsPulse?.operationType || '').split(',').map(t => t.trim()).filter(Boolean);
+                                    const isSelected = currentTypes.includes(type);
+                                    return (
+                                      <button
+                                        key={type} type="button"
+                                        onClick={() => {
+                                          let newTypes;
+                                          if (isSelected) {
+                                            newTypes = currentTypes.filter(t => t !== type);
+                                          } else {
+                                            newTypes = [...currentTypes, type];
+                                          }
+                                          setFormData({
+                                            ...formData, 
+                                            opsPulse: { 
+                                              ...formData.opsPulse!, 
+                                              operationType: newTypes.join(', ') 
+                                            }
+                                          });
+                                        }}
+                                        className={`py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                                          isSelected 
+                                          ? 'bg-rc-teal text-black border-rc-teal shadow-lg shadow-rc-teal/20' 
+                                          : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10'
+                                        }`}
+                                      >
+                                        {type}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                                <div className="p-4 bg-rc-teal/5 border border-rc-teal/20 rounded-2xl">
+                                   <p className="text-[10px] font-black text-rc-teal uppercase tracking-widest mb-1">Resumen de Operación</p>
+                                   <p className="text-[11px] font-bold text-white">{(formData.opsPulse?.operationType || 'No especificado')}</p>
+                                </div>
+                             </div>
                             <div className="grid grid-cols-2 gap-6">
                                <div className="space-y-2">
                                  <label>Personal Contratado (Plan)</label>
                                  <input 
                                    type="number" value={formData.opsPulse?.hcContracted}
-                                   onChange={e => setFormData({...formData, opsPulse: { ...formData.opsPulse!, hcContracted: parseInt(e.target.value) || 0 }})}
+                                   onChange={e => setFormData({...formData, opsPulse: { ...formData.opsPulse!, hcContracted: parseInt(e.target.value) || 0 } })}
                                    className="w-full text-lg font-black"
                                    placeholder="Cant. según contrato"
                                  />
@@ -360,7 +387,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                  <label>Personal Real (En Piso)</label>
                                  <input 
                                    type="number" value={formData.opsPulse?.hcReal}
-                                   onChange={e => setFormData({...formData, opsPulse: { ...formData.opsPulse!, hcReal: parseInt(e.target.value) || 0 }})}
+                                   onChange={e => setFormData({...formData, opsPulse: { ...formData.opsPulse!, hcReal: parseInt(e.target.value) || 0 } })}
                                    className="w-full text-lg font-black"
                                    placeholder="Cant. actual"
                                  />
@@ -374,7 +401,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                               {['Disponible', 'En Uso', 'Crítico'].map(status => (
                                 <button
                                   key={status} type="button"
-                                  onClick={() => setFormData({...formData, opsPulse: { ...formData.opsPulse!, backupStatus: status as any }})}
+                                  onClick={() => setFormData({...formData, opsPulse: { ...formData.opsPulse!, backupStatus: status as any } })}
                                   className={`py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
                                     formData.opsPulse?.backupStatus === status 
                                     ? 'bg-[var(--rc-turquoise)] text-[var(--bg-primary)] border-[var(--rc-turquoise)] shadow-lg' 
@@ -396,7 +423,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                               onClick={() => {
                                 const newShifts = [...(formData.opsPulse?.shifts || [])];
                                 newShifts.push({ id: Math.random().toString(36).substr(2, 9), name: `Turno ${String.fromCharCode(65 + newShifts.length)}`, timeRange: '08:00 - 17:00', peopleCount: 0 });
-                                setFormData({...formData, opsPulse: { ...formData.opsPulse!, shifts: newShifts }});
+                                setFormData({...formData, opsPulse: { ...formData.opsPulse!, shifts: newShifts } });
                               }}
                               className="text-[var(--rc-turquoise)] text-[9px] font-black uppercase tracking-widest flex items-center gap-2 px-4 py-2 bg-[var(--rc-turquoise)]/10 rounded-xl hover:bg-[var(--rc-turquoise)]/20 transition-all"
                             >
@@ -415,7 +442,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                           onChange={e => {
                                              const s = [...(formData.opsPulse?.shifts || [])];
                                              s[idx].timeRange = e.target.value;
-                                             setFormData({...formData, opsPulse: { ...formData.opsPulse!, shifts: s }});
+                                             setFormData({...formData, opsPulse: { ...formData.opsPulse!, shifts: s } });
                                           }}
                                           className="bg-transparent border-none p-0 text-xs font-black uppercase tracking-widest focus:ring-0 w-full"
                                         />
@@ -427,7 +454,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                           onChange={e => {
                                              const s = [...(formData.opsPulse?.shifts || [])];
                                              s[idx].peopleCount = parseInt(e.target.value) || 0;
-                                             setFormData({...formData, opsPulse: { ...formData.opsPulse!, shifts: s }});
+                                             setFormData({...formData, opsPulse: { ...formData.opsPulse!, shifts: s } });
                                           }}
                                           className="bg-transparent border-none p-0 text-xs font-black focus:ring-0 w-full"
                                         />
@@ -435,7 +462,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                   </div>
                                   <button 
                                      type="button"
-                                     onClick={() => setFormData({...formData, opsPulse: { ...formData.opsPulse!, shifts: formData.opsPulse?.shifts?.filter(s => s.id !== shift.id) }})}
+                                     onClick={() => setFormData({...formData, opsPulse: { ...formData.opsPulse!, shifts: formData.opsPulse?.shifts?.filter(s => s.id !== shift.id) } })}
                                      className="p-2 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-500/10 rounded-lg"
                                   >
                                      <X size={14} />
@@ -470,7 +497,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                           {['RC506', 'WYP', 'IPBX', 'HÍBRIDO'].map(mode => (
                             <button
                               key={mode} type="button"
-                              onClick={() => setFormData({...formData, techDNA: { ...formData.techDNA!, operationMode: mode as any }})}
+                              onClick={() => setFormData({...formData, techDNA: { ...formData.techDNA!, operationMode: mode as any } })}
                               className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
                                 formData.techDNA?.operationMode === mode 
                                 ? 'bg-[var(--rc-turquoise)] text-[var(--bg-primary)] border-[var(--rc-turquoise)] shadow-lg' 
@@ -488,7 +515,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                           <label>Proveedor de Internet (ISP)</label>
                           <input 
                             value={formData.techDNA?.isp}
-                            onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, isp: e.target.value }})}
+                            onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, isp: e.target.value } })}
                             placeholder="Ej: Liberty / Telecable"
                             className="w-full"
                           />
@@ -497,7 +524,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                           <label>Velocidad Contratada (Mbps)</label>
                           <input 
                             value={formData.techDNA?.internetSpeed}
-                            onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, internetSpeed: e.target.value }})}
+                            onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, internetSpeed: e.target.value } })}
                             placeholder="Ej: 500/500 symmetrical"
                             className="w-full"
                           />
@@ -509,7 +536,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                           <label>Tipo de Conectividad</label>
                           <select 
                             value={formData.techDNA?.connectivityType}
-                            onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, connectivityType: e.target.value as any }})}
+                            onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, connectivityType: e.target.value as any } })}
                             className="w-full font-black uppercase tracking-widest cursor-pointer"
                           >
                             <option value="Fibra Óptica">Fibra Óptica</option>
@@ -522,7 +549,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                           <div className="flex gap-4">
                             <button
                               type="button"
-                              onClick={() => setFormData({...formData, techDNA: { ...formData.techDNA!, redundancy: true }})}
+                              onClick={() => setFormData({...formData, techDNA: { ...formData.techDNA!, redundancy: true } })}
                               className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
                                 formData.techDNA?.redundancy 
                                 ? 'bg-[var(--rc-turquoise)] text-[var(--bg-primary)] border-[var(--rc-turquoise)]' 
@@ -533,7 +560,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                             </button>
                             <button
                               type="button"
-                              onClick={() => setFormData({...formData, techDNA: { ...formData.techDNA!, redundancy: false }})}
+                              onClick={() => setFormData({...formData, techDNA: { ...formData.techDNA!, redundancy: false } })}
                               className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${
                                 !formData.techDNA?.redundancy 
                                 ? 'bg-slate-800 text-white border-white/10' 
@@ -551,7 +578,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                            <label>País de Operación</label>
                            <select 
                              value={formData.techDNA?.country}
-                             onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, country: e.target.value as any }})}
+                             onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, country: e.target.value as any } })}
                              className="w-full font-black uppercase tracking-widest cursor-pointer"
                            >
                              <option value="Costa Rica">Costa Rica</option>
@@ -562,7 +589,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                            <label>SIP Trunk Virtual</label>
                            <select 
                              value={formData.techDNA?.sipTrunkVirtual}
-                             onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, sipTrunkVirtual: e.target.value as any }})}
+                             onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, sipTrunkVirtual: e.target.value as any } })}
                              className="w-full font-black uppercase tracking-widest cursor-pointer"
                            >
                              {['Navegalo', 'Vocex', 'ICE', 'Call My Way', 'Callcentric', 'Voip.ms', 'Movistar Vzla.', 'N/A.'].map(opt => (
@@ -576,7 +603,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                          <label>Línea Telefónica / Troncal (ID Físico)</label>
                          <input 
                            value={formData.techDNA?.phoneLine}
-                           onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, phoneLine: e.target.value }})}
+                           onChange={e => setFormData({...formData, techDNA: { ...formData.techDNA!, phoneLine: e.target.value } })}
                            placeholder="Ej: Sip Trunk / Análoga / Cloud"
                            className="w-full"
                          />
@@ -584,21 +611,140 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                     </motion.div>
                   )}
 
-                  {activeTab === 'evaluation' && (
+                  {activeTab === 'services' && (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
                       <header className="flex items-start justify-between">
                         <div className="space-y-1">
-                          <h2 className="section-title">Evaluación del Cliente</h2>
+                          <h2 className="section-title">Servicios</h2>
                           <div className="flex items-center gap-2">
                              <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
-                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Salud de la Relación.</p>
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Catálogo de Servicios Activos.</p>
                           </div>
                         </div>
-                        <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
-                           <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
-                              Evalúa el compromiso mutuo mediante rúbricas clave para detectar riesgos comerciales de forma temprana.
-                           </p>
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const newServices = [...(formData.services || [])];
+                            newServices.push({ 
+                              id: Math.random().toString(36).substr(2, 9), 
+                              name: '', 
+                              description: '', 
+                              startDate: new Date().toISOString().split('T')[0], 
+                              score: 5,
+                              type: 'Contact Center'
+                            });
+                            setFormData({...formData, services: newServices});
+                          }}
+                          className="px-6 py-3 bg-rc-teal/10 border border-rc-teal/20 text-rc-teal rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-rc-teal/20 transition-all"
+                        >
+                          <Plus size={16} /> Agregar Servicio
+                        </button>
+                      </header>
+
+                      <div className="grid grid-cols-1 gap-6">
+                        {formData.services?.map((service, index) => (
+                          <div key={service.id} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] relative group hover:border-rc-teal/30 transition-all">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <div className="space-y-4">
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Nombre del Servicio</label>
+                                  <input 
+                                    value={service.name}
+                                    onChange={e => {
+                                      const s = [...(formData.services || [])];
+                                      s[index].name = e.target.value;
+                                      setFormData({...formData, services: s});
+                                    }}
+                                    placeholder="Ej: Atención VIP / Soporte N1"
+                                    className="w-full text-sm font-black uppercase tracking-widest"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Descripción</label>
+                                  <textarea 
+                                    value={service.description}
+                                    onChange={e => {
+                                      const s = [...(formData.services || [])];
+                                      s[index].description = e.target.value;
+                                      setFormData({...formData, services: s});
+                                    }}
+                                    placeholder="Breve descripción del alcance..."
+                                    className="w-full h-20 resize-none text-xs font-medium"
+                                  />
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Categoría Técnica</label>
+                                  <select 
+                                    value={service.type}
+                                    onChange={e => {
+                                      const s = [...(formData.services || [])];
+                                      s[index].type = e.target.value as any;
+                                      setFormData({...formData, services: s});
+                                    }}
+                                    className="w-full text-xs font-black uppercase tracking-widest"
+                                  >
+                                    <option value="Botmaker">Botmaker</option>
+                                    <option value="Yeastar">Yeastar</option>
+                                    <option value="IPBX">IPBX</option>
+                                    <option value="Contact Center">Contact Center</option>
+                                    <option value="Servicios Web">Servicios Web</option>
+                                    <option value="Capacitaciones">Capacitaciones</option>
+                                  </select>
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Fecha Inicio</label>
+                                  <input 
+                                    type="date"
+                                    value={service.startDate}
+                                    onChange={e => {
+                                      const s = [...(formData.services || [])];
+                                      s[index].startDate = e.target.value;
+                                      setFormData({...formData, services: s});
+                                    }}
+                                    className="w-full text-xs font-medium"
+                                  />
+                                </div>
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const s = (formData.services || []).filter(item => item.id !== service.id);
+                                    setFormData({...formData, services: s});
+                                  }}
+                                  className="col-span-2 py-3 bg-rose-500/10 text-rose-500 rounded-xl text-[9px] font-black uppercase tracking-widest border border-rose-500/20 hover:bg-rose-500 hover:text-white transition-all mt-2"
+                                >
+                                  Eliminar Servicio
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {activeTab === 'assets' && (
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
+                      <header className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <h2 className="section-title">Activos y Sistemas</h2>
+                          <div className="flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gestión de Activos y Sistemas.</p>
+                          </div>
                         </div>
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const newAssets = [...(formData.assets || [])];
+                            newAssets.push({ id: Math.random().toString(36).substr(2, 9), model: '', quantity: 0, category: 'Hardware', notes: '', assignedPosition: '' });
+                            setFormData({...formData, assets: newAssets});
+                          }}
+                          className="px-6 py-3 bg-rc-teal text-black rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:scale-105 transition-all shadow-lg shadow-rc-teal/20"
+                        >
+                          <Plus size={16} /> Registrar Activo
+                        </button>
                       </header>
 
                       <div className="grid grid-cols-1 gap-8 pb-12">
@@ -742,7 +888,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                <input 
                                  type="range" min="1" max="10" step="1"
                                  value={formData.strategy?.defaultTaskWeight}
-                                 onChange={e => setFormData({...formData, strategy: { ...formData.strategy!, defaultTaskWeight: parseInt(e.target.value) }})}
+                                 onChange={e => setFormData({...formData, strategy: { ...formData.strategy!, defaultTaskWeight: parseInt(e.target.value) } })}
                                  className="w-full accent-rc-teal"
                                />
                             </div>
@@ -751,7 +897,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                <div className="relative">
                                   <input 
                                     type="number" value={formData.strategy?.responseSla}
-                                    onChange={e => setFormData({...formData, strategy: { ...formData.strategy!, responseSla: parseInt(e.target.value) || 0 }})}
+                                    onChange={e => setFormData({...formData, strategy: { ...formData.strategy!, responseSla: parseInt(e.target.value) || 0 } })}
                                     className="w-full pl-6 pr-20 py-4 text-xl font-black"
                                   />
                                   <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-500 uppercase tracking-widest">Horas</span>
@@ -768,7 +914,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                  onClick={() => {
                                     const tasks = [...(formData.strategy?.recurringTasks || [])];
                                     tasks.push('');
-                                    setFormData({...formData, strategy: { ...formData.strategy!, recurringTasks: tasks }});
+                                    setFormData({...formData, strategy: { ...formData.strategy!, recurringTasks: tasks } })
                                  }}
                                  className="p-2 text-[var(--rc-turquoise)] hover:bg-[var(--rc-turquoise)]/10 rounded-lg transition-all"
                                >
@@ -785,7 +931,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                        onChange={e => {
                                           const t = [...(formData.strategy?.recurringTasks || [])];
                                           t[idx] = e.target.value;
-                                          setFormData({...formData, strategy: { ...formData.strategy!, recurringTasks: t }});
+                                          setFormData({...formData, strategy: { ...formData.strategy!, recurringTasks: t } });
                                        }}
                                        className="flex-1 bg-white/5 border-none py-3 px-4 rounded-xl text-[11px] font-bold text-white placeholder:text-slate-600 focus:bg-white/10"
                                      />
@@ -793,7 +939,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                        type="button"
                                        onClick={() => {
                                           const t = (formData.strategy?.recurringTasks || []).filter((_, i) => i !== idx);
-                                          setFormData({...formData, strategy: { ...formData.strategy!, recurringTasks: t }});
+                                          setFormData({...formData, strategy: { ...formData.strategy!, recurringTasks: t } });
                                        }}
                                        className="p-2 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
                                      >
@@ -803,6 +949,59 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                ))}
                             </div>
                          </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {activeTab === 'evaluation' && (
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
+                      <header className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <h2 className="section-title">Evaluación del Cliente</h2>
+                          <div className="flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Salud de la Relación.</p>
+                          </div>
+                        </div>
+                        <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
+                           <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
+                              Evalúa el compromiso mutuo mediante rúbricas clave para detectar riesgos comerciales de forma temprana.
+                           </p>
+                        </div>
+                      </header>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[
+                           { id: 'projectLeader', label: 'Líder de Proyecto Definido' },
+                           { id: 'timelyDocumentation', label: 'Entrega Documentación a Tiempo' },
+                           { id: 'advisoryReceptivity', label: 'Receptivo a Asesoría' },
+                           { id: 'effectiveServiceUse', label: 'Uso Efectivo del Servicio' },
+                           { id: 'serviceContinuity', label: 'Continuidad en el Uso' },
+                           { id: 'reportValuation', label: 'Valora Informes de Gestión' },
+                           { id: 'paymentPunctuality', label: 'Puntualidad en Pagos' }
+                        ].map((item) => (
+                           <div 
+                              key={item.id}
+                              onClick={() => {
+                                 const evalData = { ...formData.clientEvaluation };
+                                 const key = item.id as keyof typeof evalData;
+                                 if (typeof evalData[key] === 'boolean') {
+                                    (evalData as any)[key] = !evalData[key];
+                                    setFormData({ ...formData, clientEvaluation: evalData as any });
+                                 }
+                              }}
+                              className="p-6 bg-white/[0.03] border border-white/5 rounded-3xl flex items-center justify-between group cursor-pointer hover:bg-white/5 transition-all"
+                           >
+                              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-white transition-colors">{item.label}</span>
+                              <div className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all ${
+                                 formData.clientEvaluation?.[item.id as keyof typeof formData.clientEvaluation] 
+                                 ? 'bg-rc-teal border-rc-teal text-black shadow-lg shadow-rc-teal/20' 
+                                 : 'border-white/10 text-transparent'
+                              }`}>
+                                 <CheckCircle size={18} strokeWidth={3} />
+                              </div>
+                           </div>
+                        ))}
                       </div>
                     </motion.div>
                   )}
