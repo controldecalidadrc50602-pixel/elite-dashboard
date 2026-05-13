@@ -1,16 +1,40 @@
 {
   "name": "RC506 Gestión Elite",
-  "short_name": "RC506",
+  "short_name": "Elite V4",
+  "description": "Dashboard Ejecutivo de Inteligencia y Operaciones RC506",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0B0E14",
+  "background_color": "#020203",
   "theme_color": "#3BC7AA",
-  "description": "Dashboard Ejecutivo de Inteligencia RC506",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["productivity", "business"],
   "icons": [
     {
-      "src": "favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ]
 }

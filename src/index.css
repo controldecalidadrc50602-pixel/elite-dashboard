@@ -17,15 +17,16 @@
 }
 
 :root {
-  --bg-primary: #050505;
-  --bg-secondary: #0a0a0b;
-  --glass-bg: rgba(10, 10, 11, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.03);
+  --bg-primary: #020203;
+  --bg-secondary: #050506;
+  --glass-bg: rgba(15, 15, 20, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.08);
   --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --rc-teal: #3bbca9;
+  --text-secondary: #94a3b8;
+  --rc-teal: #3BC7AA;
   --rc-turquoise: #4fd1c5;
-  --accent-glow: rgba(59, 188, 169, 0.15);
+  --accent-glow: rgba(59, 188, 169, 0.25);
+  --transition-organic: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 body {
@@ -138,20 +139,23 @@ body {
   }
 
   .glass-card {
-    @apply bg-[var(--card-bg)] backdrop-blur-[15px] border border-[var(--glass-border)] shadow-[var(--card-shadow)] transition-all duration-500 ease-[var(--transition-premium)];
+    @apply bg-[var(--glass-bg)] backdrop-blur-[30px] border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-700 ease-[var(--transition-organic)];
   }
 
-  .premium-button {
-    @apply transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+  .organic-input {
+    @apply bg-white/[0.03] border border-white/5 rounded-[24px] px-8 py-6 text-[15px] transition-all duration-500 outline-none text-white placeholder:text-white/10;
   }
 
-  .glow-optimal {
-    box-shadow: var(--glow-optimal);
+  .organic-input:focus {
+    @apply bg-white/[0.06] border-rc-teal/40 shadow-[0_0_40px_rgba(59,188,169,0.1),inset_0_0_20px_rgba(255,255,255,0.02)];
   }
 
-  .glow-hover:hover {
-    box-shadow: var(--glow-teal);
-    @apply border-rc-teal/30;
+  .glow-text {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+
+  .premium-glow-teal {
+    box-shadow: 0 0 40px rgba(59, 188, 169, 0.15), inset 0 0 20px rgba(59, 188, 169, 0.05);
   }
 }
 
@@ -184,21 +188,17 @@ input:focus, select:focus, textarea:focus {
   @apply p-10 bg-white/[0.03] border border-white/10 rounded-[56px] transition-all duration-500 hover:border-rc-teal/30 hover:bg-white/[0.05];
 }
 
-/* Custom Scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+.premium-card-v4 {
+  @apply p-12 bg-white/[0.02] border border-white/5 rounded-[64px] transition-all duration-700 hover:border-rc-teal/20 hover:bg-white/[0.04] backdrop-blur-xl relative overflow-hidden;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-transparent;
+.premium-card-v4::before {
+  content: '';
+  @apply absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-rc-teal/5 to-transparent opacity-0 transition-opacity duration-700 pointer-events-none;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
-}
-
-.light .custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-black/10 hover:bg-black/20;
+.premium-card-v4:hover::before {
+  @apply opacity-100;
 }
 
 /* Utility for text hierarchy */
