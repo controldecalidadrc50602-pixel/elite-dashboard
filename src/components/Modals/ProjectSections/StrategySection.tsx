@@ -1,7 +1,7 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Plus, X, ShieldCheck, Clock } from 'lucide-react';
-import { StrategySLA } from '../../../types/project';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Trash2, Target, Calendar, CheckSquare } from 'lucide-react';
+import { StrategySLA, RecurringTask } from '../../../types/project';
 
 interface Props {
   strategy?: StrategySLA;
@@ -9,122 +9,107 @@ interface Props {
 }
 
 const StrategySection: React.FC<Props> = ({ strategy, onUpdate }) => {
-  const addRecurringTask = () => {
+  const addTask = () => {
     const tasks = [...(strategy?.recurringTasks || [])];
-    tasks.push('');
+    tasks.push({ 
+      id: Math.random().toString(36).substr(2, 9), 
+      task: '', 
+      frequency: 'Semanal' 
+    });
     onUpdate({ recurringTasks: tasks });
   };
 
-  const updateRecurringTask = (index: number, value: string) => {
-    const tasks = [...(strategy?.recurringTasks || [])];
-    tasks[index] = value;
-    onUpdate({ recurringTasks: tasks });
+  const updateTask = (id: string, task: string) => {
+    onUpdate({ 
+      recurringTasks: strategy?.recurringTasks?.map((t: RecurringTask) => t.id === id ? { ...t, task } : t) 
+    });
   };
 
-  const removeRecurringTask = (index: number) => {
-    const tasks = (strategy?.recurringTasks || []).filter((_, i) => i !== index);
-    onUpdate({ recurringTasks: tasks });
+  const removeTask = (id: string) => {
+    onUpdate({ 
+      recurringTasks: strategy?.recurringTasks?.filter((t: RecurringTask) => t.id !== id) 
+    });
   };
 
   return (
     <motion.div 
       initial={{ opacity: 0, x: 20 }} 
       animate={{ opacity: 1, x: 0 }} 
-      exit={{ opacity: 0, x: -20 }} 
-      className="section-container"
+      className="space-y-12"
     >
-      <header className="flex items-start justify-between mb-12">
-        <div className="space-y-3">
-          <h2 className="text-3xl font-black tracking-tight text-white uppercase tracking-wider">Estrategia y SLA</h2>
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-rc-teal animate-pulse" />
-            <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Métricas de Calidad y Cumplimiento</p>
-          </div>
+      <header className="flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-0.5 px-1 bg-rc-teal rounded-full shadow-[0_0_15px_rgba(59,188,169,0.5)]" />
+          <h2 className="text-3xl font-black tracking-tighter text-white uppercase glow-text">Estrategia</h2>
         </div>
-        <div className="max-w-[340px] p-6 bg-rc-teal/5 border border-rc-teal/10 rounded-[32px]">
-          <p className="text-[11px] text-slate-400 leading-relaxed font-medium">
-            Establezca los parámetros de rendimiento y las tareas críticas que rigen la excelencia operativa de esta cuenta.
-          </p>
-        </div>
+        <p className="text-slate-500 font-bold uppercase tracking-[0.5em] text-[9px] ml-11">Acuerdos y Compromisos de Servicio</p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,2fr] gap-16 premium-card-v4">
-        <div className="space-y-12">
-          <div className="form-group">
-            <div className="flex justify-between items-end mb-4">
-              <label className="form-label">Prioridad Promedio (SLA Weight)</label>
-              <span className="text-3xl font-black text-rc-teal tracking-tighter">{strategy?.defaultTaskWeight || 5}/10</span>
-            </div>
-            <input 
-              type="range" min="1" max="10" step="1"
-              value={strategy?.defaultTaskWeight || 5}
-              onChange={e => onUpdate({ defaultTaskWeight: parseInt(e.target.value) })}
-              className="w-full h-3 bg-black/40 rounded-full appearance-none cursor-pointer accent-rc-teal"
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="space-y-8 premium-card-v4">
+          <div className="space-y-4">
+            <label className="text-[10px] font-black text-rc-teal uppercase tracking-[0.4em] flex items-center gap-2.5">
+              <Target size={12} /> Niveles de Servicio (SLA)
+            </label>
+            <textarea 
+              value={strategy?.slaRequirements || ''}
+              onChange={e => onUpdate({ slaRequirements: e.target.value })}
+              placeholder="Defina los KPIs y tiempos de respuesta comprometidos..."
+              className="organic-input w-full h-40 resize-none leading-relaxed pt-6"
             />
-            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-4">Nivel de criticidad base para las tareas del proyecto</p>
           </div>
 
-          <div className="p-10 bg-black/40 border border-white/10 rounded-[40px] space-y-6 shadow-inner">
-            <div className="flex items-center gap-4 text-rc-teal mb-2">
-              <Clock size={24} />
-              <label className="form-label !m-0">Ventana de Respuesta SLA</label>
-            </div>
-            <div className="relative">
-              <input 
-                type="number" value={strategy?.responseSla || 0}
-                onChange={e => onUpdate({ responseSla: parseInt(e.target.value) || 0 })}
-                className="w-full pl-8 pr-24 py-8 text-3xl font-black text-rc-teal"
-              />
-              <span className="absolute right-8 top-1/2 -translate-y-1/2 text-[12px] font-black text-slate-500 uppercase tracking-widest">Horas</span>
-            </div>
-            <p className="text-[10px] text-slate-400 font-medium italic leading-relaxed">
-              Tiempo máximo de resolución para incidencias técnicas de prioridad estándar.
-            </p>
+          <div className="p-8 bg-white/[0.01] border border-white/5 rounded-[36px] space-y-6">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] flex items-center gap-2.5">
+              <Calendar size={12} /> Próximo QBR (Quarterly Business Review)
+            </label>
+            <input 
+              type="date"
+              value={strategy?.nextReviewDate || ''}
+              onChange={e => onUpdate({ nextReviewDate: e.target.value })}
+              className="organic-input w-full font-bold uppercase tracking-widest text-rc-teal"
+            />
           </div>
         </div>
 
-        <div className="space-y-10">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <label className="form-label !text-[12px] !text-white">Matriz de Tareas Recurrentes</label>
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Entregables de Cumplimiento Continuo</p>
-            </div>
+        <div className="space-y-8">
+          <div className="flex items-center justify-between px-2">
+            <h3 className="text-xl font-black text-white uppercase tracking-tighter glow-text flex items-center gap-3">
+              <CheckSquare size={18} className="text-rc-teal" /> Tareas Recurrentes
+            </h3>
             <button 
-              type="button"
-              onClick={addRecurringTask}
-              className="w-12 h-12 flex items-center justify-center bg-rc-teal/10 text-rc-teal rounded-2xl hover:bg-rc-teal/20 transition-all shadow-lg border border-rc-teal/20"
+              type="button" onClick={addTask}
+              className="w-10 h-10 flex items-center justify-center bg-rc-teal/10 text-rc-teal rounded-xl hover:bg-rc-teal hover:text-black transition-all duration-500"
             >
-              <Plus size={24} />
+              <Plus size={20} />
             </button>
           </div>
 
-          <div className="space-y-4 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
-            {(strategy?.recurringTasks || []).length === 0 ? (
-              <div className="py-12 px-6 border-2 border-dashed border-white/5 rounded-[32px] text-center">
-                <p className="text-slate-600 font-black uppercase tracking-widest text-[10px]">No hay tareas recurrentes definidas</p>
-              </div>
-            ) : (
-              strategy?.recurringTasks?.map((task, idx) => (
-                <div key={idx} className="flex items-center gap-6 group">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:border-rc-teal/30 group-hover:bg-rc-teal/5 transition-all">
-                    <ShieldCheck size={18} className="text-slate-600 group-hover:text-rc-teal transition-colors" />
-                  </div>
+          <div className="grid grid-cols-1 gap-4">
+            <AnimatePresence>
+              {strategy?.recurringTasks?.map((task: RecurringTask) => (
+                <motion.div 
+                  layout
+                  key={task.id} 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-5 bg-white/[0.02] border border-white/5 rounded-[24px] flex items-center gap-6 group hover:border-rc-teal/20 transition-all duration-500"
+                >
                   <input 
-                    placeholder="Ej: Auditoría de Calidad Semanal / Backups de BD"
-                    value={task}
-                    onChange={e => updateRecurringTask(idx, e.target.value)}
-                    className="flex-1 text-base font-bold placeholder:opacity-20"
+                    value={task.task}
+                    onChange={e => updateTask(task.id, e.target.value)}
+                    placeholder="Ej: Reporte de Calidad Mensual"
+                    className="bg-transparent border-none p-0 text-[13px] font-medium text-white focus:ring-0 w-full"
                   />
                   <button 
-                    type="button"
-                    onClick={() => removeRecurringTask(idx)}
-                    className="w-10 h-10 flex items-center justify-center text-rose-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-500/10 rounded-xl"
+                    type="button" onClick={() => removeTask(task.id)}
+                    className="text-rose-500/30 hover:text-rose-500 transition-colors p-2"
                   >
-                    <X size={18} />
+                    <Trash2 size={16} />
                   </button>
-                </div>
-              ))
-            )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         </div>
       </div>

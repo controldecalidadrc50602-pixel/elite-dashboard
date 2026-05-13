@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, Award } from 'lucide-react';
+import { Activity, Star, TrendingUp } from 'lucide-react';
 import { ClientEvaluation } from '../../../types/project';
 
 interface Props {
@@ -9,78 +9,74 @@ interface Props {
 }
 
 const EvaluationSection: React.FC<Props> = ({ clientEvaluation, onUpdate }) => {
-  const items = [
-    { id: 'projectLeader', label: 'Líder de Proyecto Definido', desc: 'El cliente asignó un responsable único.' },
-    { id: 'timelyDocumentation', label: 'Documentación a Tiempo', desc: 'Cumplimiento en la entrega de insumos.' },
-    { id: 'advisoryReceptivity', label: 'Receptivo a Asesoría', desc: 'Aceptación de sugerencias técnicas.' },
-    { id: 'effectiveServiceUse', label: 'Uso Efectivo del Servicio', desc: 'Aprovechamiento de las funcionalidades.' },
-    { id: 'serviceContinuity', label: 'Continuidad Operativa', desc: 'Uso constante sin interrupciones.' },
-    { id: 'reportValuation', label: 'Valoración de Informes', desc: 'El cliente analiza los KPIs entregados.' },
-    { id: 'paymentPunctuality', label: 'Puntualidad en Pagos', desc: 'Cumplimiento de compromisos financieros.' }
-  ];
-
   return (
     <motion.div 
       initial={{ opacity: 0, x: 20 }} 
       animate={{ opacity: 1, x: 0 }} 
-      exit={{ opacity: 0, x: -20 }} 
-      className="section-container"
+      className="space-y-12"
     >
-      <header className="flex items-start justify-between mb-12">
-        <div className="space-y-3">
-          <h2 className="text-3xl font-black tracking-tight text-white uppercase tracking-wider">Perfil de Compromiso</h2>
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-rc-teal animate-pulse" />
-            <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Evaluación del Perfil de Cliente</p>
-          </div>
+      <header className="flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-0.5 px-1 bg-rc-teal rounded-full shadow-[0_0_15px_rgba(59,188,169,0.5)]" />
+          <h2 className="text-3xl font-black tracking-tighter text-white uppercase glow-text">Evaluación</h2>
         </div>
-        <div className="max-w-[340px] p-6 bg-rc-teal/5 border border-rc-teal/10 rounded-[32px]">
-          <p className="text-[11px] text-slate-400 leading-relaxed font-medium">
-            Mida el grado de madurez y compromiso del cliente para prever riesgos comerciales y optimizar la relación.
-          </p>
-        </div>
+        <p className="text-slate-500 font-bold uppercase tracking-[0.5em] text-[9px] ml-11">Índice de Madurez y Satisfacción</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {items.map((item) => {
-          const isChecked = clientEvaluation?.[item.id as keyof ClientEvaluation];
-          return (
-            <div 
-              key={item.id}
-              onClick={() => onUpdate({ [item.id]: !isChecked })}
-              className={`p-8 rounded-[40px] border transition-all duration-500 cursor-pointer flex items-center justify-between group shadow-lg ${
-                isChecked 
-                ? 'bg-rc-teal/[0.08] border-rc-teal/40' 
-                : 'bg-black/20 border-white/5 hover:border-white/20'
-              }`}
-            >
-              <div className="space-y-2">
-                <span className={`text-[12px] font-black uppercase tracking-[0.15em] transition-colors ${isChecked ? 'text-rc-teal' : 'text-slate-400 group-hover:text-white'}`}>
-                  {item.label}
-                </span>
-                <p className="text-[10px] text-slate-500 font-medium group-hover:text-slate-400 transition-colors">
-                  {item.desc}
-                </p>
-              </div>
-              <div className={`w-14 h-14 rounded-[20px] border-2 flex items-center justify-center transition-all duration-500 shrink-0 ${
-                isChecked 
-                ? 'bg-rc-teal border-rc-teal text-black shadow-[0_10px_20px_rgba(59,188,169,0.3)] rotate-[360deg]' 
-                : 'border-white/10 text-transparent'
-              }`}>
-                <CheckCircle size={24} strokeWidth={3} />
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="space-y-8 premium-card-v4">
+          <div className="space-y-4">
+            <label className="text-[10px] font-black text-rc-teal uppercase tracking-[0.4em] flex items-center gap-2.5">
+              <Star size={12} /> NPS / CSAT Estimado
+            </label>
+            <input 
+              type="number"
+              max="100"
+              min="0"
+              value={clientEvaluation?.satisfactionLevel || 0}
+              onChange={e => onUpdate({ satisfactionLevel: parseInt(e.target.value) || 0 })}
+              className="bg-transparent border-none p-0 text-5xl font-black text-white focus:ring-0 w-full tracking-tighter"
+            />
+            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${clientEvaluation?.satisfactionLevel || 0}%` }}
+                className="h-full bg-rc-teal shadow-[0_0_15px_rgba(59,188,169,0.5)]"
+              />
             </div>
-          );
-        })}
-        
-        <div className="p-10 bg-rc-teal/5 border border-rc-teal/20 rounded-[48px] flex flex-col items-center justify-center text-center space-y-4 md:col-span-2 mt-8">
-           <div className="w-16 h-16 bg-rc-teal/20 rounded-full flex items-center justify-center text-rc-teal">
-              <Award size={32} />
-           </div>
-           <div className="space-y-1">
-             <p className="text-[11px] font-black text-rc-teal uppercase tracking-[0.4em]">Índice de Madurez</p>
-             <p className="text-[24px] font-black text-white">{(Object.values(clientEvaluation || {}).filter(v => v === true).length / items.length * 100).toFixed(0)}%</p>
-           </div>
+          </div>
+
+          <div className="p-8 bg-black/20 rounded-[32px] border border-white/5 space-y-4">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] flex items-center gap-2.5">
+              <TrendingUp size={12} /> Índice de Madurez
+            </label>
+            <select 
+              value={clientEvaluation?.maturityIndex || 'Nivel 1: Inicial'}
+              onChange={e => onUpdate({ maturityIndex: e.target.value as any })}
+              className="organic-input w-full font-black uppercase tracking-widest text-rc-teal"
+            >
+              <option value="Nivel 1: Inicial">Nivel 1: Inicial</option>
+              <option value="Nivel 2: Gestionado">Nivel 2: Gestionado</option>
+              <option value="Nivel 3: Definido">Nivel 3: Definido</option>
+              <option value="Nivel 4: Medido">Nivel 4: Medido</option>
+              <option value="Nivel 5: Optimizado">Nivel 5: Optimizado</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          <div className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] space-y-4 h-full relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-8">
+              <Activity size={24} className="text-rc-teal opacity-20 group-hover:opacity-100 transition-opacity" />
+            </div>
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Análisis de Crecimiento</label>
+            <textarea 
+              value={clientEvaluation?.growthPotential || ''}
+              onChange={e => onUpdate({ growthPotential: e.target.value })}
+              placeholder="Identifique oportunidades de Upselling o Cross-selling..."
+              className="organic-input w-full h-48 resize-none leading-relaxed pt-6"
+            />
+          </div>
         </div>
       </div>
     </motion.div>

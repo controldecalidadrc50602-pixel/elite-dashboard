@@ -143,7 +143,7 @@ body {
   }
 
   .organic-input {
-    @apply bg-white/[0.03] border border-white/5 rounded-[24px] px-8 py-6 text-[15px] transition-all duration-500 outline-none text-white placeholder:text-white/10;
+    @apply bg-white/[0.03] border border-white/5 rounded-[20px] px-6 py-4 text-[13px] transition-all duration-500 outline-none text-white placeholder:text-white/10;
   }
 
   .organic-input:focus {
@@ -189,7 +189,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .premium-card-v4 {
-  @apply p-12 bg-white/[0.02] border border-white/5 rounded-[64px] transition-all duration-700 hover:border-rc-teal/20 hover:bg-white/[0.04] backdrop-blur-xl relative overflow-hidden;
+  @apply p-8 bg-white/[0.02] border border-white/5 rounded-[48px] transition-all duration-700 hover:border-rc-teal/20 hover:bg-white/[0.04] backdrop-blur-xl relative overflow-hidden;
 }
 
 .premium-card-v4::before {

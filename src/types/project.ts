@@ -3,7 +3,6 @@ import { Task } from '../components/TaskManager';
 export type SipTrunkVirtual = 'Navegalo' | 'Vocex' | 'ICE' | 'Call My Way' | 'Callcentric' | 'Voip.ms' | 'Movistar Vzla.' | 'N/A.';
 export type Country = 'Venezuela' | 'Costa Rica';
 
-
 export interface ServiceLog {
   id: string;
   date: string;
@@ -23,25 +22,16 @@ export interface ClientService {
   type?: 'Botmaker' | 'Yeastar' | 'IPBX' | 'Contact Center' | 'Servicios Web' | 'Capacitaciones' | 'Other';
 
   // Sub-configuraciones según categoría
-  // Botmaker
   botmakerType?: 'Agentes Humanos + Chatbots' | 'Agentes Humanos + Chatbots + Agente IA' | 'Chatbots + Agente IA';
-  
-  // Yeastar & IPBX
   extensionCount?: number;
   otherDetails?: string;
-
-  // Contact Center
   positionsCount?: number;
   workSchedule?: string;
   attentionType?: string;
-
-  // Servicios WEB
   webServiceType?: 'Onepage' | 'A medida';
-
-  // Capacitaciones
   trainingType?: 'Disney' | 'Calidad de Servicio' | 'A medidas';
-
-  // Legado / Otros (Keep for compatibility)
+  
+  // Legado
   setupDate?: string;
   botType?: 'IA Generativa' | 'Flujos' | 'Híbrido';
   purpose?: 'Generar Leads' | 'Resolver dudas' | 'Autogestión';
@@ -49,8 +39,6 @@ export interface ClientService {
   trunkId?: string;
   lastAdminAccess?: string;
   mgmtType?: 'Ventas' | 'Servicio';
-
-  // Bitácora
   logs?: ServiceLog[];
   responsible?: string;
   collaborator?: string;
@@ -77,8 +65,8 @@ export interface Alert {
 
 export interface Shift {
   id: string;
-  name: string; // e.g. "Turno A"
-  timeRange: string; // e.g. "08:00 - 17:00"
+  name: string;
+  timeRange: string;
   peopleCount: number;
 }
 
@@ -102,30 +90,44 @@ export interface TechDNA {
 }
 
 export interface ClientEvaluation {
-  projectLeader: boolean;
-  timelyDocumentation: boolean;
-  advisoryReceptivity: boolean;
-  effectiveServiceUse: boolean;
-  serviceContinuity: boolean;
-  reportValuation: boolean;
-  paymentPunctuality: boolean;
+  satisfactionLevel: number;
+  maturityIndex: 'Nivel 1: Inicial' | 'Nivel 2: Gestionado' | 'Nivel 3: Definido' | 'Nivel 4: Medido' | 'Nivel 5: Optimizado';
+  growthPotential: string;
+  // Legado
+  projectLeader?: boolean;
+  timelyDocumentation?: boolean;
+  advisoryReceptivity?: boolean;
+  effectiveServiceUse?: boolean;
+  serviceContinuity?: boolean;
+  reportValuation?: boolean;
+  paymentPunctuality?: boolean;
   status: 'Verde' | 'Amarilla' | 'Roja' | 'Negra';
 }
 
 export interface HardwareAsset {
   id: string;
-  category?: string; // Ej: Hardware, Sistema, Conectividad
+  category?: string;
   model: string;
-  quantity: number;
-  purchaseDate?: string;
   assignedPosition?: string;
-  notes?: string; // Para opciones libres como VPN, detalles de sistema, etc.
+  status: 'Operativo' | 'Mantenimiento' | 'Fuera de Servicio';
+  quantity?: number;
+  purchaseDate?: string;
+  notes?: string;
+}
+
+export interface RecurringTask {
+  id: string;
+  task: string;
+  frequency: 'Diario' | 'Semanal' | 'Mensual' | 'Trimestral';
 }
 
 export interface StrategySLA {
-  recurringTasks: string[];
-  defaultTaskWeight: number; // 1-10
-  responseSla: number; // Horas/Días
+  slaRequirements: string;
+  nextReviewDate: string;
+  recurringTasks: RecurringTask[];
+  // Legado
+  defaultTaskWeight?: number;
+  responseSla?: number;
 }
 
 export interface QuarterlyAssessment {

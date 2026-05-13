@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Project, ClientService, OperationPulse, TechDNA, HardwareAsset, StrategySLA } from '../types/project';
+import { Project, ClientService, OperationPulse, TechDNA, HardwareAsset, StrategySLA, ClientEvaluation } from '../types/project';
 
 interface UseProjectFormProps {
   project?: Project | null;
@@ -10,7 +10,8 @@ interface UseProjectFormProps {
 
 export const useProjectForm = ({ project, isOpen, onSave, onClose }: UseProjectFormProps) => {
   const [activeTab, setActiveTab] = useState<string>('basic');
-  const [formData, setFormData] = useState<Partial<Project>>({
+  
+  const initialData: Partial<Project> = {
     client: '',
     startDate: new Date().toISOString().split('T')[0],
     accountManager: '',
@@ -23,50 +24,30 @@ export const useProjectForm = ({ project, isOpen, onSave, onClose }: UseProjectF
     opsPulse: { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
     techDNA: { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false, sipTrunkVirtual: 'N/A.', country: 'Costa Rica' },
     assets: [],
-    strategy: { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
+    strategy: { slaRequirements: '', nextReviewDate: '', recurringTasks: [] },
     clientEvaluation: { 
-      projectLeader: false, timelyDocumentation: false, advisoryReceptivity: false, 
-      effectiveServiceUse: false, serviceContinuity: false, reportValuation: false, 
-      paymentPunctuality: false, status: 'Verde' 
+      satisfactionLevel: 100, 
+      maturityIndex: 'Nivel 1: Inicial', 
+      growthPotential: '',
+      status: 'Verde' 
     }
-  });
+  };
+
+  const [formData, setFormData] = useState<Partial<Project>>(initialData);
 
   useEffect(() => {
     if (project) {
       setFormData({
         ...project,
-        opsPulse: project.opsPulse || { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
-        techDNA: project.techDNA || { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false, sipTrunkVirtual: 'N/A.', country: 'Costa Rica' },
-        assets: project.assets || [],
-        strategy: project.strategy || { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
+        opsPulse: project.opsPulse || initialData.opsPulse,
+        techDNA: project.techDNA || initialData.techDNA,
+        assets: project.assets || initialData.assets,
+        strategy: project.strategy || initialData.strategy,
         adminStatus: project.adminStatus || 'En Proceso',
-        clientEvaluation: project.clientEvaluation || { 
-          projectLeader: false, timelyDocumentation: false, advisoryReceptivity: false, 
-          effectiveServiceUse: false, serviceContinuity: false, reportValuation: false, 
-          paymentPunctuality: false, status: 'Verde' 
-        }
+        clientEvaluation: project.clientEvaluation || initialData.clientEvaluation
       });
     } else {
-      setFormData({
-        client: '',
-        startDate: new Date().toISOString().split('T')[0],
-        accountManager: '',
-        partnerLiaison: { name: '', email: '' },
-        strategicObjective: '',
-        services: [],
-        evaluations: [],
-        healthFlag: 'Verde',
-        opsPulse: { hcContracted: 0, hcReal: 0, backupStatus: 'Disponible', operationType: 'Servicio al Cliente', shifts: [] },
-        techDNA: { operationMode: 'RC506', isp: '', phoneLine: '', internetSpeed: '', connectivityType: 'Fibra Óptica', redundancy: false, sipTrunkVirtual: 'N/A.', country: 'Costa Rica' },
-        assets: [],
-        strategy: { recurringTasks: [], defaultTaskWeight: 5, responseSla: 24 },
-        adminStatus: 'En Proceso',
-        clientEvaluation: { 
-          projectLeader: false, timelyDocumentation: false, advisoryReceptivity: false, 
-          effectiveServiceUse: false, serviceContinuity: false, reportValuation: false, 
-          paymentPunctuality: false, status: 'Verde' 
-        }
-      });
+      setFormData(initialData);
     }
     setActiveTab('basic');
   }, [project, isOpen]);
@@ -139,7 +120,7 @@ export const useProjectForm = ({ project, isOpen, onSave, onClose }: UseProjectF
       assets: formData.assets as HardwareAsset[],
       strategy: formData.strategy as StrategySLA,
       adminStatus: formData.adminStatus as any || 'En Proceso',
-      clientEvaluation: formData.clientEvaluation as any
+      clientEvaluation: formData.clientEvaluation as ClientEvaluation
     };
 
     onSave(finalProject);

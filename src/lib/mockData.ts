@@ -33,11 +33,13 @@ export const initialProjects: Project[] = [
     techDNA: { operationMode: 'RC506', isp: 'Liberty', phoneLine: 'Sip Trunk', country: 'Costa Rica', sipTrunkVirtual: 'Navegalo' },
     adminStatus: 'Activo',
     clientEvaluation: { 
-      projectLeader: true, timelyDocumentation: true, advisoryReceptivity: true, 
-      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
-      paymentPunctuality: true, status: 'Verde' 
+      satisfactionLevel: 95,
+      maturityIndex: 'Nivel 4: Medido',
+      growthPotential: 'Oportunidad de expansión en servicios de IA avanzada.',
+      status: 'Verde' 
     },
     assets: [],
+    strategy: { slaRequirements: 'SLA 99.9%', nextReviewDate: '2024-06-01', recurringTasks: [] },
     quarterlyAssessment: {
       responseTime: 5, communicationQuality: 5, effectiveResolution: 5, proactivity: 5, technicalKnowledge: 5,
       reliability: 5, flexibility: 5, innovation: 5, serviceCulture: 5, valuePerception: 5
@@ -54,11 +56,13 @@ export const initialProjects: Project[] = [
     techDNA: { operationMode: 'RC506', isp: 'Telecable', phoneLine: 'Cloud', country: 'Costa Rica', sipTrunkVirtual: 'Vocex' },
     adminStatus: 'Activo',
     clientEvaluation: { 
-      projectLeader: true, timelyDocumentation: true, advisoryReceptivity: true, 
-      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
-      paymentPunctuality: true, status: 'Verde' 
+      satisfactionLevel: 90,
+      maturityIndex: 'Nivel 3: Definido',
+      growthPotential: 'Potencial de servicios adicionales de gestión de calidad.',
+      status: 'Verde' 
     },
     assets: [],
+    strategy: { slaRequirements: 'SLA 95%', nextReviewDate: '2024-06-15', recurringTasks: [] },
     quarterlyAssessment: {
       responseTime: 4, communicationQuality: 5, effectiveResolution: 4, proactivity: 4, technicalKnowledge: 5,
       reliability: 4, flexibility: 4, innovation: 4, serviceCulture: 5, valuePerception: 5
@@ -75,11 +79,13 @@ export const initialProjects: Project[] = [
     techDNA: { operationMode: 'WYP', isp: 'Liberty', phoneLine: 'Analog', country: 'Venezuela', sipTrunkVirtual: 'Movistar Vzla.' },
     adminStatus: 'Prueba',
     clientEvaluation: { 
-      projectLeader: true, timelyDocumentation: false, advisoryReceptivity: true, 
-      effectiveServiceUse: false, serviceContinuity: false, reportValuation: true, 
-      paymentPunctuality: true, status: 'Amarilla' 
+      satisfactionLevel: 75,
+      maturityIndex: 'Nivel 2: Gestionado',
+      growthPotential: 'Requiere estabilización antes de crecimiento.',
+      status: 'Amarilla' 
     },
     assets: [],
+    strategy: { slaRequirements: 'SLA Básico', nextReviewDate: '2024-07-01', recurringTasks: [] },
     quarterlyAssessment: {
       responseTime: 3, communicationQuality: 3, effectiveResolution: 3, proactivity: 4, technicalKnowledge: 4,
       reliability: 3, flexibility: 4, innovation: 3, serviceCulture: 3, valuePerception: 3
@@ -96,11 +102,13 @@ export const initialProjects: Project[] = [
     techDNA: { operationMode: 'RC506', isp: 'ICE', phoneLine: 'Cloud', country: 'Costa Rica', sipTrunkVirtual: 'ICE' },
     adminStatus: 'Activo',
     clientEvaluation: { 
-      projectLeader: true, timelyDocumentation: true, advisoryReceptivity: true, 
-      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
-      paymentPunctuality: true, status: 'Verde' 
+      satisfactionLevel: 88,
+      maturityIndex: 'Nivel 4: Medido',
+      growthPotential: 'Estable.',
+      status: 'Verde' 
     },
     assets: [],
+    strategy: { slaRequirements: 'SLA Estándar', nextReviewDate: '2024-07-05', recurringTasks: [] },
     quarterlyAssessment: {
       responseTime: 5, communicationQuality: 5, effectiveResolution: 5, proactivity: 5, technicalKnowledge: 4,
       reliability: 5, flexibility: 4, innovation: 4, serviceCulture: 5, valuePerception: 5
@@ -117,11 +125,13 @@ export const initialProjects: Project[] = [
     techDNA: { operationMode: 'HÍBRIDO', isp: 'Telecable', phoneLine: 'Sip Trunk', country: 'Venezuela', sipTrunkVirtual: 'Voip.ms' },
     adminStatus: 'Inactivo',
     clientEvaluation: { 
-      projectLeader: false, timelyDocumentation: false, advisoryReceptivity: true, 
-      effectiveServiceUse: true, serviceContinuity: true, reportValuation: false, 
-      paymentPunctuality: false, status: 'Roja' 
+      satisfactionLevel: 60,
+      maturityIndex: 'Nivel 1: Inicial',
+      growthPotential: 'Riesgo de churn.',
+      status: 'Roja' 
     },
     assets: [],
+    strategy: { slaRequirements: 'SLA en revisión', nextReviewDate: '2024-03-10', recurringTasks: [] },
     quarterlyAssessment: {
       responseTime: 2, communicationQuality: 3, effectiveResolution: 2, proactivity: 2, technicalKnowledge: 3,
       reliability: 3, flexibility: 2, innovation: 2, serviceCulture: 2, valuePerception: 3
@@ -138,11 +148,13 @@ export const initialProjects: Project[] = [
     techDNA: { operationMode: 'RC506', isp: 'Liberty', phoneLine: 'Cloud', country: 'Costa Rica', sipTrunkVirtual: 'Call My Way' },
     adminStatus: 'Activo',
     clientEvaluation: { 
-      projectLeader: true, timelyDocumentation: true, advisoryReceptivity: true, 
-      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
-      paymentPunctuality: true, status: 'Verde' 
+      satisfactionLevel: 98,
+      maturityIndex: 'Nivel 5: Optimizado',
+      growthPotential: 'Cuenta estratégica para pilotos.',
+      status: 'Verde' 
     },
     assets: [],
+    strategy: { slaRequirements: 'SLA Platinum', nextReviewDate: '2024-08-15', recurringTasks: [] },
     quarterlyAssessment: {
       responseTime: 5, communicationQuality: 5, effectiveResolution: 5, proactivity: 5, technicalKnowledge: 5,
       reliability: 5, flexibility: 5, innovation: 5, serviceCulture: 5, valuePerception: 5
@@ -159,11 +171,13 @@ export const initialProjects: Project[] = [
     techDNA: { operationMode: 'WYP', isp: 'Liberty', phoneLine: 'Cloud', country: 'Venezuela', sipTrunkVirtual: 'Callcentric' },
     adminStatus: 'Prueba',
     clientEvaluation: { 
-      projectLeader: true, timelyDocumentation: false, advisoryReceptivity: true, 
-      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
-      paymentPunctuality: true, status: 'Amarilla' 
+      satisfactionLevel: 80,
+      maturityIndex: 'Nivel 2: Gestionado',
+      growthPotential: 'En fase de prueba exitosa.',
+      status: 'Amarilla' 
     },
     assets: [],
+    strategy: { slaRequirements: 'SLA Estándar', nextReviewDate: '2024-05-20', recurringTasks: [] },
     quarterlyAssessment: {
       responseTime: 4, communicationQuality: 4, effectiveResolution: 4, proactivity: 3, technicalKnowledge: 4,
       reliability: 4, flexibility: 4, innovation: 3, serviceCulture: 4, valuePerception: 4
@@ -180,11 +194,13 @@ export const initialProjects: Project[] = [
     techDNA: { operationMode: 'HÍBRIDO', isp: 'Telecable', phoneLine: 'Cloud', country: 'Costa Rica', sipTrunkVirtual: 'Navegalo' },
     adminStatus: 'En Proceso',
     clientEvaluation: { 
-      projectLeader: true, timelyDocumentation: true, advisoryReceptivity: true, 
-      effectiveServiceUse: true, serviceContinuity: true, reportValuation: true, 
-      paymentPunctuality: true, status: 'Verde' 
+      satisfactionLevel: 85,
+      maturityIndex: 'Nivel 3: Definido',
+      growthPotential: 'Alta capacidad de escalado.',
+      status: 'Verde' 
     },
     assets: [],
+    strategy: { slaRequirements: 'SLA 24/7', nextReviewDate: '2024-09-01', recurringTasks: [] },
     quarterlyAssessment: {
       responseTime: 5, communicationQuality: 5, effectiveResolution: 4, proactivity: 4, technicalKnowledge: 4,
       reliability: 5, flexibility: 5, innovation: 4, serviceCulture: 5, valuePerception: 5
