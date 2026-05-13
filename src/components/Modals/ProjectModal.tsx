@@ -59,34 +59,34 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
           initial={{ opacity: 0, scale: 0.9, y: 20 }} 
           animate={{ opacity: 1, scale: 1, y: 0 }} 
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-5xl bg-[var(--bg-secondary)] border border-white/5 shadow-2xl rounded-[48px] overflow-hidden flex h-[90vh] max-h-[900px]"
+          className="relative w-full max-w-6xl bg-[var(--bg-secondary)] border border-white/5 shadow-2xl rounded-[64px] overflow-hidden flex h-[90vh] max-h-[1000px]"
         >
           {/* Sidebar Tabs */}
-          <div className="w-64 bg-black/20 border-r border-white/5 p-8 flex flex-col gap-2 shrink-0">
-            <div className="mb-8 px-2">
-              <h3 className="text-rc-teal font-semibold text-xs uppercase tracking-[0.3em] mb-1">Elite V4.0</h3>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest opacity-50">Gestión de Cuenta</p>
+          <div className="w-72 bg-black/30 border-r border-white/5 p-10 flex flex-col gap-3 shrink-0">
+            <div className="mb-12 px-2">
+              <h3 className="text-rc-teal font-black text-sm uppercase tracking-[0.4em] mb-2">Elite V4.0</h3>
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest opacity-60">Centro de Operaciones</p>
             </div>
             
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-3 px-5 py-4 rounded-2xl text-[10px] font-semibold uppercase tracking-widest transition-all ${
+                className={`flex items-center gap-4 px-6 py-5 rounded-[24px] text-[11px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${
                   activeTab === tab.id 
-                  ? 'bg-rc-teal text-black shadow-lg shadow-rc-teal/30' 
-                  : 'text-[var(--text-secondary)] hover:bg-white/5'
+                  ? 'bg-rc-teal text-black shadow-[0_10px_30px_rgba(59,188,169,0.3)]' 
+                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
                 }`}
               >
-                <tab.icon size={16} />
+                <tab.icon size={18} />
                 {tab.label}
               </button>
             ))}
 
-            <div className="mt-auto p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-3xl">
-              <div className="flex items-center gap-2 mb-2">
-                <Shield size={14} className="text-rc-teal" />
-                <span className="text-[9px] font-black text-rc-teal uppercase">Matriz de Riesgo</span>
+            <div className="mt-auto p-6 bg-rc-teal/5 border border-rc-teal/10 rounded-[32px]">
+              <div className="flex items-center gap-3 mb-3">
+                <Shield size={16} className="text-rc-teal" />
+                <span className="text-[10px] font-black text-rc-teal uppercase tracking-widest">Matriz de Riesgo</span>
               </div>
               <div className={`h-1.5 w-full rounded-full bg-black/20 overflow-hidden`}>
                 <div 

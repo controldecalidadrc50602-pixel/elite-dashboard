@@ -9,32 +9,32 @@ interface Props {
 
 const ContactCenterConfig: React.FC<Props> = ({ service, index, onUpdate }) => {
   return (
-    <div className="grid grid-cols-3 gap-4">
-      <div className="space-y-2">
-        <label className="text-[9px] font-bold text-slate-400 uppercase">Posiciones</label>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="form-group">
+        <label className="form-label !text-[10px]">Posiciones HC</label>
         <input 
           type="number"
           value={service.positionsCount || 0}
           onChange={e => onUpdate(index, { positionsCount: parseInt(e.target.value) || 0 })}
-          className="w-full bg-black/20 border border-white/5 rounded-xl p-3 text-xs font-black"
+          className="w-full text-center"
         />
       </div>
-      <div className="space-y-2">
-        <label className="text-[9px] font-bold text-slate-400 uppercase">Horario</label>
+      <div className="form-group">
+        <label className="form-label !text-[10px]">Franja Horaria</label>
         <input 
           value={service.workSchedule || ''}
           onChange={e => onUpdate(index, { workSchedule: e.target.value })}
-          className="w-full bg-black/20 border border-white/5 rounded-xl p-3 text-xs font-bold"
-          placeholder="Ej: 24/7"
+          className="w-full"
+          placeholder="Ej: 24/7 / L-V 08:00-17:00"
         />
       </div>
-      <div className="space-y-2">
-        <label className="text-[9px] font-bold text-slate-400 uppercase">Tipo Atención</label>
+      <div className="form-group">
+        <label className="form-label !text-[10px]">Modelo de Atención</label>
         <input 
           value={service.attentionType || ''}
           onChange={e => onUpdate(index, { attentionType: e.target.value })}
-          className="w-full bg-black/20 border border-white/5 rounded-xl p-3 text-xs font-bold"
-          placeholder="Ej: Multicanal"
+          className="w-full"
+          placeholder="Ej: Multicanal / Omnicanal"
         />
       </div>
     </div>

@@ -9,23 +9,23 @@ interface Props {
 
 const TelephonyConfig: React.FC<Props> = ({ service, index, onUpdate }) => {
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <div className="space-y-2">
-        <label className="text-[9px] font-bold text-slate-400 uppercase">Extensiones</label>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="form-group">
+        <label className="form-label !text-[10px]">Cantidad de Extensiones</label>
         <input 
           type="number"
           value={service.extensionCount || 0}
           onChange={e => onUpdate(index, { extensionCount: parseInt(e.target.value) || 0 })}
-          className="w-full bg-black/20 border border-white/5 rounded-xl p-3 text-xs font-black"
+          className="w-full"
         />
       </div>
-      <div className="space-y-2">
-        <label className="text-[9px] font-bold text-slate-400 uppercase">Otros Detalles</label>
+      <div className="form-group">
+        <label className="form-label !text-[10px]">Especificaciones Técnicas</label>
         <input 
           value={service.otherDetails || ''}
           onChange={e => onUpdate(index, { otherDetails: e.target.value })}
-          className="w-full bg-black/20 border border-white/5 rounded-xl p-3 text-xs font-bold"
-          placeholder="..."
+          className="w-full"
+          placeholder="Ej: Licencias remotas, IVR personalizado..."
         />
       </div>
     </div>

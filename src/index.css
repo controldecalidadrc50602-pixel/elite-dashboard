@@ -157,7 +157,7 @@ body {
 
 /* Premium Inputs */
 input, select, textarea {
-  @apply bg-black/20 border border-[var(--glass-border)] rounded-2xl px-6 py-4 text-sm transition-all outline-none text-[var(--text-primary)];
+  @apply bg-black/40 border border-white/10 rounded-2xl px-7 py-5 text-base transition-all outline-none text-white placeholder:text-slate-600;
 }
 
 .light input, .light select, .light textarea {
@@ -165,7 +165,23 @@ input, select, textarea {
 }
 
 input:focus, select:focus, textarea:focus {
-  @apply border-[var(--rc-turquoise)]/50 ring-4 ring-[var(--rc-turquoise)]/10 bg-black/40 shadow-[0_0_20px_rgba(59,188,169,0.1)];
+  @apply border-[var(--rc-turquoise)]/60 ring-8 ring-[var(--rc-turquoise)]/5 bg-black/60 shadow-[0_0_30px_rgba(59,188,169,0.15)];
+}
+
+.section-container {
+  @apply space-y-12 p-2;
+}
+
+.form-group {
+  @apply space-y-3;
+}
+
+.form-label {
+  @apply text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1 block;
+}
+
+.premium-card-v4 {
+  @apply p-10 bg-white/[0.03] border border-white/10 rounded-[56px] transition-all duration-500 hover:border-rc-teal/30 hover:bg-white/[0.05];
 }
 
 /* Custom Scrollbar */
