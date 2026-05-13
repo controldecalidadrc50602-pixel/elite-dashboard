@@ -229,12 +229,40 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                     <div className="grid grid-cols-2 gap-4">
                                        <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
                                           <span className="text-[8px] font-bold text-slate-600 uppercase block mb-1">Configuración</span>
-                                          <span className="text-[10px] font-black text-white uppercase">{service.botmakerType || service.extensionCount || service.webServiceType || service.trainingType || 'General'}</span>
+                                          <span className="text-[10px] font-black text-white uppercase">
+                                             {service.type === 'Botmaker' ? service.botmakerType : 
+                                              service.type === 'Yeastar' || service.type === 'IPBX' ? `${service.extensionCount} Exts` :
+                                              service.type === 'Servicios Web' ? service.webServiceType :
+                                              service.type === 'Capacitaciones' ? service.trainingType :
+                                              service.type === 'Contact Center' ? `${service.positionsCount} Pos` : 'General'}
+                                          </span>
                                        </div>
                                        <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
                                           <span className="text-[8px] font-bold text-slate-600 uppercase block mb-1">Fecha de Alta</span>
-                                          <span className="text-[10px] font-black text-white uppercase">{service.startDate || '01 May 2024'}</span>
+                                          <span className="text-[10px] font-black text-white uppercase">{service.startDate || 'N/A'}</span>
                                        </div>
+                                       {service.type === 'Contact Center' && (
+                                          <>
+                                             <div className="p-4 bg-white/5 rounded-2xl border border-white/5 col-span-2">
+                                                <span className="text-[8px] font-bold text-slate-600 uppercase block mb-1">Horarios / Matriz</span>
+                                                <span className="text-[10px] font-black text-rc-teal uppercase tracking-widest">{service.shiftMatrix || 'No especificado'}</span>
+                                             </div>
+                                             <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                                                <span className="text-[8px] font-bold text-slate-600 uppercase block mb-1">Responsable</span>
+                                                <span className="text-[10px] font-black text-white uppercase">{service.responsible || 'Pendiente'}</span>
+                                             </div>
+                                             <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                                                <span className="text-[8px] font-bold text-slate-600 uppercase block mb-1">Líder / Sup</span>
+                                                <span className="text-[10px] font-black text-white uppercase">{service.collaborator || 'Pendiente'}</span>
+                                             </div>
+                                          </>
+                                       )}
+                                       {service.type === 'Botmaker' && service.responsible && (
+                                          <div className="p-4 bg-white/5 rounded-2xl border border-white/5 col-span-2">
+                                             <span className="text-[8px] font-bold text-slate-600 uppercase block mb-1">Responsable del Servicio</span>
+                                             <span className="text-[10px] font-black text-white uppercase">{service.responsible}</span>
+                                          </div>
+                                       )}
                                     </div>
                                  </div>
                               </div>

@@ -694,7 +694,6 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                         >
                           <Plus size={16} /> Añadir Servicio
                         </button>
-                      </header>
 
                       <div className="grid grid-cols-1 gap-6">
                         {formData.services?.map((service, index) => (
@@ -788,6 +787,19 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                            <option value="Plataforma+ Bots+Agente IA">Plataforma+ Bots+Agente IA</option>
                                         </select>
                                      </div>
+                                      <div className="space-y-1">
+                                         <label className="text-[8px] opacity-60">Responsable / Líder</label>
+                                         <input 
+                                           placeholder="Nombre del responsable"
+                                           value={service.responsible || ''}
+                                           onChange={e => {
+                                              const s = [...(formData.services || [])];
+                                              s[index].responsible = e.target.value;
+                                              setFormData({...formData, services: s});
+                                           }}
+                                           className="w-full py-2 px-3 text-[10px]"
+                                         />
+                                      </div>
                                   </div>
                                )}
 
@@ -892,6 +904,32 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                           className="w-full py-2 px-3 text-[10px]"
                                         />
                                      </div>
+                                      <div className="space-y-1">
+                                         <label className="text-[8px] opacity-60">Responsable Operativo</label>
+                                         <input 
+                                           placeholder="Ej: Gerente de Ops"
+                                           value={service.responsible || ''}
+                                           onChange={e => {
+                                              const s = [...(formData.services || [])];
+                                              s[index].responsible = e.target.value;
+                                              setFormData({...formData, services: s});
+                                           }}
+                                           className="w-full py-2 px-3 text-[10px]"
+                                         />
+                                      </div>
+                                      <div className="space-y-1">
+                                         <label className="text-[8px] opacity-60">Líder / Supervisor</label>
+                                         <input 
+                                           placeholder="Ej: Supervisor asignado"
+                                           value={service.collaborator || ''}
+                                           onChange={e => {
+                                              const s = [...(formData.services || [])];
+                                              s[index].collaborator = e.target.value;
+                                              setFormData({...formData, services: s});
+                                           }}
+                                           className="w-full py-2 px-3 text-[10px]"
+                                         />
+                                      </div>
                                   </div>
                                )}
 
@@ -935,7 +973,6 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                         >
                           <Plus size={16} /> Registrar Activo
                         </button>
-                      </header>
 
                       <div className="grid grid-cols-1 gap-4">
                         {formData.assets?.map((asset, index) => (

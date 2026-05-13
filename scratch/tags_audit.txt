@@ -1,0 +1,267 @@
+﻿
+LineNumber Line                                                                                                        
+---------- ----                                                                                                        
+       143           <motion.div                                                                                       
+       148           <motion.div                                                                                       
+       155             <div className="w-64 bg-black/20 border-r border-white/5 p-8 flex flex-col gap-2">              
+       156               <div className="mb-8 px-2">                                                                   
+       159               </div>                                                                                        
+       175               <div className="mt-auto p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-3xl">               
+       176                 <div className="flex items-center gap-2 mb-2">                                              
+       179                 </div>                                                                                      
+       180                 <div className={`h-1.5 w-full rounded-full bg-black/20 overflow-hidden`}>                   
+       181                   <div                                                                                      
+       189                 </div>                                                                                      
+       190               </div>                                                                                        
+       191             </div>                                                                                          
+       195               <div className="absolute top-8 right-8 z-20">                                                 
+       199               </div>                                                                                        
+       201               <div className="p-12 overflow-y-auto custom-scrollbar flex-1">                                
+       204                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ op...
+       206                         <div className="space-y-1">                                                         
+       208                           <div className="flex items-center gap-2">                                         
+       209                              <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />          
+       211                           </div>                                                                            
+       212                         </div>                                                                              
+       213                         <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2...
+       217                         </div>                                                                              
+       220                       <div className="grid grid-cols-[1fr,2fr] gap-12 p-10 bg-black/10 rounded-[48px] bor...
+       221                         <div className="space-y-6">                                                         
+       222                            <div className="w-full aspect-square bg-slate-900/40 rounded-[32px] border-2 b...
+       226                                 <div className="text-center p-4 opacity-40">                                
+       229                                 </div>                                                                      
+       236                            </div>                                                                           
+       238                         </div>                                                                              
+       240                         <div className="space-y-6">                                                         
+       241                           <div className="space-y-2">                                                       
+       249                           </div>                                                                            
+       250                           <div className="grid grid-cols-2 gap-6">                                          
+       251                              <div className="space-y-2">                                                    
+       259                              </div>                                                                         
+       260                              <div className="space-y-2">                                                    
+       272                              </div>                                                                         
+       273                           </div>                                                                            
+       274                         </div>                                                                              
+       275                       </div>                                                                                
+       277                       <div className="grid grid-cols-2 gap-8">                                              
+       278                         <div className="space-y-2">                                                         
+       280                           <div className="grid grid-cols-2 gap-4">                                          
+       293                           </div>                                                                            
+       294                         </div>                                                                              
+       295                         <div className="space-y-2">                                                         
+       302                         </div>                                                                              
+       303                       </div>                                                                                
+       305                       <div className="space-y-2">                                                           
+       313                       </div>                                                                                
+       314                     </motion.div>                                                                           
+       318                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ op...
+       320                         <div className="space-y-1">                                                         
+       322                           <div className="flex items-center gap-2">                                         
+       323                              <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />          
+       325                           </div>                                                                            
+       326                         </div>                                                                              
+       327                         <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2...
+       331                         </div>                                                                              
+       334                       <div className="grid grid-cols-2 gap-8">                                              
+       335                          <div className="space-y-6">                                                        
+       336                             <div className="space-y-2">                                                     
+       348                             </div>                                                                          
+       349                             <div className="grid grid-cols-2 gap-6">                                        
+       350                                <div className="space-y-2">                                                  
+       358                                </div>                                                                       
+       359                                <div className="space-y-2">                                                  
+       367                                </div>                                                                       
+       368                             </div>                                                                          
+       369                          </div>                                                                             
+       371                          <div className="space-y-6 p-8 bg-black/10 rounded-[40px] border border-white/5">   
+       373                             <div className="flex flex-col gap-3">                                           
+       387                             </div>                                                                          
+       388                          </div>                                                                             
+       389                       </div>                                                                                
+       391                       <div className="space-y-6">                                                           
+       392                          <div className="flex items-center justify-between">                                
+       405                          </div>                                                                             
+       407                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">                            
+       409                                <div key={shift.id} className="p-6 bg-white/5 border border-white/5 rounde...
+       410                                   <div className="flex-1 grid grid-cols-2 gap-4">                           
+       411                                      <div className="space-y-1">                                            
+       422                                      </div>                                                                 
+       423                                      <div className="space-y-1">                                            
+       434                                      </div>                                                                 
+       435                                   </div>                                                                    
+       443                                </div>                                                                       
+       445                          </div>                                                                             
+       446                       </div>                                                                                
+       447                     </motion.div>                                                                           
+       451                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ op...
+       453                         <div className="space-y-1">                                                         
+       455                           <div className="flex items-center gap-2">                                         
+       456                              <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />          
+       458                           </div>                                                                            
+       459                         </div>                                                                              
+       460                         <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2...
+       464                         </div>                                                                              
+       467                       <div className="space-y-2">                                                           
+       469                         <div className="flex gap-4">                                                        
+       483                         </div>                                                                              
+       484                       </div>                                                                                
+       486                       <div className="grid grid-cols-2 gap-8">                                              
+       487                         <div className="space-y-2">                                                         
+       495                         </div>                                                                              
+       496                         <div className="space-y-2">                                                         
+       504                         </div>                                                                              
+       505                       </div>                                                                                
+       507                       <div className="grid grid-cols-2 gap-8">                                              
+       508                         <div className="space-y-2">                                                         
+       519                         </div>                                                                              
+       520                         <div className="space-y-2">                                                         
+       522                           <div className="flex gap-4">                                                      
+       545                           </div>                                                                            
+       546                         </div>                                                                              
+       547                       </div>                                                                                
+       549                        <div className="grid grid-cols-2 gap-8 p-8 bg-black/10 rounded-[32px] border borde...
+       550                          <div className="space-y-2">                                                        
+       560                          </div>                                                                             
+       561                          <div className="space-y-2">                                                        
+       572                          </div>                                                                             
+       573                       </div>                                                                                
+       575                       <div className="space-y-2 p-8 bg-black/10 rounded-[32px] border border-white/5">      
+       583                       </div>                                                                                
+       584                     </motion.div>                                                                           
+       588                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ op...
+       590                         <div className="space-y-1">                                                         
+       592                           <div className="flex items-center gap-2">                                         
+       593                              <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />          
+       595                           </div>                                                                            
+       596                         </div>                                                                              
+       597                         <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2...
+       601                         </div>                                                                              
+       604                       <div className="grid grid-cols-1 gap-4">                                              
+       613                            <div key={rubric.id} className="p-6 bg-black/10 border border-white/5 rounded-...
+       615                               <div                                                                          
+       639                                  <motion.div                                                                
+       643                               </div>                                                                        
+       644                            </div>                                                                           
+       646                       </div>                                                                                
+       648                       <div className="p-8 bg-rc-teal/5 border border-rc-teal/20 rounded-[40px] flex items...
+       649                          <div>                                                                              
+       652                          </div>                                                                             
+       653                          <div className="flex items-center gap-4">                                          
+       654                             <div className={`px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-...
+       661                             </div>                                                                          
+       662                          </div>                                                                             
+       663                       </div>                                                                                
+       664                     </motion.div>                                                                           
+       668                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ op...
+       670                         <div className="space-y-1">                                                         
+       672                           <div className="flex items-center gap-2">                                         
+       673                              <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />          
+       675                           </div>                                                                            
+       676                         </div>                                                                              
+       677                         <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2...
+       681                         </div>                                                                              
+       698                       <div className="grid grid-cols-1 gap-6">                                              
+       700                           <div key={service.id} className="p-8 bg-black/10 border border-white/5 rounded-...
+       709                             <div className="grid grid-cols-[1.5fr,1fr] gap-8">                              
+       710                                <div className="space-y-4">                                                  
+       711                                   <div className="space-y-1">                                               
+       723                                   </div>                                                                    
+       724                                   <div className="space-y-1">                                               
+       747                                   </div>                                                                    
+       748                                </div>                                                                       
+       749                                <div className="space-y-1">                                                  
+       761                                </div>                                                                       
+       762                             </div>                                                                          
+       765                             <div className="p-6 bg-slate-900/40 rounded-[32px] border border-white/5 spac...
+       766                                <div className="flex items-center gap-2 mb-2">                               
+       767                                   <div className="w-1.5 h-1.5 rounded-full bg-[var(--rc-turquoise)] shado...
+       769                                </div>                                                                       
+       772                                   <div className="grid grid-cols-2 gap-6">                                  
+       773                                      <div className="space-y-1">                                            
+       789                                      </div>                                                                 
+       790                                   </div>                                                                    
+       794                                   <div className="grid grid-cols-2 gap-6">                                  
+       795                                      <div className="space-y-1">                                            
+       808                                      </div>                                                                 
+       809                                      <div className="space-y-1">                                            
+       821                                      </div>                                                                 
+       822                                   </div>                                                                    
+       826                                   <div className="grid grid-cols-2 gap-6">                                  
+       827                                      <div className="space-y-1">                                            
+       841                                      </div>                                                                 
+       842                                   </div>                                                                    
+       846                                   <div className="grid grid-cols-2 gap-6">                                  
+       847                                      <div className="space-y-1">                                            
+       861                                      </div>                                                                 
+       862                                   </div>                                                                    
+       866                                   <div className="grid grid-cols-2 gap-6">                                  
+       867                                      <div className="space-y-1">                                            
+       880                                      </div>                                                                 
+       881                                      <div className="space-y-1">                                            
+       893                                      </div>                                                                 
+       894                                   </div>                                                                    
+       900                             </div>                                                                          
+       901                           </div>                                                                            
+       903                       </div>                                                                                
+       904                     </motion.div>                                                                           
+       908                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ op...
+       910                         <div className="space-y-1">                                                         
+       912                           <div className="flex items-center gap-2">                                         
+       913                              <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />          
+       915                           </div>                                                                            
+       916                         </div>                                                                              
+       917                         <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2...
+       921                         </div>                                                                              
+       938                       <div className="grid grid-cols-1 gap-4">                                              
+       940                           <div key={asset.id} className="p-6 bg-black/10 border border-white/5 rounded-[3...
+       941                             <div className="w-12 h-12 bg-[var(--rc-turquoise)]/10 rounded-2xl flex items-...
+       943                             </div>                                                                          
+       944                             <div className="flex-1 grid grid-cols-4 gap-6">                                 
+       945                                <div className="space-y-1">                                                  
+       957                                </div>                                                                       
+       958                                <div className="space-y-1">                                                  
+       969                                </div>                                                                       
+       970                                <div className="space-y-1">                                                  
+       982                                </div>                                                                       
+       983                                <div className="space-y-1">                                                  
+       994                                </div>                                                                       
+       995                             </div>                                                                          
+      1003                           </div>                                                                            
+      1005                       </div>                                                                                
+      1006                     </motion.div>                                                                           
+      1010                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ op...
+      1012                         <div className="space-y-1">                                                         
+      1014                           <div className="flex items-center gap-2">                                         
+      1015                              <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />          
+      1017                           </div>                                                                            
+      1018                         </div>                                                                              
+      1019                         <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2...
+      1023                         </div>                                                                              
+      1026                       <div className="grid grid-cols-[1.5fr,2fr] gap-12">                                   
+      1027                          <div className="p-8 bg-black/10 border border-white/5 rounded-[40px] space-y-8">   
+      1028                             <div className="space-y-2">                                                     
+      1029                                <div className="flex justify-between items-center">                          
+      1032                                </div>                                                                       
+      1040                             </div>                                                                          
+      1041                             <div className="space-y-4 pt-6 border-t border-white/5">                        
+      1043                                <div className="relative">                                                   
+      1050                                </div>                                                                       
+      1052                             </div>                                                                          
+      1053                          </div>                                                                             
+      1055                          <div className="space-y-6">                                                        
+      1056                             <div className="flex items-center justify-between">                             
+      1069                             </div>                                                                          
+      1070                             <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar"> 
+      1072                                   <div key={idx} className="flex items-center gap-3 group">                 
+      1073                                      <div className="w-2 h-2 rounded-full bg-[var(--rc-turquoise)] shrink...
+      1094                                   </div>                                                                    
+      1096                             </div>                                                                          
+      1097                          </div>                                                                             
+      1098                       </div>                                                                                
+      1099                     </motion.div>                                                                           
+      1102               </div>                                                                                        
+      1104               <div className="p-10 bg-black/40 border-t border-white/5 flex items-center justify-between ...
+      1112               </div>                                                                                        
+      1114           </motion.div>                                                                                     
+
+
