@@ -14,9 +14,10 @@ import { Task } from '../TaskManager';
 interface LiveOpsPanelProps {
   projects: Project[];
   tasks: Task[];
+  onSelectProject?: (id: string | null) => void;
 }
 
-const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
+const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks, onSelectProject }) => {
   const activeProjects = projects.filter(p => p.adminStatus !== 'Archivado');
   const criticalProjects = activeProjects.filter(p => p.healthFlag === 'Roja' || p.healthFlag === 'Negra');
   const clientHealthAlerts = activeProjects.filter(p => p.clientEvaluation?.status === 'Roja' || p.clientEvaluation?.status === 'Negra');
@@ -86,6 +87,7 @@ const LiveOpsPanel: React.FC<LiveOpsPanelProps> = ({ projects, tasks }) => {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.1 }}
+                    onClick={() => onSelectProject?.(project.id)}
                     className="glass-card p-4 rounded-[28px] flex items-center gap-3 hover:bg-white/[0.02] cursor-pointer group premium-button border-[var(--glass-border)]"
                   >
                     <div className={`w-1.5 h-8 rounded-full shadow-lg ${(project as any).alertType === 'Client' ? 'bg-amber-500 shadow-amber-500/40' : 'bg-rose-500 shadow-rose-500/40'}`} />

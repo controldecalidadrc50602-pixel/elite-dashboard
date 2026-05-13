@@ -32,6 +32,7 @@ import { exportService } from '../../services/exportService';
 
 interface AuditDashboardProps {
   projects: Project[];
+  isSingleProject?: boolean;
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -47,7 +48,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
+const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProject }) => {
+  const selectedProject = isSingleProject ? projects[0] : null;
   
   // Cálculo de promedios de los 10 pilares globales
   const pillarMetrics = useMemo(() => {
@@ -110,8 +112,12 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
     <div className="space-y-12 animate-in fade-in duration-700">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Centro de Inteligencia</h2>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-1">Calidad Global de Cartera Rc506</p>
+          <h2 className="text-4xl font-black text-white uppercase tracking-tighter">
+            {isSingleProject ? `Status: ${selectedProject?.client}` : 'Centro de Inteligencia'}
+          </h2>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-1">
+            {isSingleProject ? `Análisis Estratégico Individual` : 'Calidad Global de Cartera Rc506'}
+          </p>
         </div>
         <div className="flex items-center gap-6">
            <div className="px-8 py-4 bg-rc-teal/10 border border-rc-teal/20 rounded-[32px] flex items-center gap-6 shadow-[0_0_40px_rgba(59,188,169,0.1)]">
@@ -130,8 +136,12 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
          <div className="lg:col-span-5 glass-panel p-10 rounded-[48px] border border-white/5 flex flex-col bg-black/10">
             <div className="mb-10 flex items-center justify-between">
                <div>
-                  <h3 className="text-xl font-black text-white uppercase tracking-tighter">Matriz de Excelencia</h3>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Atributos de Valor Global</p>
+                  <h3 className="text-xl font-black text-white uppercase tracking-tighter">
+                    {isSingleProject ? 'ADN de Servicio' : 'Matriz de Excelencia'}
+                  </h3>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    {isSingleProject ? 'Atributos de Valor del Cliente' : 'Atributos de Valor Global'}
+                  </p>
                </div>
                <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-rc-teal">
                   <Activity size={20} />
@@ -210,32 +220,59 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
                </ResponsiveContainer>
             </div>
 
-            {/* Ciclo de Vida del Cliente (New Section) */}
+            {/* Ciclo de Vida del Cliente / Servicios Activos */}
             <div className="mt-12 pt-12 border-t border-white/5">
-               <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-8">Ciclo de Vida del Cliente</h4>
-               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  {adminStatusDistribution.map(status => (
-                    <div key={status.name} className="relative group">
-                       <div className="flex items-center justify-between mb-3">
-                          <span className="text-xs font-black text-white uppercase tracking-tighter">{status.name}</span>
-                          <span className="text-[10px] font-black text-rc-teal">{status.percentage}%</span>
-                       </div>
-                       <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                          <motion.div 
-                            initial={{ width: 0 }}
-                            animate={{ width: `${status.percentage}%` }}
-                            transition={{ duration: 1, ease: "easeOut" }}
-                            className={`h-full rounded-full ${
-                              status.name === 'Activo' ? 'bg-emerald-400' :
-                              status.name === 'Prueba' ? 'bg-amber-400' :
-                              status.name === 'En Proceso' ? 'bg-blue-400' : 'bg-rose-500'
-                            }`}
-                          />
-                       </div>
-                       <p className="mt-2 text-[9px] font-bold text-slate-600 uppercase tracking-widest">{status.count} Clientes</p>
-                    </div>
-                  ))}
-               </div>
+               {isSingleProject ? (
+                 <>
+                   <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-8">Unidades de Servicio Activas</h4>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {selectedProject?.services.map(service => (
+                        <div key={service.id} className="p-5 bg-white/[0.03] rounded-[24px] border border-white/5 flex items-center justify-between group hover:border-rc-teal/30 transition-all">
+                           <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 bg-rc-teal/10 rounded-xl flex items-center justify-center text-rc-teal">
+                                 <Zap size={18} />
+                              </div>
+                              <div className="flex flex-col">
+                                 <span className="text-[11px] font-black text-white uppercase tracking-tighter">{service.name}</span>
+                                 <span className="text-[9px] font-bold text-slate-500 uppercase">{service.type || 'Soporte'}</span>
+                              </div>
+                           </div>
+                           <div className="flex flex-col items-end">
+                              <span className="text-xs font-black text-rc-teal">{service.score?.toFixed(1) || '5.0'}</span>
+                              <span className="text-[8px] font-black text-slate-600 uppercase">Score</span>
+                           </div>
+                        </div>
+                      ))}
+                   </div>
+                 </>
+               ) : (
+                 <>
+                   <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-8">Ciclo de Vida del Cliente</h4>
+                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                      {adminStatusDistribution.map(status => (
+                        <div key={status.name} className="relative group">
+                           <div className="flex items-center justify-between mb-3">
+                              <span className="text-xs font-black text-white uppercase tracking-tighter">{status.name}</span>
+                              <span className="text-[10px] font-black text-rc-teal">{status.percentage}%</span>
+                           </div>
+                           <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                              <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: `${status.percentage}%` }}
+                                transition={{ duration: 1, ease: "easeOut" }}
+                                className={`h-full rounded-full ${
+                                  status.name === 'Activo' ? 'bg-emerald-400' :
+                                  status.name === 'Prueba' ? 'bg-amber-400' :
+                                  status.name === 'En Proceso' ? 'bg-blue-400' : 'bg-rose-500'
+                                }`}
+                              />
+                           </div>
+                           <p className="mt-2 text-[9px] font-bold text-slate-600 uppercase tracking-widest">{status.count} Clientes</p>
+                        </div>
+                      ))}
+                   </div>
+                 </>
+               )}
             </div>
          </div>
       </div>
@@ -268,15 +305,19 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects }) => {
                   <LayoutGrid size={32} />
                </div>
                <div>
-                  <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Auditoría Consolidada</h3>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Reporte Ejecutivo de Salud de Cartera</p>
+                  <h3 className="text-2xl font-black text-white uppercase tracking-tighter">
+                      {isSingleProject ? 'Expediente del Cliente' : 'Auditoría Consolidada'}
+                   </h3>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                      {isSingleProject ? 'Reporte Detallado de Salud y ADN' : 'Reporte Ejecutivo de Salud de Cartera'}
+                   </p>
                </div>
             </div>
             <button 
-               onClick={() => exportService.exportGlobalQualityPDF(projects)}
+               onClick={() => isSingleProject ? exportService.exportIndividualPDF(selectedProject!, null) : exportService.exportGlobalQualityPDF(projects)}
                className="px-10 py-5 bg-rc-teal text-black hover:bg-white transition-all rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 shadow-xl shadow-rc-teal/10"
             >
-               Descargar Reporte Global <BarChart3 size={16} strokeWidth={3} />
+               {isSingleProject ? 'Descargar Expediente' : 'Descargar Reporte Global'} <BarChart3 size={16} strokeWidth={3} />
             </button>
          </div>
 

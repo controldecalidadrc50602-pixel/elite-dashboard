@@ -202,9 +202,19 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                 <AnimatePresence mode="wait">
                   {activeTab === 'basic' && (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                      <header>
-                        <h2 className="section-title">Identidad</h2>
-                        <p className="text-[var(--text-secondary)] text-xs font-medium">Configuración base del cliente y nivel de salud estratégica.</p>
+                      <header className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <h2 className="section-title">Identidad</h2>
+                          <div className="flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Configuración base de la cuenta.</p>
+                          </div>
+                        </div>
+                        <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
+                           <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
+                              Define la imagen corporativa, los responsables estratégicos y el pulso inicial de salud del cliente.
+                           </p>
+                        </div>
                       </header>
 
                       <div className="grid grid-cols-[1fr,2fr] gap-12 p-10 bg-black/10 rounded-[48px] border border-white/5">
@@ -306,9 +316,19 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
 
                   {activeTab === 'ops' && (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                      <header>
-                        <h2 className="section-title">Operaciones</h2>
-                        <p className="text-[var(--text-secondary)] text-xs font-medium">Pulso operativo y capacidad instalada (HC).</p>
+                      <header className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <h2 className="section-title">Operaciones</h2>
+                          <div className="flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Capacidad Instalada y HC.</p>
+                          </div>
+                        </div>
+                        <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
+                           <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
+                              Gestiona el personal, planes de contingencia y la matriz de turnos para asegurar la continuidad del servicio.
+                           </p>
+                        </div>
                       </header>
 
                       <div className="grid grid-cols-2 gap-8">
@@ -429,9 +449,19 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
 
                   {activeTab === 'tech' && (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                      <header>
-                        <h2 className="section-title">Tech DNA</h2>
-                        <p className="text-[var(--text-secondary)] text-xs font-medium">Infraestructura, conectividad y modalidad de operación.</p>
+                      <header className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <h2 className="section-title">Tech DNA</h2>
+                          <div className="flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">ADN Tecnológico.</p>
+                          </div>
+                        </div>
+                        <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
+                           <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
+                              Registra la infraestructura de red, conectividad y redundancia que soporta la operación del cliente.
+                           </p>
+                        </div>
                       </header>
 
                       <div className="space-y-2">
@@ -516,7 +546,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-8">
+                       <div className="grid grid-cols-2 gap-8 p-8 bg-black/10 rounded-[32px] border border-white/5">
                          <div className="space-y-2">
                            <label>País de Operación</label>
                            <select 
@@ -542,7 +572,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                          </div>
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-2 p-8 bg-black/10 rounded-[32px] border border-white/5">
                          <label>Línea Telefónica / Troncal (ID Físico)</label>
                          <input 
                            value={formData.techDNA?.phoneLine}
@@ -556,9 +586,19 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
 
                   {activeTab === 'evaluation' && (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                      <header>
-                        <h2 className="section-title">Evaluación del Cliente</h2>
-                        <p className="text-[var(--text-secondary)] text-xs font-medium">Rúbricas de compromiso y salud de la relación comercial.</p>
+                      <header className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <h2 className="section-title">Evaluación del Cliente</h2>
+                          <div className="flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Salud de la Relación.</p>
+                          </div>
+                        </div>
+                        <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
+                           <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
+                              Evalúa el compromiso mutuo mediante rúbricas clave para detectar riesgos comerciales de forma temprana.
+                           </p>
+                        </div>
                       </header>
 
                       <div className="grid grid-cols-1 gap-4">
@@ -626,11 +666,20 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
 
                   {activeTab === 'services' && (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
-                      <header className="flex justify-between items-end">
-                        <div>
+                      <header className="flex items-start justify-between">
+                        <div className="space-y-1">
                           <h2 className="section-title">Servicios</h2>
-                          <p className="text-[var(--text-secondary)] text-xs font-medium">Portafolio de soluciones activas y bitácora técnica.</p>
+                          <div className="flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Portafolio de soluciones.</p>
+                          </div>
                         </div>
+                        <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
+                           <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
+                              Detalla los servicios activos y sus especificaciones técnicas para un seguimiento granular de la operación.
+                           </p>
+                        </div>
+                      </header>
                         <button 
                           type="button"
                           onClick={() => setFormData({
@@ -830,11 +879,20 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
 
                   {activeTab === 'assets' && (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
-                      <header className="flex justify-between items-end">
-                        <div>
-                          <h2 className="section-title">Inventario de Equipos</h2>
-                          <p className="text-[var(--text-secondary)] text-xs font-medium">Control de hardware asignado a esta operación.</p>
+                      <header className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <h2 className="section-title">Activos</h2>
+                          <div className="flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gestión de Hardware.</p>
+                          </div>
                         </div>
+                        <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
+                           <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
+                              Controla el inventario de equipos asignados a la operación para asegurar el cumplimiento de herramientas de trabajo.
+                           </p>
+                        </div>
+                      </header>
                         <button 
                           type="button"
                           onClick={() => setFormData({
@@ -924,9 +982,19 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
 
                   {activeTab === 'strategy' && (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
-                      <header>
-                        <h2 className="section-title">Estrategia</h2>
-                        <p className="text-[var(--text-secondary)] text-xs font-medium">Configuración de SLA y automatización de tareas base.</p>
+                      <header className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <h2 className="section-title">Estrategia</h2>
+                          <div className="flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Calidad y SLA.</p>
+                          </div>
+                        </div>
+                        <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
+                           <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
+                              Configura los tiempos de respuesta y las tareas recurrentes que definen el éxito y cumplimiento del proyecto.
+                           </p>
+                        </div>
                       </header>
 
                       <div className="grid grid-cols-[1.5fr,2fr] gap-12">
@@ -1013,7 +1081,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                   type="submit"
                   className="px-12 py-5 bg-rc-teal text-black text-[11px] font-semibold uppercase tracking-widest rounded-2xl shadow-[0_0_25px_rgba(59,188,169,0.2)] hover:scale-105 active:scale-95 transition-all"
                 >
-                  Sincronizar en Repositorio Central
+                  Actualizar Cuenta de Cliente
                 </button>
               </div>
             </form>

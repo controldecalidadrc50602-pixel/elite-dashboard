@@ -13,7 +13,9 @@ import {
   CheckCircle2,
   Activity,
   Zap,
-  Phone
+  Phone,
+  FileSpreadsheet,
+  Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projectService } from '../services/projectService';
@@ -25,6 +27,7 @@ import StoriesBar from '../components/Dashboard/StoriesBar';
 import LiveOpsPanel from '../components/Dashboard/LiveOpsPanel';
 import AuditDashboard from '../components/Dashboard/AuditDashboard';
 import TaskManager, { Task } from '../components/TaskManager';
+import { exportService } from '../services/exportService';
 import StatCard from '../components/common/StatCard';
 import ProjectDetailsModal from '../components/ProjectDetailsModal';
 import ProjectModal from '../components/Modals/ProjectModal';
@@ -38,10 +41,16 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [isSlideoverOpen, setIsSlideoverOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [toast, setToast] = useState<{message: string, type: 'success' | 'info'} | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'info' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -78,9 +87,15 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
     return projects.filter(p => {
       const matchesSearch = p.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            p.services.some(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()));
-      return p.adminStatus !== 'Archivado' && matchesSearch;
+      const matchesSelection = !selectedProjectId || p.id === selectedProjectId;
+      return p.adminStatus !== 'Archivado' && matchesSearch && matchesSelection;
     });
-  }, [projects, searchQuery]);
+  }, [projects, searchQuery, selectedProjectId]);
+
+  const projectsForDashboard = useMemo(() => {
+    if (!selectedProjectId) return projects;
+    return projects.filter(p => p.id === selectedProjectId);
+  }, [projects, selectedProjectId]);
 
   if (loading) return (
     <div className="h-full flex items-center justify-center bg-transparent">
@@ -107,7 +122,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
                  <button className="text-slate-500 hover:text-rc-teal transition-colors p-2 premium-button"><Search size={18} strokeWidth={1.5} /></button>
               </div>
            </div>
-           <StoriesBar projects={projects} />
+           <StoriesBar projects={projects} selectedProjectId={selectedProjectId} onSelectProject={setSelectedProjectId} />
         </div>
 
         {/* Scrollable Content */}
@@ -116,7 +131,10 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
               
               {activeTab === 'overview' && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                   <AuditDashboard projects={projects} />
+                   <AuditDashboard 
+                     projects={projectsForDashboard} 
+                     isSingleProject={!!selectedProjectId}
+                   />
                 </div>
               )}
 
@@ -154,7 +172,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
                                key={project.id}
                                whileHover={{ scale: 1.05, y: -5 }}
                                whileTap={{ scale: 0.95 }}
-                               onClick={() => { setSelectedProject(project); setIsSlideoverOpen(true); }}
+                               onClick={() => { setSelectedProjectId(project.id); setIsSlideoverOpen(true); }}
                                className="cursor-pointer group flex flex-col items-center gap-4"
                              >
                                 <div className={`w-full aspect-square rounded-[32px] bg-white/[0.03] backdrop-blur-md border-[1.5px] flex items-center justify-center p-6 shadow-2xl transition-all duration-500 relative overflow-hidden ${
@@ -192,8 +210,12 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
               )}
 
               {activeTab === 'status' && (
-                <div className="animate-in fade-in duration-700">
-                   <AuditDashboard projects={projects} />
+                <div className="animate-in fade-in duration-700 py-20 text-center">
+                   <div className="w-20 h-20 bg-rc-teal/5 rounded-full flex items-center justify-center mx-auto mb-6 text-rc-teal border border-rc-teal/10">
+                      <TrendingUp size={40} />
+                   </div>
+                   <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Reportes en Construcción</h3>
+                   <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-2">Módulo de Analítica Avanzada V3.6</p>
                 </div>
               )}
 
@@ -203,11 +225,15 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
 
       {/* Right Column (10% más compacto) */}
       <div className="w-[340px] hidden xl:block">
-        <LiveOpsPanel projects={projects} tasks={tasks} />
+        <LiveOpsPanel 
+          projects={projects} 
+          tasks={tasks} 
+          onSelectProject={setSelectedProjectId}
+        />
       </div>
 
       <ProjectDetailsModal 
-         project={selectedProject}
+         project={projects.find(p => p.id === selectedProjectId) || null}
          isOpen={isSlideoverOpen}
          onClose={() => setIsSlideoverOpen(false)}
          onUpdate={async (p) => setProjects(await projectService.updateProject(p, projects))}
@@ -226,6 +252,22 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'task
          onSave={async (p) => setProjects(editingProject ? await projectService.updateProject(p, projects) : await projectService.addProject(p, projects))}
          project={editingProject}
       />
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] px-8 py-4 bg-black/90 backdrop-blur-2xl border border-white/10 rounded-[32px] flex items-center gap-4 shadow-2xl"
+          >
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${toast.type === 'success' ? 'bg-rc-teal/20 text-rc-teal' : 'bg-blue-500/20 text-blue-400'}`}>
+              {toast.type === 'success' ? <Check size={16} strokeWidth={3} /> : <Bell size={16} />}
+            </div>
+            <span className="text-[11px] font-black text-white uppercase tracking-widest">{toast.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
