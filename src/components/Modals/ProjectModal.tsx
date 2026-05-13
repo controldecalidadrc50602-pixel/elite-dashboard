@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Save, Trash2, Plus, Upload, Activity, Globe, Layers, Headphones, Settings, Shield, CheckCircle } from 'lucide-react';
+import { X, Save, Trash2, Plus, Upload, Activity, Globe, Layers, Headphones, Settings, Shield, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project, ClientService, OperationPulse, TechDNA, HardwareAsset, StrategySLA } from '../../types/project';
@@ -641,80 +641,276 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                         </button>
                       </header>
 
-                      <div className="grid grid-cols-1 gap-6">
+                      {(() => {
+                        const totalCCPositions = formData.services?.reduce((acc, s) => acc + (s.positionsCount || 0), 0) || 0;
+                        const hcReal = formData.opsPulse?.hcReal || 0;
+                        const isOverCapacity = totalCCPositions > hcReal;
+
+                        return isOverCapacity && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: -10 }} 
+                            animate={{ opacity: 1, y: 0 }}
+                            className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-[32px] flex items-center gap-6 mb-8"
+                          >
+                            <div className="w-12 h-12 bg-rose-500/20 rounded-2xl flex items-center justify-center text-rose-500 shrink-0">
+                               <AlertTriangle size={24} />
+                            </div>
+                            <div className="space-y-1">
+                               <p className="text-[11px] font-black text-rose-500 uppercase tracking-widest">Alerta de Capacidad Excedida</p>
+                               <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                                  El total de posiciones configuradas ({totalCCPositions}) supera el personal real disponible en piso ({hcReal}). 
+                                  Por favor, revise el HC en la pestaña de Operaciones o ajuste las posiciones de servicio.
+                                </p>
+                            </div>
+                          </motion.div>
+                        );
+                      })()}
+
+                      <div className="grid grid-cols-1 gap-10">
                         {formData.services?.map((service, index) => (
-                          <div key={service.id} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] relative group hover:border-rc-teal/30 transition-all">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                              <div className="space-y-4">
+                          <div key={service.id} className="p-10 bg-white/[0.02] border border-white/5 rounded-[48px] relative group hover:border-rc-teal/30 transition-all">
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                              {/* Left Column: Basic Info */}
+                              <div className="lg:col-span-5 space-y-6">
                                 <div className="space-y-2">
-                                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Nombre del Servicio</label>
-                                  <input 
-                                    value={service.name}
-                                    onChange={e => {
-                                      const s = [...(formData.services || [])];
-                                      s[index].name = e.target.value;
-                                      setFormData({...formData, services: s});
-                                    }}
-                                    placeholder="Ej: Atención VIP / Soporte N1"
-                                    className="w-full text-sm font-black uppercase tracking-widest"
-                                  />
+                                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nombre del Servicio</label>
+                                  <div className="bg-black/20 border border-white/5 rounded-2xl p-4 focus-within:border-rc-teal/50 transition-colors">
+                                    <input 
+                                      value={service.name}
+                                      onChange={e => {
+                                        const s = [...(formData.services || [])];
+                                        s[index].name = e.target.value;
+                                        setFormData({...formData, services: s});
+                                      }}
+                                      placeholder="Ej: Atención VIP / Soporte N1"
+                                      className="w-full text-sm font-black uppercase tracking-widest bg-transparent border-none p-0 focus:ring-0 text-white placeholder:text-white/10"
+                                    />
+                                  </div>
                                 </div>
                                 <div className="space-y-2">
-                                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Descripción</label>
-                                  <textarea 
-                                    value={service.description}
-                                    onChange={e => {
-                                      const s = [...(formData.services || [])];
-                                      s[index].description = e.target.value;
-                                      setFormData({...formData, services: s});
-                                    }}
-                                    placeholder="Breve descripción del alcance..."
-                                    className="w-full h-20 resize-none text-xs font-medium"
-                                  />
+                                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Descripción del Alcance</label>
+                                  <div className="bg-black/20 border border-white/5 rounded-2xl p-4 focus-within:border-rc-teal/50 transition-colors">
+                                    <textarea 
+                                      value={service.description}
+                                      onChange={e => {
+                                        const s = [...(formData.services || [])];
+                                        s[index].description = e.target.value;
+                                        setFormData({...formData, services: s});
+                                      }}
+                                      placeholder="Defina el alcance técnico y operativo..."
+                                      className="w-full h-24 resize-none text-xs font-medium bg-transparent border-none p-0 focus:ring-0 text-slate-300 placeholder:text-white/10"
+                                    />
+                                  </div>
                                 </div>
                               </div>
-                              <div className="grid grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Categoría Técnica</label>
-                                  <select 
-                                    value={service.type}
-                                    onChange={e => {
-                                      const s = [...(formData.services || [])];
-                                      s[index].type = e.target.value as any;
-                                      setFormData({...formData, services: s});
-                                    }}
-                                    className="w-full text-xs font-black uppercase tracking-widest"
-                                  >
-                                    <option value="Botmaker">Botmaker</option>
-                                    <option value="Yeastar">Yeastar</option>
-                                    <option value="IPBX">IPBX</option>
-                                    <option value="Contact Center">Contact Center</option>
-                                    <option value="Servicios Web">Servicios Web</option>
-                                    <option value="Capacitaciones">Capacitaciones</option>
-                                  </select>
+
+                              {/* Right Column: Category & Specific Config */}
+                              <div className="lg:col-span-7 space-y-8">
+                                <div className="grid grid-cols-2 gap-6">
+                                  <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Categoría Técnica</label>
+                                    <div className="bg-black/20 border border-white/5 rounded-2xl p-4 focus-within:border-rc-teal/50 transition-colors">
+                                      <select 
+                                        value={service.type}
+                                        onChange={e => {
+                                          const s = [...(formData.services || [])];
+                                          s[index].type = e.target.value as any;
+                                          setFormData({...formData, services: s});
+                                        }}
+                                        className="w-full text-xs font-black uppercase bg-transparent border-none p-0 focus:ring-0 text-white cursor-pointer"
+                                      >
+                                        <option value="Botmaker" className="bg-[#121212]">Botmaker</option>
+                                        <option value="Yeastar" className="bg-[#121212]">Yeastar</option>
+                                        <option value="IPBX" className="bg-[#121212]">IPBX</option>
+                                        <option value="Contact Center" className="bg-[#121212]">Contact Center</option>
+                                        <option value="Servicios Web" className="bg-[#121212]">Servicios Web</option>
+                                        <option value="Capacitaciones" className="bg-[#121212]">Capacitaciones</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Fecha de Activación</label>
+                                    <div className="bg-black/20 border border-white/5 rounded-2xl p-4 focus-within:border-rc-teal/50 transition-colors">
+                                      <input 
+                                        type="date"
+                                        value={service.startDate}
+                                        onChange={e => {
+                                          const s = [...(formData.services || [])];
+                                          s[index].startDate = e.target.value;
+                                          setFormData({...formData, services: s});
+                                        }}
+                                        className="w-full text-xs font-medium bg-transparent border-none p-0 focus:ring-0 text-white invert-[0.8] brightness-150"
+                                      />
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="space-y-2">
-                                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Fecha Inicio</label>
-                                  <input 
-                                    type="date"
-                                    value={service.startDate}
-                                    onChange={e => {
-                                      const s = [...(formData.services || [])];
-                                      s[index].startDate = e.target.value;
-                                      setFormData({...formData, services: s});
-                                    }}
-                                    className="w-full text-xs font-medium"
-                                  />
+
+                                {/* Conditional Specific Config Section */}
+                                <div className="p-6 bg-rc-teal/5 border border-rc-teal/10 rounded-[32px] space-y-6">
+                                  <p className="text-[9px] font-black text-rc-teal uppercase tracking-[0.2em]">Configuración Específica: {service.type}</p>
+                                  
+                                  <div className="grid grid-cols-1 gap-6">
+                                    {service.type === 'Botmaker' && (
+                                      <div className="space-y-3">
+                                        <label className="text-[9px] font-bold text-slate-400 uppercase">Modalidad de Servicio</label>
+                                        <div className="grid grid-cols-1 gap-2">
+                                          {['Agentes Humanos + Chatbots', 'Agentes Humanos + Chatbots + Agente IA', 'Chatbots + Agente IA'].map(opt => (
+                                            <button
+                                              key={opt} type="button"
+                                              onClick={() => {
+                                                const s = [...(formData.services || [])];
+                                                s[index].botmakerType = opt as any;
+                                                setFormData({...formData, services: s});
+                                              }}
+                                              className={`py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all text-left ${
+                                                service.botmakerType === opt 
+                                                ? 'bg-rc-teal text-black border-rc-teal shadow-lg shadow-rc-teal/20' 
+                                                : 'bg-black/20 border-white/5 text-slate-400 hover:bg-white/5'
+                                              }`}
+                                            >
+                                              {opt}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {(service.type === 'Yeastar' || service.type === 'IPBX') && (
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                          <label className="text-[9px] font-bold text-slate-400 uppercase">Extensiones</label>
+                                          <input 
+                                            type="number"
+                                            value={service.extensionCount || 0}
+                                            onChange={e => {
+                                              const s = [...(formData.services || [])];
+                                              s[index].extensionCount = parseInt(e.target.value) || 0;
+                                              setFormData({...formData, services: s});
+                                            }}
+                                            className="w-full bg-black/20 border border-white/5 rounded-xl p-3 text-xs font-black"
+                                          />
+                                        </div>
+                                        <div className="space-y-2">
+                                          <label className="text-[9px] font-bold text-slate-400 uppercase">Otros Detalles</label>
+                                          <input 
+                                            value={service.otherDetails || ''}
+                                            onChange={e => {
+                                              const s = [...(formData.services || [])];
+                                              s[index].otherDetails = e.target.value;
+                                              setFormData({...formData, services: s});
+                                            }}
+                                            className="w-full bg-black/20 border border-white/5 rounded-xl p-3 text-xs font-bold"
+                                            placeholder="..."
+                                          />
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {service.type === 'Contact Center' && (
+                                      <div className="grid grid-cols-3 gap-4">
+                                        <div className="space-y-2">
+                                          <label className="text-[9px] font-bold text-slate-400 uppercase">Posiciones</label>
+                                          <input 
+                                            type="number"
+                                            value={service.positionsCount || 0}
+                                            onChange={e => {
+                                              const s = [...(formData.services || [])];
+                                              s[index].positionsCount = parseInt(e.target.value) || 0;
+                                              setFormData({...formData, services: s});
+                                            }}
+                                            className="w-full bg-black/20 border border-white/5 rounded-xl p-3 text-xs font-black"
+                                          />
+                                        </div>
+                                        <div className="space-y-2">
+                                          <label className="text-[9px] font-bold text-slate-400 uppercase">Horario</label>
+                                          <input 
+                                            value={service.workSchedule || ''}
+                                            onChange={e => {
+                                              const s = [...(formData.services || [])];
+                                              s[index].workSchedule = e.target.value;
+                                              setFormData({...formData, services: s});
+                                            }}
+                                            className="w-full bg-black/20 border border-white/5 rounded-xl p-3 text-xs font-bold"
+                                            placeholder="Ej: 24/7"
+                                          />
+                                        </div>
+                                        <div className="space-y-2">
+                                          <label className="text-[9px] font-bold text-slate-400 uppercase">Tipo Atención</label>
+                                          <input 
+                                            value={service.attentionType || ''}
+                                            onChange={e => {
+                                              const s = [...(formData.services || [])];
+                                              s[index].attentionType = e.target.value;
+                                              setFormData({...formData, services: s});
+                                            }}
+                                            className="w-full bg-black/20 border border-white/5 rounded-xl p-3 text-xs font-bold"
+                                            placeholder="Ej: Multicanal"
+                                          />
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {service.type === 'Servicios Web' && (
+                                      <div className="space-y-3">
+                                        <label className="text-[9px] font-bold text-slate-400 uppercase">Tipo de Web</label>
+                                        <div className="flex gap-4">
+                                          {['Onepage', 'A medida'].map(opt => (
+                                            <button
+                                              key={opt} type="button"
+                                              onClick={() => {
+                                                const s = [...(formData.services || [])];
+                                                s[index].webServiceType = opt as any;
+                                                setFormData({...formData, services: s});
+                                              }}
+                                              className={`flex-1 py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                                                service.webServiceType === opt 
+                                                ? 'bg-rc-teal text-black border-rc-teal shadow-lg shadow-rc-teal/20' 
+                                                : 'bg-black/20 border-white/5 text-slate-400 hover:bg-white/5'
+                                              }`}
+                                            >
+                                              {opt}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {service.type === 'Capacitaciones' && (
+                                      <div className="space-y-3">
+                                        <label className="text-[9px] font-bold text-slate-400 uppercase">Módulos</label>
+                                        <div className="flex gap-4">
+                                          {['Disney', 'Calidad de Servicio', 'A medidas'].map(opt => (
+                                            <button
+                                              key={opt} type="button"
+                                              onClick={() => {
+                                                const s = [...(formData.services || [])];
+                                                s[index].trainingType = opt as any;
+                                                setFormData({...formData, services: s});
+                                              }}
+                                              className={`flex-1 py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                                                service.trainingType === opt 
+                                                ? 'bg-rc-teal text-black border-rc-teal shadow-lg shadow-rc-teal/20' 
+                                                : 'bg-black/20 border-white/5 text-slate-400 hover:bg-white/5'
+                                              }`}
+                                            >
+                                              {opt}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
+
                                 <button 
                                   type="button"
                                   onClick={() => {
                                     const s = (formData.services || []).filter(item => item.id !== service.id);
                                     setFormData({...formData, services: s});
                                   }}
-                                  className="col-span-2 py-3 bg-rose-500/10 text-rose-500 rounded-xl text-[9px] font-black uppercase tracking-widest border border-rose-500/20 hover:bg-rose-500 hover:text-white transition-all mt-2"
+                                  className="w-full py-4 bg-rose-500/10 text-rose-500 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-rose-500/20 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center gap-2"
                                 >
-                                  Eliminar Servicio
+                                  <Trash2 size={16} /> Eliminar este Servicio
                                 </button>
                               </div>
                             </div>

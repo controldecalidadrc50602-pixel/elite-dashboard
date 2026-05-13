@@ -24,19 +24,25 @@ export interface ClientService {
 
   // Sub-configuraciones según categoría
   // Botmaker
-  botmakerType?: 'Plataforma' | 'Plataforma+Bots(Intenciones)' | 'Plataforma+ Agente IA' | 'Plataforma+ Bots+Agente IA';
+  botmakerType?: 'Agentes Humanos + Chatbots' | 'Agentes Humanos + Chatbots + Agente IA' | 'Chatbots + Agente IA';
   
   // Yeastar & IPBX
   extensionCount?: number;
-  setupDate?: string;
+  otherDetails?: string;
+
+  // Contact Center
+  positionsCount?: number;
+  workSchedule?: string;
+  attentionType?: string;
 
   // Servicios WEB
-  webServiceType?: 'Onepage' | 'Pagina a la medida';
+  webServiceType?: 'Onepage' | 'A medida';
 
   // Capacitaciones
-  trainingType?: 'Free' | 'Costo';
+  trainingType?: 'Disney' | 'Calidad de Servicio' | 'A medidas';
 
   // Legado / Otros (Keep for compatibility)
+  setupDate?: string;
   botType?: 'IA Generativa' | 'Flujos' | 'Híbrido';
   purpose?: 'Generar Leads' | 'Resolver dudas' | 'Autogestión';
   lastUpdate?: string;
@@ -48,7 +54,6 @@ export interface ClientService {
   logs?: ServiceLog[];
   responsible?: string;
   collaborator?: string;
-  positionsCount?: number;
   shiftMatrix?: string;
 }
 
