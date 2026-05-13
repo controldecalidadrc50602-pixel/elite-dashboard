@@ -333,26 +333,45 @@ const ProjectDetailsModal: React.FC<Props> = ({
                      {activeTab === 'milestones' && (
                         <div className="grid grid-cols-1 gap-4">
                            {editedProject.assets?.map((asset) => (
-                              <div key={asset.id} className="p-6 bg-white/[0.03] border border-white/5 rounded-[32px] flex items-center gap-6 group hover:border-rc-teal/30 transition-all">
-                                 <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal group-hover:scale-110 transition-transform">
-                                    <Headphones size={24} />
+                              <div key={asset.id} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] flex flex-col gap-8 group hover:border-rc-teal/30 transition-all shadow-xl shadow-black/10">
+                                 <div className="flex items-start gap-6">
+                                    <div className="w-14 h-14 bg-rc-teal/10 rounded-[20px] flex items-center justify-center text-rc-teal group-hover:scale-110 transition-transform shadow-lg shadow-black/20">
+                                       <Headphones size={28} />
+                                    </div>
+                                    <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-8">
+                                       <div className="md:col-span-3 flex flex-col">
+                                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Categoría</span>
+                                          <div className="bg-black/20 rounded-2xl px-5 py-4 border border-white/5">
+                                             <span className="text-xs font-black text-white uppercase">{asset.category || 'Hardware'}</span>
+                                          </div>
+                                       </div>
+                                       <div className="md:col-span-6 flex flex-col">
+                                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Modelo / Nombre</span>
+                                          <div className="bg-black/20 rounded-2xl px-5 py-4 border border-white/5">
+                                             <span className="text-xs font-black text-white uppercase">{asset.model}</span>
+                                          </div>
+                                       </div>
+                                       <div className="md:col-span-3 flex flex-col">
+                                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Cantidad</span>
+                                          <div className="bg-black/20 rounded-2xl px-5 py-4 border border-white/5">
+                                             <span className="text-xs font-black text-white">{asset.quantity} Unid.</span>
+                                          </div>
+                                       </div>
+                                    </div>
                                  </div>
-                                 <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-6">
-                                    <div className="flex flex-col">
-                                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Categoría</span>
-                                       <span className="text-[10px] font-black text-white uppercase">{asset.category || 'Hardware'}</span>
+                                 
+                                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                                    <div className="md:col-span-4 flex flex-col">
+                                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Posición / VPN / Acceso</span>
+                                       <div className="bg-black/20 rounded-2xl px-5 py-4 border border-white/5">
+                                          <span className="text-xs font-black text-white uppercase">{asset.assignedPosition || 'N/A'}</span>
+                                       </div>
                                     </div>
-                                    <div className="flex flex-col">
-                                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Modelo / Nombre</span>
-                                       <span className="text-[10px] font-black text-white uppercase">{asset.model}</span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Posición / VPN</span>
-                                       <span className="text-[10px] font-black text-white uppercase">{asset.assignedPosition || 'N/A'}</span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Notas</span>
-                                       <span className="text-[10px] font-black text-rc-teal uppercase italic">{asset.notes || 'Sin detalles'}</span>
+                                    <div className="md:col-span-8 flex flex-col">
+                                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Notas y Detalles Operativos</span>
+                                       <div className="bg-black/20 rounded-2xl px-5 py-4 border border-white/5">
+                                          <span className="text-sm font-medium text-rc-teal italic leading-relaxed">{asset.notes || 'Sin especificaciones adicionales.'}</span>
+                                       </div>
                                     </div>
                                  </div>
                               </div>

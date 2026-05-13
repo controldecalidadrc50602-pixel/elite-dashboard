@@ -601,488 +601,114 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                         </div>
                       </header>
 
-                      <div className="grid grid-cols-1 gap-4">
-                         {[
-                           { id: 'projectLeader', label: 'Asignación de un líder de proyecto' },
-                           { id: 'documentation', label: 'Entrega oportuna de documentación e información' },
-                           { id: 'receptivity', label: 'Apertura y receptividad a la asesoría brindada' },
-                           { id: 'continuity', label: 'Uso efectivo y continuidad en el servicio' },
-                           { id: 'reportValuation', label: 'Recepción y valoración del informe de gestión' },
-                           { id: 'paymentPunctuality', label: 'Puntualidad en el pago del servicio' },
-                         ].map(rubric => (
-                           <div key={rubric.id} className="p-6 bg-black/10 border border-white/5 rounded-[32px] flex items-center justify-between">
-                              <span className="text-xs font-bold uppercase tracking-widest">{rubric.label}</span>
-                              <div 
-                                onClick={() => {
-                                  const evalObj = (formData.clientEvaluation || { 
-                                     projectLeader: false, timelyDocumentation: false, advisoryReceptivity: false, 
-                                     effectiveServiceUse: false, serviceContinuity: false, reportValuation: false, 
-                                     paymentPunctuality: false, status: 'Verde' 
-                                  }) as any;
-                                  const newVal = !evalObj[rubric.id];
-                                  const newEval = { ...evalObj, [rubric.id]: newVal };
-                                  
-                                  // Recalculate status
-                                  const keys = ['projectLeader', 'timelyDocumentation', 'advisoryReceptivity', 'effectiveServiceUse', 'serviceContinuity', 'reportValuation', 'paymentPunctuality'];
-                                  const trueCount = keys.filter(k => newEval[k]).length;
-                                  
-                                  let status = 'Verde';
-                                  if (trueCount <= 2) status = 'Negra';
-                                  else if (trueCount <= 3) status = 'Roja';
-                                  else if (trueCount <= 5) status = 'Amarilla';
-                                  
-                                  newEval.status = status;
-                                  setFormData({...formData, clientEvaluation: newEval});
-                                }}
-                                className={`w-14 h-8 rounded-full transition-all cursor-pointer relative ${formData.clientEvaluation?.[rubric.id as keyof typeof formData.clientEvaluation] ? 'bg-rc-teal' : 'bg-white/10'}`}
-                              >
-                                 <motion.div 
-                                   animate={{ x: formData.clientEvaluation?.[rubric.id as keyof typeof formData.clientEvaluation] ? 28 : 4 }}
-                                   className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-lg"
-                                 />
-                              </div>
-                           </div>
-                         ))}
-                      </div>
-
-                      <div className="p-8 bg-rc-teal/5 border border-rc-teal/20 rounded-[40px] flex items-center justify-between">
-                         <div>
-                            <h4 className="text-sm font-black uppercase tracking-tighter">Estado de la Evaluación</h4>
-                            <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Basado en el cumplimiento de las rúbricas anteriores</p>
-                         </div>
-                         <div className="flex items-center gap-4">
-                            <div className={`px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest border transition-all ${
-                              formData.clientEvaluation?.status === 'Verde' ? 'bg-emerald-500 text-[var(--bg-primary)] border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]' :
-                              formData.clientEvaluation?.status === 'Amarilla' ? 'bg-amber-500 text-[var(--bg-primary)] border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]' :
-                              formData.clientEvaluation?.status === 'Roja' ? 'bg-rose-500 text-[var(--bg-primary)] border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]' :
-                              'bg-slate-900 text-white border-white/10'
-                            }`}>
-                              {formData.clientEvaluation?.status}
-                            </div>
-                         </div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {activeTab === 'services' && (
-                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
-                      <header className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <h2 className="section-title">Servicios</h2>
-                          <div className="flex items-center gap-2">
-                             <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
-                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Portafolio de soluciones.</p>
-                          </div>
-                        </div>
-                        <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
-                           <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
-                              Detalla los servicios activos y sus especificaciones técnicas para un seguimiento granular de la operación.
-                           </p>
-                        </div>
-                      </header>
-                        <button 
-                          type="button"
-                          onClick={() => setFormData({
-                            ...formData, 
-                            services: [...(formData.services || []), { 
-                              id: Math.random().toString(36).substr(2, 9), 
-                              name: '', description: '', startDate: new Date().toISOString().split('T')[0], score: 0,
-                              type: 'Other'
-                            }]
-                          })}
-                          className="bg-[var(--rc-turquoise)]/10 text-[var(--rc-turquoise)] px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[var(--rc-turquoise)]/20 transition-all flex items-center gap-2"
-                        >
-                          <Plus size={16} /> Añadir Servicio
-                        </button>
-
-                      <div className="grid grid-cols-1 gap-6">
-                        {formData.services?.map((service, index) => (
-                          <div key={service.id} className="p-8 bg-black/10 border border-white/5 rounded-[40px] relative group space-y-6">
-                            <button 
-                              type="button"
-                              onClick={() => setFormData({...formData, services: formData.services?.filter(s => s.id !== service.id)})}
-                              className="absolute top-6 right-6 text-rose-500 opacity-0 group-hover:opacity-100 p-2 hover:bg-rose-500/10 rounded-xl transition-all"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                            
-                            <div className="grid grid-cols-[1.5fr,1fr] gap-8">
-                               <div className="space-y-4">
-                                  <div className="space-y-1">
-                                     <label>Nombre del Servicio</label>
-                                     <input 
-                                       required placeholder="Ej: Plataforma de IA / Telefonía Cloud"
-                                       value={service.name}
-                                       onChange={e => {
-                                         const s = [...(formData.services || [])];
-                                         s[index].name = e.target.value;
-                                         setFormData({...formData, services: s});
-                                       }}
-                                       className="w-full text-sm font-black uppercase tracking-widest border-none p-0 focus:ring-0 bg-transparent"
-                                     />
-                                  </div>
-                                  <div className="space-y-1">
-                                     <label>Categoría Técnica</label>
-                                     <select 
-                                       value={service.type}
-                                       onChange={e => {
-                                          const s = [...(formData.services || [])];
-                                          s[index].type = e.target.value as any;
-                                          // Reset fields based on type
-                                          if (s[index].type === 'Botmaker') s[index].botmakerType = 'Plataforma';
-                                          if (s[index].type === 'Servicios Web') s[index].webServiceType = 'Onepage';
-                                          if (s[index].type === 'Capacitaciones') s[index].trainingType = 'Free';
-                                          setFormData({...formData, services: s});
-                                       }}
-                                       className="w-full text-[10px] font-black uppercase tracking-widest"
-                                     >
-                                        <option value="Other">Estándar</option>
-                                        <option value="Botmaker">Botmaker</option>
-                                        <option value="Yeastar">Yeastar</option>
-                                        <option value="IPBX">IPBX</option>
-                                        <option value="Contact Center">Contact Center</option>
-                                        <option value="Servicios Web">Servicios Web</option>
-                                        <option value="Capacitaciones">Capacitaciones</option>
-                                     </select>
-                                  </div>
-                               </div>
-                               <div className="space-y-1">
-                                  <label>Breve Descripción</label>
-                                  <textarea 
-                                    placeholder="Detalles clave del servicio..."
-                                    value={service.description}
-                                    onChange={e => {
-                                      const s = [...(formData.services || [])];
-                                      s[index].description = e.target.value;
-                                      setFormData({...formData, services: s});
-                                    }}
-                                    className="w-full h-20 text-[10px] font-medium leading-relaxed bg-transparent border-none p-0 focus:ring-0 resize-none"
-                                  />
-                               </div>
-                            </div>
-
-                            {/* Ficha Técnica Dinámica */}
-                            <div className="p-6 bg-slate-900/40 rounded-[32px] border border-white/5 space-y-4">
-                               <div className="flex items-center gap-2 mb-2">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--rc-turquoise)] shadow-[0_0_8px_var(--rc-turquoise)]" />
-                                  <span className="text-[9px] font-black uppercase text-white tracking-widest">Configuración Técnica</span>
-                               </div>
-
-                               {service.type === 'Botmaker' && (
-                                  <div className="grid grid-cols-2 gap-6">
-                                     <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">Tipo de Solución Plataforma</label>
-                                        <select 
-                                          value={service.botmakerType}
-                                          onChange={e => {
-                                             const s = [...(formData.services || [])];
-                                             s[index].botmakerType = e.target.value as any;
-                                             setFormData({...formData, services: s});
-                                          }}
-                                          className="w-full py-2 px-3 text-[10px]"
-                                        >
-                                           <option value="Plataforma">Plataforma</option>
-                                           <option value="Plataforma+Bots(Intenciones)">Plataforma+Bots(Intenciones)</option>
-                                           <option value="Plataforma+ Agente IA">Plataforma+ Agente IA</option>
-                                           <option value="Plataforma+ Bots+Agente IA">Plataforma+ Bots+Agente IA</option>
-                                        </select>
-                                     </div>
-                                      <div className="space-y-1">
-                                         <label className="text-[8px] opacity-60">Responsable / Líder</label>
-                                         <input 
-                                           placeholder="Nombre del responsable"
-                                           value={service.responsible || ''}
-                                           onChange={e => {
-                                              const s = [...(formData.services || [])];
-                                              s[index].responsible = e.target.value;
-                                              setFormData({...formData, services: s});
-                                           }}
-                                           className="w-full py-2 px-3 text-[10px]"
-                                         />
-                                      </div>
-                                  </div>
-                               )}
-
-                               {(service.type === 'Yeastar' || service.type === 'IPBX') && (
-                                  <div className="grid grid-cols-2 gap-6">
-                                     <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">Cantidad Extensiones</label>
-                                        <input 
-                                          type="number"
-                                          placeholder="Ej: 50"
-                                          value={service.extensionCount || ''}
-                                          onChange={e => {
-                                             const s = [...(formData.services || [])];
-                                             s[index].extensionCount = parseInt(e.target.value) || 0;
-                                             setFormData({...formData, services: s});
-                                          }}
-                                          className="w-full py-2 px-3 text-[10px]"
-                                        />
-                                     </div>
-                                     <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">Fecha de Inicio</label>
-                                        <input 
-                                          type="date"
-                                          value={service.setupDate || ''}
-                                          onChange={e => {
-                                             const s = [...(formData.services || [])];
-                                             s[index].setupDate = e.target.value;
-                                             setFormData({...formData, services: s});
-                                          }}
-                                          className="w-full py-2 px-3 text-[10px]"
-                                        />
-                                     </div>
-                                  </div>
-                               )}
-
-                               {service.type === 'Servicios Web' && (
-                                  <div className="grid grid-cols-2 gap-6">
-                                     <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">Tipo de Desarrollo</label>
-                                        <select 
-                                          value={service.webServiceType}
-                                          onChange={e => {
-                                             const s = [...(formData.services || [])];
-                                             s[index].webServiceType = e.target.value as any;
-                                             setFormData({...formData, services: s});
-                                          }}
-                                          className="w-full py-2 px-3 text-[10px]"
-                                        >
-                                           <option value="Onepage">Onepage</option>
-                                           <option value="Pagina a la medida">Página a la medida</option>
-                                        </select>
-                                     </div>
-                                  </div>
-                               )}
-
-                               {service.type === 'Capacitaciones' && (
-                                  <div className="grid grid-cols-2 gap-6">
-                                     <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">Modalidad</label>
-                                        <select 
-                                          value={service.trainingType}
-                                          onChange={e => {
-                                             const s = [...(formData.services || [])];
-                                             s[index].trainingType = e.target.value as any;
-                                             setFormData({...formData, services: s});
-                                          }}
-                                          className="w-full py-2 px-3 text-[10px]"
-                                        >
-                                           <option value="Free">Free</option>
-                                           <option value="Costo">Costo</option>
-                                        </select>
-                                     </div>
-                                  </div>
-                               )}
-
-                               {service.type === 'Contact Center' && (
-                                  <div className="grid grid-cols-2 gap-6">
-                                     <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">Cantidad de Posiciones</label>
-                                        <input 
-                                          type="number"
-                                          placeholder="Ej: 12"
-                                          value={service.positionsCount || ''}
-                                          onChange={e => {
-                                             const s = [...(formData.services || [])];
-                                             s[index].positionsCount = parseInt(e.target.value) || 0;
-                                             setFormData({...formData, services: s});
-                                          }}
-                                          className="w-full py-2 px-3 text-[10px]"
-                                        />
-                                     </div>
-                                     <div className="space-y-1">
-                                        <label className="text-[8px] opacity-60">Horarios de Posiciones</label>
-                                        <input 
-                                          placeholder="Ej: 24/7 o L-V 08:00-17:00"
-                                          value={service.shiftMatrix || ''}
-                                          onChange={e => {
-                                             const s = [...(formData.services || [])];
-                                             s[index].shiftMatrix = e.target.value;
-                                             setFormData({...formData, services: s});
-                                          }}
-                                          className="w-full py-2 px-3 text-[10px]"
-                                        />
-                                     </div>
-                                      <div className="space-y-1">
-                                         <label className="text-[8px] opacity-60">Responsable Operativo</label>
-                                         <input 
-                                           placeholder="Ej: Gerente de Ops"
-                                           value={service.responsible || ''}
-                                           onChange={e => {
-                                              const s = [...(formData.services || [])];
-                                              s[index].responsible = e.target.value;
-                                              setFormData({...formData, services: s});
-                                           }}
-                                           className="w-full py-2 px-3 text-[10px]"
-                                         />
-                                      </div>
-                                      <div className="space-y-1">
-                                         <label className="text-[8px] opacity-60">Líder / Supervisor</label>
-                                         <input 
-                                           placeholder="Ej: Supervisor asignado"
-                                           value={service.collaborator || ''}
-                                           onChange={e => {
-                                              const s = [...(formData.services || [])];
-                                              s[index].collaborator = e.target.value;
-                                              setFormData({...formData, services: s});
-                                           }}
-                                           className="w-full py-2 px-3 text-[10px]"
-                                         />
-                                      </div>
-                                  </div>
-                               )}
-
-                               {service.type === 'Other' && (
-                                  <p className="text-[9px] font-medium text-slate-500 italic">No se requiere configuración técnica adicional para esta categoría.</p>
-                               )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {activeTab === 'assets' && (
-                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
-                      <header className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <h2 className="section-title">Activos</h2>
-                          <div className="flex items-center gap-2">
-                             <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
-                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gestión de Activos y Sistemas.</p>
-                          </div>
-                        </div>
-                        <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
-                           <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
-                              Controla el inventario de equipos asignados a la operación para asegurar el cumplimiento de herramientas de trabajo.
-                           </p>
-                        </div>
-                      </header>
-                        <button 
-                          type="button"
-                          onClick={() => setFormData({
-                            ...formData, 
-                            assets: [...(formData.assets || []), { 
-                              id: Math.random().toString(36).substr(2, 9), 
-                              category: 'Hardware', model: '', quantity: 1, purchaseDate: new Date().toISOString().split('T')[0], notes: '',
-                              assignedPosition: ''
-                            }]
-                          })}
-                          className="bg-rc-teal/10 text-rc-teal px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rc-teal/20 transition-all flex items-center gap-2"
-                        >
-                          <Plus size={16} /> Registrar Activo
-                        </button>
-
-                      <div className="grid grid-cols-1 gap-4">
+                      <div className="grid grid-cols-1 gap-8 pb-12">
                         {formData.assets?.map((asset, index) => (
-                          <div key={asset.id} className="p-6 bg-black/10 border border-white/5 rounded-[32px] relative group flex items-center gap-6">
-                            <div className="w-12 h-12 bg-[var(--rc-turquoise)]/10 rounded-2xl flex items-center justify-center text-[var(--rc-turquoise)]">
-                               <Headphones size={24} />
+                            <div key={asset.id} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] relative group flex flex-col gap-8 hover:border-rc-teal/30 transition-all">
+                            <div className="flex items-start gap-6">
+                                <div className="w-14 h-14 bg-rc-teal/10 rounded-[20px] flex items-center justify-center text-rc-teal group-hover:scale-110 transition-transform shadow-xl shadow-black/20">
+                                   <Headphones size={28} />
+                                </div>
+                                <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-8">
+                                    <div className="md:col-span-3 space-y-2">
+                                       <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Categoría</label>
+                                       <div className="bg-black/20 border border-white/5 rounded-2xl p-4 focus-within:border-rc-teal/50 transition-colors">
+                                          <select 
+                                            value={asset.category || 'Hardware'}
+                                            onChange={e => {
+                                              const a = [...(formData.assets || [])];
+                                              a[index].category = e.target.value as any;
+                                              setFormData({...formData, assets: a});
+                                            }}
+                                            className="w-full text-xs font-black uppercase bg-transparent border-none p-0 focus:ring-0 text-white cursor-pointer"
+                                          >
+                                             <option value="Hardware" className="bg-[#121212]">Hardware</option>
+                                             <option value="Sistema" className="bg-[#121212]">Sistema</option>
+                                             <option value="Conectividad" className="bg-[#121212]">Conectividad</option>
+                                             <option value="Licencia" className="bg-[#121212]">Licencia</option>
+                                          </select>
+                                       </div>
+                                    </div>
+
+                                    <div className="md:col-span-6 space-y-2">
+                                       <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Modelo / Nombre del Activo</label>
+                                       <div className="bg-black/20 border border-white/5 rounded-2xl p-4 focus-within:border-rc-teal/50 transition-colors">
+                                          <input 
+                                            placeholder="Ej: CRM Interno / Auriculares Jabra"
+                                            value={asset.model}
+                                            onChange={e => {
+                                              const a = [...(formData.assets || [])];
+                                              a[index].model = e.target.value;
+                                              setFormData({...formData, assets: a});
+                                            }}
+                                            className="w-full text-xs font-black uppercase tracking-widest bg-transparent border-none p-0 focus:ring-0 text-white placeholder:text-white/10"
+                                          />
+                                       </div>
+                                    </div>
+
+                                    <div className="md:col-span-3 space-y-2">
+                                       <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Cantidad</label>
+                                       <div className="bg-black/20 border border-white/5 rounded-2xl p-4 focus-within:border-rc-teal/50 transition-colors">
+                                          <input 
+                                            type="number" 
+                                            value={asset.quantity}
+                                            onChange={e => {
+                                              const a = [...(formData.assets || [])];
+                                              a[index].quantity = parseInt(e.target.value) || 0;
+                                              setFormData({...formData, assets: a});
+                                            }}
+                                            className="w-full text-xs font-black bg-transparent border-none p-0 focus:ring-0 text-white"
+                                          />
+                                       </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex-1 grid grid-cols-5 gap-6">
-                                <div className="space-y-1">
-                                   <label className="text-[8px] opacity-60">Categoría</label>
-                                   <select 
-                                     value={asset.category || 'Hardware'}
-                                     onChange={e => {
-                                       const a = [...(formData.assets || [])];
-                                       a[index].category = e.target.value as any;
-                                       setFormData({...formData, assets: a});
-                                     }}
-                                     className="w-full text-[10px] font-black uppercase bg-transparent border-none p-0 focus:ring-0"
-                                   >
-                                      <option value="Hardware">Hardware</option>
-                                      <option value="Sistema">Sistema</option>
-                                      <option value="Conectividad">Conectividad</option>
-                                      <option value="Licencia">Licencia</option>
-                                   </select>
+
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                                <div className="md:col-span-4 space-y-2">
+                                   <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Posición / VPN / Acceso</label>
+                                   <div className="bg-black/20 border border-white/5 rounded-2xl p-4 focus-within:border-rc-teal/50 transition-colors">
+                                      <input 
+                                        placeholder="Ej: Posición 45 / GlobalProtect VPN"
+                                        value={asset.assignedPosition}
+                                        onChange={e => {
+                                          const a = [...(formData.assets || [])];
+                                          a[index].assignedPosition = e.target.value;
+                                          setFormData({...formData, assets: a});
+                                        }}
+                                        className="w-full text-xs font-black bg-transparent border-none p-0 focus:ring-0 text-white placeholder:text-white/10"
+                                      />
+                                   </div>
                                 </div>
-                                <div className="space-y-1">
-                                   <label className="text-[8px] opacity-60">Modelo / Nombre</label>
-                                   <input 
-                                     placeholder="Ej: CRM Interno"
-                                     value={asset.model}
-                                     onChange={e => {
-                                       const a = [...(formData.assets || [])];
-                                       a[index].model = e.target.value;
-                                       setFormData({...formData, assets: a});
-                                     }}
-                                     className="w-full text-xs font-black uppercase tracking-widest bg-transparent border-none p-0 focus:ring-0"
-                                   />
+
+                                <div className="md:col-span-8 space-y-2">
+                                   <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Notas y Detalles Operativos</label>
+                                   <div className="bg-black/20 border border-white/5 rounded-2xl p-4 focus-within:border-rc-teal/50 transition-colors">
+                                      <input 
+                                        placeholder="Escriba aquí cualquier detalle adicional..."
+                                        value={asset.notes || ''}
+                                        onChange={e => {
+                                          const a = [...(formData.assets || [])];
+                                          a[index].notes = e.target.value;
+                                          setFormData({...formData, assets: a});
+                                        }}
+                                        className="w-full text-[11px] font-medium bg-transparent border-none p-0 focus:ring-0 text-slate-300 italic placeholder:text-white/10"
+                                      />
+                                   </div>
                                 </div>
-                                <div className="space-y-1">
-                                   <label className="text-[8px] opacity-60">Cantidad</label>
-                                  <input 
-                                    type="number" value={asset.quantity}
-                                    onChange={e => {
-                                      const a = [...(formData.assets || [])];
-                                      a[index].quantity = parseInt(e.target.value) || 0;
-                                      setFormData({...formData, assets: a});
-                                    }}
-                                    className="w-full text-xs font-black bg-transparent border-none p-0 focus:ring-0"
-                                  />
-                               </div>
-                                <div className="space-y-1">
-                                   <label className="text-[8px] opacity-60">Posición / VPN</label>
-                                   <input 
-                                     placeholder="Ej: Pos 1 / Cisco VPN"
-                                     value={asset.assignedPosition}
-                                     onChange={e => {
-                                       const a = [...(formData.assets || [])];
-                                       a[index].assignedPosition = e.target.value;
-                                       setFormData({...formData, assets: a});
-                                     }}
-                                     className="w-full text-xs font-black bg-transparent border-none p-0 focus:ring-0"
-                                   />
-                                </div>
-                                <div className="space-y-1">
-                                   <label className="text-[8px] opacity-60">Notas / Detalles Libres</label>
-                                   <input 
-                                     placeholder="Ej: Requiere token..."
-                                     value={asset.notes || ''}
-                                     onChange={e => {
-                                       const a = [...(formData.assets || [])];
-                                       a[index].notes = e.target.value;
-                                       setFormData({...formData, assets: a});
-                                     }}
-                                     className="w-full text-[10px] font-medium bg-transparent border-none p-0 focus:ring-0 italic"
-                                   />
-                                </div>
-                               <div className="space-y-1">
-                                  <label className="text-[8px] opacity-60">Posición Asignada</label>
-                                  <input 
-                                    placeholder="Ej: POS-01"
-                                    value={asset.assignedPosition}
-                                    onChange={e => {
-                                      const a = [...(formData.assets || [])];
-                                      a[index].assignedPosition = e.target.value;
-                                      setFormData({...formData, assets: a});
-                                    }}
-                                    className="w-full text-xs font-black uppercase tracking-widest bg-transparent border-none p-0 focus:ring-0"
-                                  />
-                               </div>
-                               <div className="space-y-1">
-                                  <label className="text-[8px] opacity-60">Adquisición</label>
-                                  <input 
-                                    type="date" value={asset.purchaseDate}
-                                    onChange={e => {
-                                      const a = [...(formData.assets || [])];
-                                      a[index].purchaseDate = e.target.value;
-                                      setFormData({...formData, assets: a});
-                                    }}
-                                    className="w-full text-xs font-medium bg-transparent border-none p-0 focus:ring-0"
-                                  />
-                               </div>
                             </div>
+
                             <button 
                               type="button"
-                              onClick={() => setFormData({...formData, assets: formData.assets?.filter(a => a.id !== asset.id)})}
-                              className="text-rose-500 opacity-0 group-hover:opacity-100 p-2 hover:bg-rose-500/10 rounded-xl transition-all"
+                              onClick={() => {
+                                 const a = [...(formData.assets || [])];
+                                 a.splice(index, 1);
+                                 setFormData({...formData, assets: a});
+                              }}
+                              className="absolute top-6 right-6 p-3 bg-rose-500/10 text-rose-500 rounded-xl border border-rose-500/20 opacity-0 group-hover:opacity-100 hover:bg-rose-500 hover:text-white transition-all shadow-lg"
                             >
-                              <Trash2 size={16} />
+                               <Trash2 size={16} />
                             </button>
-                          </div>
+                        </div>
                         ))}
                       </div>
                     </motion.div>
