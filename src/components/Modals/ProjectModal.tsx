@@ -950,7 +950,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                           <h2 className="section-title">Activos</h2>
                           <div className="flex items-center gap-2">
                              <div className="w-1.5 h-1.5 rounded-full bg-rc-teal animate-pulse" />
-                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gestión de Hardware.</p>
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gestión de Activos y Sistemas.</p>
                           </div>
                         </div>
                         <div className="max-w-[300px] p-4 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl">
@@ -965,7 +965,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                             ...formData, 
                             assets: [...(formData.assets || []), { 
                               id: Math.random().toString(36).substr(2, 9), 
-                              model: '', quantity: 1, purchaseDate: new Date().toISOString().split('T')[0],
+                              category: 'Hardware', model: '', quantity: 1, purchaseDate: new Date().toISOString().split('T')[0], notes: '',
                               assignedPosition: ''
                             }]
                           })}
@@ -980,22 +980,39 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                             <div className="w-12 h-12 bg-[var(--rc-turquoise)]/10 rounded-2xl flex items-center justify-center text-[var(--rc-turquoise)]">
                                <Headphones size={24} />
                             </div>
-                            <div className="flex-1 grid grid-cols-4 gap-6">
-                               <div className="space-y-1">
-                                  <label className="text-[8px] opacity-60">Modelo / Serial</label>
-                                  <input 
-                                    placeholder="Ej: Jabra Biz 2300"
-                                    value={asset.model}
-                                    onChange={e => {
-                                      const a = [...(formData.assets || [])];
-                                      a[index].model = e.target.value;
-                                      setFormData({...formData, assets: a});
-                                    }}
-                                    className="w-full text-xs font-black uppercase tracking-widest bg-transparent border-none p-0 focus:ring-0"
-                                  />
-                               </div>
-                               <div className="space-y-1">
-                                  <label className="text-[8px] opacity-60">Cantidad</label>
+                            <div className="flex-1 grid grid-cols-5 gap-6">
+                                <div className="space-y-1">
+                                   <label className="text-[8px] opacity-60">Categoría</label>
+                                   <select 
+                                     value={asset.category || 'Hardware'}
+                                     onChange={e => {
+                                       const a = [...(formData.assets || [])];
+                                       a[index].category = e.target.value as any;
+                                       setFormData({...formData, assets: a});
+                                     }}
+                                     className="w-full text-[10px] font-black uppercase bg-transparent border-none p-0 focus:ring-0"
+                                   >
+                                      <option value="Hardware">Hardware</option>
+                                      <option value="Sistema">Sistema</option>
+                                      <option value="Conectividad">Conectividad</option>
+                                      <option value="Licencia">Licencia</option>
+                                   </select>
+                                </div>
+                                <div className="space-y-1">
+                                   <label className="text-[8px] opacity-60">Modelo / Nombre</label>
+                                   <input 
+                                     placeholder="Ej: CRM Interno"
+                                     value={asset.model}
+                                     onChange={e => {
+                                       const a = [...(formData.assets || [])];
+                                       a[index].model = e.target.value;
+                                       setFormData({...formData, assets: a});
+                                     }}
+                                     className="w-full text-xs font-black uppercase tracking-widest bg-transparent border-none p-0 focus:ring-0"
+                                   />
+                                </div>
+                                <div className="space-y-1">
+                                   <label className="text-[8px] opacity-60">Cantidad</label>
                                   <input 
                                     type="number" value={asset.quantity}
                                     onChange={e => {
@@ -1006,6 +1023,32 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                                     className="w-full text-xs font-black bg-transparent border-none p-0 focus:ring-0"
                                   />
                                </div>
+                                <div className="space-y-1">
+                                   <label className="text-[8px] opacity-60">Posición / VPN</label>
+                                   <input 
+                                     placeholder="Ej: Pos 1 / Cisco VPN"
+                                     value={asset.assignedPosition}
+                                     onChange={e => {
+                                       const a = [...(formData.assets || [])];
+                                       a[index].assignedPosition = e.target.value;
+                                       setFormData({...formData, assets: a});
+                                     }}
+                                     className="w-full text-xs font-black bg-transparent border-none p-0 focus:ring-0"
+                                   />
+                                </div>
+                                <div className="space-y-1">
+                                   <label className="text-[8px] opacity-60">Notas / Detalles Libres</label>
+                                   <input 
+                                     placeholder="Ej: Requiere token..."
+                                     value={asset.notes || ''}
+                                     onChange={e => {
+                                       const a = [...(formData.assets || [])];
+                                       a[index].notes = e.target.value;
+                                       setFormData({...formData, assets: a});
+                                     }}
+                                     className="w-full text-[10px] font-medium bg-transparent border-none p-0 focus:ring-0 italic"
+                                   />
+                                </div>
                                <div className="space-y-1">
                                   <label className="text-[8px] opacity-60">Posición Asignada</label>
                                   <input 

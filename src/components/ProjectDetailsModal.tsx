@@ -58,7 +58,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
     { id: 'services', label: 'Servicios', icon: Layers },
     { id: 'quality', label: 'Calidad (10P)', icon: Star },
     { id: 'admin', label: 'Administrativo', icon: ShieldCheck },
-    { id: 'milestones', label: 'Hitos', icon: Calendar }
+    { id: 'milestones', label: 'Activos', icon: Headphones }
   ];
 
   return createPortal(
@@ -302,7 +302,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                         </div>
                      )}
 
-                     {activeTab === 'admin' && (
+                      {activeTab === 'admin' && (
                         <div className="max-w-2xl mx-auto space-y-4">
                            {[
                               { id: 'projectLeader', label: 'Líder de Proyecto Asignado' },
@@ -324,6 +324,36 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                     : 'border-white/10 text-transparent'
                                  }`}>
                                     <CheckCircle size={18} strokeWidth={3} />
+                                 </div>
+                              </div>
+                           ))}
+                        </div>
+                     )}
+
+                     {activeTab === 'milestones' && (
+                        <div className="grid grid-cols-1 gap-4">
+                           {editedProject.assets?.map((asset) => (
+                              <div key={asset.id} className="p-6 bg-white/[0.03] border border-white/5 rounded-[32px] flex items-center gap-6 group hover:border-rc-teal/30 transition-all">
+                                 <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal group-hover:scale-110 transition-transform">
+                                    <Headphones size={24} />
+                                 </div>
+                                 <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-6">
+                                    <div className="flex flex-col">
+                                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Categoría</span>
+                                       <span className="text-[10px] font-black text-white uppercase">{asset.category || 'Hardware'}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Modelo / Nombre</span>
+                                       <span className="text-[10px] font-black text-white uppercase">{asset.model}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Posición / VPN</span>
+                                       <span className="text-[10px] font-black text-white uppercase">{asset.assignedPosition || 'N/A'}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                       <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Notas</span>
+                                       <span className="text-[10px] font-black text-rc-teal uppercase italic">{asset.notes || 'Sin detalles'}</span>
+                                    </div>
                                  </div>
                               </div>
                            ))}

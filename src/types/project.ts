@@ -109,10 +109,12 @@ export interface ClientEvaluation {
 
 export interface HardwareAsset {
   id: string;
+  category?: string; // Ej: Hardware, Sistema, Conectividad
   model: string;
   quantity: number;
   purchaseDate: string;
-  assignedPosition?: string; // Asociación a posición del Contact Center
+  assignedPosition?: string;
+  notes?: string; // Para opciones libres como VPN, detalles de sistema, etc.
 }
 
 export interface StrategySLA {
