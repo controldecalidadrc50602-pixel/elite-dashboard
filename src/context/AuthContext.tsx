@@ -5,7 +5,8 @@ import {
   signInWithEmailAndPassword, 
   signOut, 
   signInWithPopup,
-  User as FirebaseUser 
+  User as FirebaseUser,
+  getIdTokenResult
 } from 'firebase/auth';
 
 interface AuthContextType {
@@ -18,25 +19,34 @@ interface AuthContextType {
   isAdmin: boolean;
 }
 
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (!isFirebaseConfigured) {
-      // Demo Mode: Check local storage for mock user
+      // Demo Mode
       const mockUser = localStorage.getItem('demo_user');
-      if (mockUser) setUser(JSON.parse(mockUser) as any);
+      if (mockUser) {
+        const parsed = JSON.parse(mockUser);
+        setUser(parsed);
+        setIsAdmin(parsed.email === 'admin@admin.com');
+      }
       setLoading(false);
       return;
     }
 
-    // Subscribe to auth state changes
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
+      if (firebaseUser) {
+        const token = await getIdTokenResult(firebaseUser);
+        setIsAdmin(!!token.claims.admin);
+      } else {
+        setIsAdmin(false);
+      }
       setLoading(false);
     });
 
@@ -45,10 +55,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, pass: string) => {
     if (!isFirebaseConfigured) {
-      // Demo Mode Fallback
       if (email === 'admin@admin.com' && pass === 'admin') {
         const mockUser = { email: 'admin@admin.com', uid: '123-demo', displayName: 'Admin User' };
         setUser(mockUser as any);
+        setIsAdmin(true);
         localStorage.setItem('demo_user', JSON.stringify(mockUser));
         return { error: null };
       }
@@ -81,6 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     if (!isFirebaseConfigured) {
       setUser(null);
+      setIsAdmin(false);
       localStorage.removeItem('demo_user');
       return;
     }
@@ -95,9 +106,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loginWithGoogle,
       logout, 
       isAuthenticated: !!user,
-      isAdmin: !!(user?.email === 'admin@admin.com' || user?.email?.endsWith('@rc506.com'))
+      isAdmin
     }}>
-
       {!loading && children}
     </AuthContext.Provider>
   );
