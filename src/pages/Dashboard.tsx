@@ -147,8 +147,8 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                                 )}
                                 
                                 <div className={`absolute top-5 right-5 w-2.5 h-2.5 rounded-full ${
-                                   project.healthFlag === 'Verde' ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]' : 
-                                   project.healthFlag === 'Amarilla' ? 'bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.8)]' : 
+                                   project.healthFlag === 'Verde' ? 'bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.8)]' : 
+                                   project.healthFlag === 'Amarilla' ? 'bg-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.8)]' : 
                                    'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.8)]'
                                 }`} />
                              </div>
@@ -220,10 +220,6 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
       </AnimatePresence>
     </div>
   );
-};
-
-export default Dashboard;
-
 };
 
 export default Dashboard;
