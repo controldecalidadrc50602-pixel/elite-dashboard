@@ -63,9 +63,8 @@ body {
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(59, 188, 169, 0.1);
 }
 
-  .light body {
-    background: radial-gradient(circle at top right, #e2e8f0 0%, #F5F7FA 100%);
-  }
+.light body {
+  background: radial-gradient(circle at top right, #e2e8f0 0%, #F5F7FA 100%);
 }
 
 @layer components {
@@ -120,11 +119,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .premium-card-v4 {
-  @apply p-10 bg-white/[0.03] border border-white/10 rounded-[56px] transition-all duration-500 hover:border-rc-teal/30 hover:bg-white/[0.05];
-}
-
-.premium-card-v4 {
-  @apply p-8 bg-white/[0.02] border border-white/5 rounded-[48px] transition-all duration-700 hover:border-rc-teal/20 hover:bg-white/[0.04] backdrop-blur-xl relative overflow-hidden;
+  @apply p-10 bg-white/[0.03] border border-white/10 rounded-[56px] transition-all duration-700 hover:border-rc-teal/30 hover:bg-white/[0.05] backdrop-blur-xl relative overflow-hidden;
 }
 
 .premium-card-v4::before {
