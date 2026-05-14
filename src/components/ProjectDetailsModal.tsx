@@ -8,7 +8,7 @@ import {
   TrendingUp, ArrowUpRight, Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Project } from '../types/project';
+import { Project, QuarterlyAssessment, ClientEvaluation } from '../types/project';
 
 interface Props {
   project: Project | null;
@@ -248,13 +248,27 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                        {[1, 2, 3, 4, 5].map(n => (
                                           <div 
                                              key={n} 
-                                             onClick={() => setEditedProject({
-                                                ...editedProject,
-                                                quarterlyAssessment: {
-                                                   ...editedProject.quarterlyAssessment,
-                                                   [pillar.key]: n
-                                                }
-                                             })}
+                                             onClick={() => {
+                                                const currentAssessment = editedProject.quarterlyAssessment || {
+                                                   responseTime: 0,
+                                                   communicationQuality: 0,
+                                                   effectiveResolution: 0,
+                                                   proactivity: 0,
+                                                   technicalKnowledge: 0,
+                                                   reliability: 0,
+                                                   flexibility: 0,
+                                                   innovation: 0,
+                                                   serviceCulture: 0,
+                                                   valuePerception: 0
+                                                };
+                                                setEditedProject({
+                                                   ...editedProject,
+                                                   quarterlyAssessment: {
+                                                      ...currentAssessment,
+                                                      [pillar.key]: n
+                                                   }
+                                                });
+                                             }}
                                              className={`flex-1 rounded-full cursor-pointer transition-all duration-500 ${
                                                 score >= n 
                                                 ? 'bg-rc-teal shadow-[0_0_10px_rgba(59,188,169,0.5)]' 
@@ -282,13 +296,21 @@ const ProjectDetailsModal: React.FC<Props> = ({
                            ].map(item => (
                               <div 
                                  key={item.id}
-                                 onClick={() => setEditedProject({
-                                    ...editedProject,
-                                    clientEvaluation: {
-                                       ...editedProject.clientEvaluation,
-                                       [item.id]: !editedProject.clientEvaluation?.[item.id as keyof typeof editedProject.clientEvaluation]
-                                    }
-                                 })}
+                                 onClick={() => {
+                                    const currentEval = (editedProject.clientEvaluation || {
+                                       satisfactionLevel: 0,
+                                       maturityIndex: 'Nivel 1: Inicial',
+                                       growthPotential: '',
+                                       status: 'Verde'
+                                    }) as any;
+                                    setEditedProject({
+                                       ...editedProject,
+                                       clientEvaluation: {
+                                          ...currentEval,
+                                          [item.id]: !currentEval[item.id as keyof typeof currentEval]
+                                       }
+                                    });
+                                 }}
                                  className="p-8 bg-white/[0.03] border border-white/5 rounded-[32px] flex items-center justify-between group cursor-pointer hover:bg-white/5 transition-all border-l-4 border-l-transparent hover:border-l-rc-teal"
                               >
                                  <span className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] group-hover:text-white transition-colors">{item.label}</span>
@@ -303,8 +325,6 @@ const ProjectDetailsModal: React.FC<Props> = ({
                            ))}
                         </div>
                      )}
-
-                     {/* ... (Keep other tabs but update aesthetic if needed) ... */}
                   </motion.div>
                </AnimatePresence>
             </div>
