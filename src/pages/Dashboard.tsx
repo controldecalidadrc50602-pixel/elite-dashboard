@@ -49,6 +49,15 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
     loadData();
   }, []);
 
+  useEffect(() => {
+    const handleOpenModal = (e: any) => {
+      setSelectedProjectId(e.detail.id);
+      setIsSlideoverOpen(true);
+    };
+    document.addEventListener('open-client-modal', handleOpenModal);
+    return () => document.removeEventListener('open-client-modal', handleOpenModal);
+  }, []);
+
   const filteredProjects = useMemo(() => {
     return projects.filter(p => {
       const matchesSearch = p.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -101,7 +110,12 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
               
               {activeTab === 'overview' && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                   <AuditDashboard projects={projects} isSingleProject={false} />
+                   <AuditDashboard 
+                    projects={projects} 
+                    isSingleProject={false} 
+                    selectedProjectId={selectedProjectId}
+                    onSelectProject={(id) => setSelectedProjectId(id)}
+                   />
                 </div>
               )}
 

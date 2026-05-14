@@ -10,18 +10,25 @@ import {
   AlertTriangle,
   CheckCircle2,
   Layers,
-  Search
+  Search,
+  ArrowUpRight
 } from 'lucide-react';
-import { Project } from '../../types/project';
+import { Project, QuarterlyAssessment } from '../../types/project';
 import StatCard from '../common/StatCard';
 
 interface AuditDashboardProps {
   projects: Project[];
   isSingleProject?: boolean;
+  selectedProjectId?: string | null;
+  onSelectProject?: (id: string | null) => void;
 }
 
-const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProject }) => {
-  const selectedProject = isSingleProject ? projects[0] : null;
+const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProject, selectedProjectId, onSelectProject }) => {
+  const selectedProject = useMemo(() => {
+    if (isSingleProject) return projects[0];
+    if (selectedProjectId) return projects.find(p => p.id === selectedProjectId) || null;
+    return null;
+  }, [projects, isSingleProject, selectedProjectId]);
   
   const stats = useMemo(() => {
     const totalProjects = projects.length;
@@ -54,10 +61,17 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
       { key: 'valuePerception', label: 'Percepción' }
     ];
 
+    if (selectedProject) {
+      return pillars.map(p => ({
+        pillar: p.label,
+        value: Math.round(((selectedProject.quarterlyAssessment?.[p.key as keyof QuarterlyAssessment] || 0) / 5) * 100)
+      }));
+    }
+
     return pillars.map(p => {
-      const validProjects = projects.filter(proj => proj.quarterlyAssessment && proj.quarterlyAssessment[p.key as keyof typeof proj.quarterlyAssessment] !== undefined);
+      const validProjects = projects.filter(proj => proj.quarterlyAssessment && proj.quarterlyAssessment[p.key as keyof QuarterlyAssessment] !== undefined);
       const avg = validProjects.length > 0
-        ? validProjects.reduce((acc, proj) => acc + (proj.quarterlyAssessment![p.key as keyof typeof proj.quarterlyAssessment] || 0), 0) / validProjects.length
+        ? validProjects.reduce((acc, proj) => acc + (proj.quarterlyAssessment![p.key as keyof QuarterlyAssessment] || 0), 0) / validProjects.length
         : 0;
       
       return {
@@ -65,7 +79,7 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
         value: Math.round((avg / 5) * 100)
       };
     });
-  }, [projects]);
+  }, [projects, selectedProject]);
 
   return (
     <div className="space-y-12 animate-in fade-in duration-700">
@@ -134,7 +148,12 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
               <motion.div 
                 key={project.id}
                 whileHover={{ scale: 1.01, x: 5 }}
-                className="p-6 bg-white/[0.02] border border-white/5 rounded-[32px] flex flex-col gap-6 hover:border-rc-teal/30 transition-all group"
+                onClick={() => onSelectProject?.(selectedProjectId === project.id ? null : project.id)}
+                className={`p-6 border rounded-[32px] flex flex-col gap-6 transition-all group cursor-pointer backdrop-blur-xl ${
+                  selectedProjectId === project.id 
+                  ? 'bg-rc-teal/10 border-rc-teal shadow-[0_0_30px_rgba(59,188,169,0.1)]' 
+                  : 'bg-white/[0.02] border-white/5 hover:border-rc-teal/30'
+                }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -145,18 +164,33 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
                         <Activity className="text-rc-teal opacity-20" size={20} />
                       )}
                     </div>
-                    <div>
-                      <h4 className="text-sm font-black text-white uppercase tracking-tight">{project.client}</h4>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className={`w-2 h-2 rounded-full ${
-                          project.healthFlag === 'Verde' ? 'bg-emerald-500' : 
-                          project.healthFlag === 'Amarilla' ? 'bg-amber-500' : 'bg-rose-500'
-                        } shadow-[0_0_8px_currentColor]`} />
-                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
-                          {project.healthFlag === 'Verde' ? 'ÓPTIMO' : 
-                           project.healthFlag === 'Amarilla' ? 'ATENCIÓN' : 'CRÍTICO'}
-                        </span>
+                    <div className="flex items-center justify-between w-full">
+                      <div>
+                        <h4 className="text-sm font-black text-white uppercase tracking-tight">{project.client}</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className={`w-2 h-2 rounded-full ${
+                            project.healthFlag === 'Verde' ? 'bg-emerald-500' : 
+                            project.healthFlag === 'Amarilla' ? 'bg-amber-500' : 'bg-rose-500'
+                          } shadow-[0_0_8px_currentColor]`} />
+                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                            {project.healthFlag === 'Verde' ? 'ÓPTIMO' : 
+                             project.healthFlag === 'Amarilla' ? 'ATENCIÓN' : 'CRÍTICO'}
+                          </span>
+                        </div>
                       </div>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedProjectId?.(project.id);
+                          // Necesitamos una forma de avisar al Dashboard que abra el modal.
+                          // Por ahora, usaremos un truco: si se hace doble clic o se pulsa este botón específico.
+                          document.dispatchEvent(new CustomEvent('open-client-modal', { detail: { id: project.id } }));
+                        }}
+                        className="p-3 bg-white/5 hover:bg-rc-teal hover:text-black rounded-xl transition-all opacity-0 group-hover:opacity-100 border border-white/5"
+                        title="Ver Ficha Completa"
+                      >
+                         <ArrowUpRight size={14} />
+                      </button>
                     </div>
                   </div>
                   <div className="flex flex-col items-end">

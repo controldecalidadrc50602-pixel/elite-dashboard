@@ -283,6 +283,82 @@ const ProjectDetailsModal: React.FC<Props> = ({
                         </div>
                      )}
 
+                     {activeTab === 'services' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                           {editedProject.services?.length ? (
+                              editedProject.services.map((service) => (
+                                 <div key={service.id} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] space-y-6 hover:border-rc-teal/30 transition-all group backdrop-blur-xl">
+                                    <div className="flex justify-between items-start">
+                                       <div className="flex items-center gap-4">
+                                          <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal border border-rc-teal/10">
+                                             <Zap size={20} />
+                                          </div>
+                                          <div>
+                                             <span className="text-[12px] font-black text-white uppercase tracking-tight block">{service.name}</span>
+                                             <span className="text-[9px] text-rc-teal font-bold uppercase tracking-widest">{service.type}</span>
+                                          </div>
+                                       </div>
+                                       <div className={`px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest ${service.score >= 4 ? 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5' : 'text-amber-400 border-amber-400/20 bg-amber-400/5'}`}>
+                                          Score: {service.score}.0
+                                       </div>
+                                    </div>
+                                    <p className="text-xs text-slate-400 leading-relaxed font-medium line-clamp-3 italic">
+                                       "{service.description || 'Sin descripción detallada disponible.'}"
+                                    </p>
+                                    <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                                       <div className="flex items-center gap-2">
+                                          <Calendar size={14} className="text-slate-500" />
+                                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Go-Live: {service.startDate}</span>
+                                       </div>
+                                       <div className="flex items-center gap-2">
+                                          <ShieldCheck size={14} className="text-rc-teal" />
+                                          <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Activo</span>
+                                       </div>
+                                    </div>
+                                 </div>
+                              ))
+                           ) : (
+                              <div className="col-span-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-[48px]">
+                                 <Layers className="text-slate-700 mb-6" size={48} />
+                                 <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px]">No hay servicios registrados en este expediente</p>
+                              </div>
+                           )}
+                        </div>
+                     )}
+
+                     {activeTab === 'milestones' && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                           {editedProject.assets?.length ? (
+                              editedProject.assets.map((asset) => (
+                                 <div key={asset.id} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] space-y-6 hover:border-rc-teal/30 transition-all group backdrop-blur-xl">
+                                    <div className="w-14 h-14 bg-white/5 rounded-[24px] flex items-center justify-center text-slate-400 group-hover:text-rc-teal transition-colors">
+                                       <Headphones size={28} />
+                                    </div>
+                                    <div>
+                                       <span className="text-[14px] font-black text-white uppercase tracking-tight block mb-1">{asset.model}</span>
+                                       <div className="flex items-center gap-2">
+                                          <User size={12} className="text-rc-teal" />
+                                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Posición: {asset.assignedPosition}</span>
+                                       </div>
+                                    </div>
+                                    <div className={`px-5 py-2.5 rounded-2xl border text-[9px] font-black uppercase tracking-[0.2em] w-fit ${
+                                       asset.status === 'Operativo' ? 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5' : 
+                                       asset.status === 'Mantenimiento' ? 'text-amber-400 border-amber-400/20 bg-amber-400/5' : 
+                                       'text-rose-500 border-rose-500/20 bg-rose-500/5'
+                                    }`}>
+                                       {asset.status}
+                                    </div>
+                                 </div>
+                              ))
+                           ) : (
+                              <div className="col-span-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-[48px]">
+                                 <Cpu className="text-slate-700 mb-6" size={48} />
+                                 <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px]">No hay activos de hardware asignados</p>
+                              </div>
+                           )}
+                        </div>
+                     )}
+
                      {activeTab === 'admin' && (
                         <div className="max-w-3xl mx-auto space-y-5">
                            {[
