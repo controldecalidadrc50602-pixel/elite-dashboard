@@ -306,6 +306,31 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                     <p className="text-xs text-slate-400 leading-relaxed font-medium line-clamp-3 italic">
                                        "{service.description || 'Sin descripción detallada disponible.'}"
                                     </p>
+
+                                    {/* Métricas Dinámicas */}
+                                    {(service.extensionCount || service.positionsCount || service.botmakerType) && (
+                                       <div className="flex items-center gap-6 p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                          {service.extensionCount ? (
+                                             <div className="flex flex-col">
+                                                <span className="text-[8px] font-black text-rc-teal uppercase tracking-[0.2em] mb-1">Extensiones</span>
+                                                <span className="text-lg font-black text-white leading-none">{service.extensionCount}</span>
+                                             </div>
+                                          ) : null}
+                                          {service.positionsCount ? (
+                                             <div className="flex flex-col">
+                                                <span className="text-[8px] font-black text-rc-teal uppercase tracking-[0.2em] mb-1">Posiciones</span>
+                                                <span className="text-lg font-black text-white leading-none">{service.positionsCount}</span>
+                                             </div>
+                                          ) : null}
+                                          {service.botmakerType ? (
+                                             <div className="flex flex-col">
+                                                <span className="text-[8px] font-black text-rc-teal uppercase tracking-[0.2em] mb-1">Modelo Bot</span>
+                                                <span className="text-[10px] font-black text-white leading-none truncate max-w-[150px] uppercase">{service.botmakerType.split(' + ')[0]}</span>
+                                             </div>
+                                          ) : null}
+                                       </div>
+                                    )}
+
                                     <div className="pt-4 border-t border-white/5 flex items-center justify-between">
                                        <div className="flex items-center gap-2">
                                           <Calendar size={14} className="text-slate-500" />

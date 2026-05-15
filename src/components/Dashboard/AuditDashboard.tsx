@@ -203,12 +203,19 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {project.services?.map(service => (
-                    <div key={service.id} className="flex items-center justify-between px-4 py-3 bg-white/[0.03] rounded-2xl border border-white/5">
+                    <div key={service.id} className="flex items-center justify-between px-4 py-3 bg-white/[0.03] rounded-2xl border border-white/5 group/service hover:border-rc-teal/30 transition-all">
                       <div className="flex items-center gap-3 truncate">
                         <Zap size={10} className="text-rc-teal shrink-0" />
-                        <span className="text-[10px] font-bold text-slate-400 truncate uppercase">{service.name}</span>
+                        <div className="flex flex-col truncate">
+                           <span className="text-[10px] font-black text-slate-400 truncate uppercase">{service.name}</span>
+                           {(service.extensionCount || service.positionsCount) && (
+                              <span className="text-[8px] font-black text-rc-teal/60 uppercase tracking-widest">
+                                 {service.extensionCount ? `${service.extensionCount} Ext.` : `${service.positionsCount} Pos.`}
+                              </span>
+                           )}
+                        </div>
                       </div>
-                      <div className={`w-1.5 h-1.5 rounded-full ${service.score > 4 ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${service.score > 4 ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                     </div>
                   ))}
                 </div>
