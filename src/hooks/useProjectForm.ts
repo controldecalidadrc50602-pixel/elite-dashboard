@@ -39,6 +39,7 @@ export const useProjectForm = ({ project, isOpen, onSave, onClose }: UseProjectF
     if (project) {
       setFormData({
         ...project,
+        services: project.services || [],
         opsPulse: project.opsPulse || initialData.opsPulse,
         techDNA: project.techDNA || initialData.techDNA,
         assets: project.assets || initialData.assets,

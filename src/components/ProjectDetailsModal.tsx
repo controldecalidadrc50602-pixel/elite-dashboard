@@ -160,10 +160,11 @@ const ProjectDetailsModal: React.FC<Props> = ({
                <AnimatePresence mode="wait">
                   <motion.div
                      key={activeTab}
-                     initial={{ opacity: 0, x: 20 }}
-                     animate={{ opacity: 1, x: 0 }}
-                     exit={{ opacity: 0, x: -20 }}
-                     className="max-w-7xl mx-auto w-full h-full"
+                     initial={{ opacity: 0, y: 10 }}
+                     animate={{ opacity: 1, y: 0 }}
+                     exit={{ opacity: 0, y: -10 }}
+                     transition={{ duration: 0.2 }}
+                     className="max-w-7xl mx-auto w-full min-h-full"
                   >
                      {activeTab === 'summary' && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -200,7 +201,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                  </div>
                                  <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[48px] flex flex-col items-center justify-center gap-6 group hover:border-rc-teal/30 transition-all backdrop-blur-xl">
                                     <div className="text-7xl font-black text-white tracking-tighter">
-                                       {editedProject?.services?.length || 0}
+                                       {(editedProject.services || []).length}
                                     </div>
                                     <span className="text-[10px] font-black text-rc-teal uppercase tracking-[0.4em]">Suscripciones Activas</span>
                                  </div>
@@ -285,8 +286,8 @@ const ProjectDetailsModal: React.FC<Props> = ({
 
                      {activeTab === 'services' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                           {editedProject.services?.length ? (
-                              editedProject.services.map((service) => (
+                           {(editedProject.services || []).length > 0 ? (
+                              (editedProject.services || []).map((service) => (
                                  <div key={service.id} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] space-y-6 hover:border-rc-teal/30 transition-all group backdrop-blur-xl">
                                     <div className="flex justify-between items-start">
                                        <div className="flex items-center gap-4">
@@ -328,8 +329,8 @@ const ProjectDetailsModal: React.FC<Props> = ({
 
                      {activeTab === 'milestones' && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                           {editedProject.assets?.length ? (
-                              editedProject.assets.map((asset) => (
+                           {(editedProject.assets || []).length > 0 ? (
+                              (editedProject.assets || []).map((asset) => (
                                  <div key={asset.id} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] space-y-6 hover:border-rc-teal/30 transition-all group backdrop-blur-xl">
                                     <div className="w-14 h-14 bg-white/5 rounded-[24px] flex items-center justify-center text-slate-400 group-hover:text-rc-teal transition-colors">
                                        <Headphones size={28} />
