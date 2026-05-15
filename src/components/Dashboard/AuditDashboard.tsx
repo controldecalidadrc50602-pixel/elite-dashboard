@@ -181,7 +181,7 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
-                          setSelectedProjectId?.(project.id);
+                          onSelectProject?.(project.id);
                           // Necesitamos una forma de avisar al Dashboard que abra el modal.
                           // Por ahora, usaremos un truco: si se hace doble clic o se pulsa este botón específico.
                           document.dispatchEvent(new CustomEvent('open-client-modal', { detail: { id: project.id } }));
