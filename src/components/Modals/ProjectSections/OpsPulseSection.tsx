@@ -9,6 +9,7 @@ interface Props {
 }
 
 const OpsPulseSection: React.FC<Props> = ({ opsPulse, onUpdate }) => {
+  // ... (funciones omitidas para brevedad, asumiendo que el buscador de reemplazo manejará el contexto)
   const addShift = () => {
     const newShifts = [...(opsPulse?.shifts || [])];
     newShifts.push({ 
@@ -34,129 +35,127 @@ const OpsPulseSection: React.FC<Props> = ({ opsPulse, onUpdate }) => {
     <motion.div 
       initial={{ opacity: 0, x: 20 }} 
       animate={{ opacity: 1, x: 0 }} 
-      className="space-y-12"
+      className="space-y-16 font-light"
     >
-      <header className="flex flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-0.5 px-1 bg-rc-teal rounded-full shadow-[0_0_15px_rgba(59,188,169,0.5)]" />
-          <h2 className="text-3xl font-black tracking-tighter text-white uppercase glow-text">Operaciones</h2>
-        </div>
-        <p className="text-slate-500 font-bold uppercase tracking-[0.5em] text-[9px] ml-11">Monitor de Capacidad y Resiliencia</p>
-      </header>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-12">
-        <div className="space-y-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4 p-8 bg-white/[0.02] border border-white/5 rounded-[36px] relative overflow-hidden group">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] flex items-center gap-2.5">
-                <Zap size={12} className="text-rc-teal" /> Capacidad Contratada
-              </label>
-              <input 
-                type="number" 
-                value={opsPulse?.hcContracted || 0}
-                onChange={e => onUpdate({ hcContracted: parseInt(e.target.value) || 0 })}
-                className="bg-transparent border-none p-0 text-4xl font-black text-white focus:ring-0 w-full tracking-tighter"
-              />
-              <p className="text-[9px] text-slate-600 font-bold uppercase tracking-widest">Headcount en presupuesto</p>
-            </div>
-
-            <div className="space-y-4 p-8 bg-white/[0.02] border border-white/5 rounded-[36px] relative overflow-hidden group">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] flex items-center gap-2.5">
-                <Activity size={12} className="text-rc-turquoise" /> Capacidad Real
-              </label>
-              <input 
-                type="number" 
-                value={opsPulse?.hcReal || 0}
-                onChange={e => onUpdate({ hcReal: parseInt(e.target.value) || 0 })}
-                className="bg-transparent border-none p-0 text-4xl font-black text-rc-teal focus:ring-0 w-full tracking-tighter glow-text"
-              />
-              <p className="text-[9px] text-slate-600 font-bold uppercase tracking-widest">Personal activo en producción</p>
-            </div>
+      {/* Operaciones - Métricas de Capacidad */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-16 pb-12 border-b border-white/5">
+        <div className="w-full md:w-1/3 space-y-6">
+          <label className="text-sm font-light text-slate-500 uppercase tracking-[0.3em] block mb-4">
+            HC Contratado
+          </label>
+          <div className="flex items-baseline gap-4">
+            <input 
+              type="number" 
+              value={opsPulse?.hcContracted || 0}
+              onChange={e => onUpdate({ hcContracted: parseInt(e.target.value) || 0 })}
+              className="bg-transparent border-none p-0 text-6xl font-light text-white focus:ring-0 w-32 tracking-tighter"
+            />
+            <span className="text-slate-600 text-sm uppercase tracking-widest">Posiciones</span>
           </div>
+          <p className="text-[10px] text-slate-700 uppercase tracking-widest font-medium">Capacidad teórica en presupuesto</p>
+        </div>
 
-          <div className="space-y-8">
-            <div className="flex items-center justify-between px-2">
-              <h3 className="text-xl font-black text-white uppercase tracking-tighter glow-text">Matriz de Turnos</h3>
+        <div className="hidden md:block w-px h-24 bg-white/5" />
+
+        <div className="w-full md:w-1/3 space-y-6">
+          <label className="text-sm font-light text-slate-500 uppercase tracking-[0.3em] block mb-4">
+            HC Real (Activo)
+          </label>
+          <div className="flex items-baseline gap-4">
+            <input 
+              type="number" 
+              value={opsPulse?.hcReal || 0}
+              onChange={e => onUpdate({ hcReal: parseInt(e.target.value) || 0 })}
+              className="bg-transparent border-none p-0 text-6xl font-light text-rc-teal focus:ring-0 w-32 tracking-tighter glow-text"
+            />
+            <span className="text-rc-teal/40 text-sm uppercase tracking-widest font-medium">Efectivo</span>
+          </div>
+          <p className="text-[10px] text-slate-700 uppercase tracking-widest font-medium">Personal validado en producción</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-16">
+        <div className="space-y-12">
+          <div className="space-y-10">
+            <div className="flex items-center justify-between border-b border-white/5 pb-6">
+              <div className="space-y-1">
+                <h3 className="text-xl font-light text-white tracking-tight">Matriz de Turnos</h3>
+                <p className="text-[10px] text-slate-500 uppercase tracking-widest">Distribución horaria de la carga</p>
+              </div>
               <button 
                 type="button" onClick={addShift}
-                className="w-10 h-10 flex items-center justify-center bg-rc-teal/10 text-rc-teal rounded-xl hover:bg-rc-teal border border-rc-teal/20 hover:text-black transition-all duration-500"
+                className="px-6 py-2 bg-white/5 text-white rounded-full hover:bg-white/10 border border-white/10 transition-all text-xs font-light tracking-wide"
               >
-                <Plus size={20} />
+                + Añadir Turno
               </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {opsPulse?.shifts?.map((shift, idx) => (
                 <motion.div 
                   layout
                   key={shift.id} 
-                  className="p-6 bg-white/[0.02] border border-white/5 rounded-[24px] flex items-center justify-between gap-8 hover:bg-white/[0.04] transition-all duration-500 group"
+                  className="p-8 bg-white/[0.02] border border-white/5 rounded-[32px] space-y-6 hover:bg-white/[0.04] transition-all duration-500 group relative"
                 >
-                  <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                    <span className="text-[11px] font-black text-rc-teal uppercase tracking-[0.3em]">{shift.name}</span>
+                  <button 
+                    type="button" onClick={() => removeShift(shift.id)}
+                    className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center text-rose-500/20 hover:text-rose-500 transition-all"
+                  >
+                    <X size={14} />
+                  </button>
+
+                  <div className="space-y-2">
+                    <input 
+                      value={shift.name}
+                      onChange={e => updateShift(idx, { name: e.target.value })}
+                      className="bg-transparent border-none p-0 text-xs font-medium text-rc-teal uppercase tracking-[0.2em] focus:ring-0 w-full"
+                    />
                     <input 
                       value={shift.timeRange}
                       onChange={e => updateShift(idx, { timeRange: e.target.value })}
-                      className="bg-transparent border-none p-0 text-base font-bold text-white focus:ring-0 uppercase tracking-widest w-full"
+                      className="bg-transparent border-none p-0 text-xl font-light text-white focus:ring-0 w-full tracking-tight"
                     />
-                    <div className="flex items-center gap-3">
-                      <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest shrink-0">Pax</span>
-                      <input 
-                        type="number" value={shift.peopleCount}
-                        onChange={e => updateShift(idx, { peopleCount: parseInt(e.target.value) || 0 })}
-                        className="bg-transparent border-none p-0 text-lg font-black text-rc-teal focus:ring-0 w-full"
-                      />
-                    </div>
                   </div>
-                  <button 
-                    type="button" onClick={() => removeShift(shift.id)}
-                    className="w-10 h-10 flex items-center justify-center text-rose-500/30 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
-                  >
-                    <X size={18} />
-                  </button>
+                  
+                  <div className="flex items-center gap-4 pt-4 border-t border-white/5">
+                    <span className="text-[10px] font-medium text-slate-600 uppercase tracking-widest">Headcount</span>
+                    <input 
+                      type="number" value={shift.peopleCount}
+                      onChange={e => updateShift(idx, { peopleCount: parseInt(e.target.value) || 0 })}
+                      className="bg-transparent border-none p-0 text-2xl font-light text-white focus:ring-0 w-full"
+                    />
+                  </div>
                 </motion.div>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="space-y-10">
-          <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[48px] space-y-8 backdrop-blur-xl relative overflow-hidden">
-            <div className="text-center">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] flex items-center justify-center gap-2.5 mb-6">
-                <Shield size={14} className="text-rc-teal" /> Contingencia
-              </label>
-            </div>
-            <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+          <div className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] space-y-8">
+            <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] block text-center">Estado de Contingencia</label>
+            <div className="flex justify-center gap-4">
               {['Disponible', 'En Uso', 'Crítico'].map(status => (
                 <button
                   key={status} type="button"
                   onClick={() => onUpdate({ backupStatus: status as any })}
-                  className={`py-4 rounded-[24px] text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-700 relative overflow-hidden group/btn ${
+                  className={`px-6 py-3 rounded-full text-[10px] font-medium uppercase tracking-[0.2em] transition-all duration-300 ${
                     opsPulse?.backupStatus === status 
-                    ? 'text-black' 
-                    : 'text-slate-500 hover:text-white border border-white/5'
+                    ? 'bg-white text-black' 
+                    : 'bg-white/5 text-slate-500 hover:text-white'
                   }`}
                 >
-                  {opsPulse?.backupStatus === status && (
-                    <motion.div 
-                      layoutId="backupStatus"
-                      className={`absolute inset-0 ${
-                        status === 'Disponible' ? 'bg-emerald-400' :
-                        status === 'En Uso' ? 'bg-amber-400' : 'bg-rose-500'
-                      }`}
-                    />
-                  )}
-                  <span className="relative z-10">{status}</span>
+                  {status}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="p-8 bg-rc-teal/5 border border-rc-teal/10 rounded-[36px] space-y-4">
-             <p className="text-[10px] font-black text-rc-teal uppercase tracking-[0.3em] text-center">Eficiencia</p>
-             <div className="flex items-baseline justify-center gap-1.5">
-                <span className="text-3xl font-black text-white glow-text">{( (opsPulse?.hcReal || 0) / (opsPulse?.hcContracted || 1) * 100).toFixed(0)}%</span>
+          <div className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] flex flex-col items-center justify-center space-y-4">
+             <p className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.3em]">Eficiencia Operativa</p>
+             <div className="flex items-baseline gap-2">
+                <span className="text-5xl font-light text-rc-teal glow-text">{( (opsPulse?.hcReal || 0) / (opsPulse?.hcContracted || 1) * 100).toFixed(0)}%</span>
+                <span className="text-slate-600 text-sm uppercase tracking-widest">Capacidad</span>
              </div>
           </div>
         </div>
