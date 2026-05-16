@@ -71,7 +71,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                 </div>
                 <div className="space-y-1">
                   <h2 className="text-2xl font-light tracking-tight text-white">
-                    {formData.clientName || 'Nuevo Expediente'}
+                    {formData.client || 'Nuevo Expediente'}
                   </h2>
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 px-2.5 py-1 bg-white/5 rounded-full border border-white/5">
