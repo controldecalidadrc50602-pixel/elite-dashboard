@@ -22,6 +22,7 @@ import StatCard from '../components/common/StatCard';
 import ProjectDetailsModal from '../components/ProjectDetailsModal';
 import ProjectModal from '../components/Modals/ProjectModal';
 import { exportService } from '../services/exportService';
+import ImageWithFallback from '../components/common/ImageWithFallback';
 
 const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'archive' }> = ({ activeTab }) => {
   const { t } = useTranslation();
@@ -164,11 +165,12 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                                 project.healthFlag === 'Amarilla' ? 'group-hover:shadow-[0_20px_50px_rgba(245,158,11,0.05)]' : 
                                 'group-hover:shadow-[0_20px_50px_rgba(244,63,94,0.05)]'
                              }`}>
-                                {project.logoUrl ? (
-                                   <img src={project.logoUrl} className="w-full h-full object-contain filter grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-105" alt={project.client} />
-                                ) : (
-                                   <Users className="text-white opacity-10 group-hover:opacity-40 transition-opacity" size={32} />
-                                )}
+                                <ImageWithFallback 
+                                  src={project.logoUrl} 
+                                  className="w-full h-full object-contain filter grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-105" 
+                                  alt={project.client}
+                                  fallbackIcon={<Users className="text-white opacity-10 group-hover:opacity-40 transition-opacity" size={32} />}
+                                />
                                 
                                 <div className={`absolute top-6 right-6 w-1.5 h-1.5 rounded-full ${
                                    project.healthFlag === 'Verde' ? 'bg-emerald-400' : 

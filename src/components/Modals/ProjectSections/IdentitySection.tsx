@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Upload, Crown, Users, Target } from 'lucide-react';
 import { Project } from '../../../types/project';
+import ImageWithFallback from '../../common/ImageWithFallback';
 
 interface Props {
   formData: Partial<Project>;
@@ -21,14 +22,17 @@ const IdentitySection: React.FC<Props> = ({ formData, onUpdate, onFileChange }) 
         <div className="shrink-0">
           <div className="relative group">
             <div className="relative w-[140px] h-[140px] bg-white/[0.01] rounded-[32px] border border-dashed border-white/10 flex items-center justify-center overflow-hidden transition-all duration-500 hover:border-rc-teal/30">
-              {formData.logoUrl ? (
-                <img src={formData.logoUrl} alt="Preview" className="w-full h-full object-contain p-6" />
-              ) : (
-                <div className="text-center p-4 opacity-20 group-hover:opacity-40 transition-opacity">
-                  <Upload size={28} className="mx-auto mb-2 text-white" />
-                  <span className="text-[8px] font-medium uppercase tracking-[0.2em] block text-white text-center">Asset</span>
-                </div>
-              )}
+              <ImageWithFallback 
+                src={formData.logoUrl} 
+                className="w-full h-full object-contain p-6" 
+                alt="Preview"
+                fallbackIcon={
+                  <div className="text-center p-4 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <Upload size={28} className="mx-auto mb-2 text-white" />
+                    <span className="text-[8px] font-medium uppercase tracking-[0.2em] block text-white text-center">Asset</span>
+                  </div>
+                }
+              />
               <label className="absolute inset-0 bg-[#0D1117] opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-all duration-500 backdrop-blur-md">
                 <Upload size={20} className="text-rc-teal mb-1" />
                 <span className="text-[8px] font-bold text-rc-teal uppercase tracking-[0.1em]">Cambiar</span>
