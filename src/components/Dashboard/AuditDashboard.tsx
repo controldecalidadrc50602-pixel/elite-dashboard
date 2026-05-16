@@ -86,24 +86,24 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
       {/* 1. Header & Global Metrics */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="text-4xl font-black text-white uppercase tracking-tighter">
+          <h2 className="text-5xl font-light text-white tracking-tighter leading-none">
             {isSingleProject ? `Status: ${selectedProject?.client}` : 'Status Operativo Elite'}
           </h2>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-1">
+          <p className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] mt-6 opacity-60">
             {isSingleProject ? `Análisis Estratégico Individual` : 'Resumen de Gestión y Salud de Cartera'}
           </p>
         </div>
         
         <div className="flex items-center gap-4">
-           <div className="px-6 py-3 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl flex items-center gap-4">
-              <div className="w-10 h-10 bg-rc-teal/20 rounded-xl flex items-center justify-center text-rc-teal">
-                 <Award size={20} />
-              </div>
-              <div className="flex flex-col">
-                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Health Index Global</span>
-                 <span className="text-2xl font-black text-white leading-none">{stats.globalScore}%</span>
-              </div>
-           </div>
+            <div className="px-8 py-4 bg-white/[0.01] border border-white/5 rounded-[32px] flex items-center gap-6 backdrop-blur-xl">
+               <div className="w-12 h-12 bg-rc-teal/5 rounded-2xl flex items-center justify-center text-rc-teal border border-rc-teal/10">
+                  <Award size={20} strokeWidth={1.5} />
+               </div>
+               <div className="flex flex-col">
+                  <span className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.3em]">Health Index Global</span>
+                  <span className="text-3xl font-light text-white leading-none mt-1">{stats.globalScore}%</span>
+               </div>
+            </div>
         </div>
       </div>
 
@@ -132,14 +132,14 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
 
       {/* 2. Client Operational Matrix */}
       <div className="glass-panel p-10 rounded-[48px] border border-white/5 bg-black/10">
-         <div className="flex items-center justify-between mb-8">
-            <div>
-               <h3 className="text-xl font-black text-white uppercase tracking-tighter">Matriz de Operaciones</h3>
-               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status de Clientes y Calidad de Servicio</p>
+         <div className="flex items-center justify-between mb-12">
+            <div className="space-y-2">
+               <h3 className="text-2xl font-light text-white tracking-tight uppercase">Matriz de Operaciones</h3>
+               <p className="text-[10px] font-medium text-slate-600 uppercase tracking-[0.4em]">Status de Clientes y Calidad de Servicio</p>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/5">
-               <Search size={14} className="text-slate-500" />
-               <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Vista Consolidada</span>
+            <div className="flex items-center gap-3 px-6 py-3 bg-white/[0.03] rounded-2xl border border-white/5">
+               <Search size={14} className="text-rc-teal opacity-40" />
+               <span className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.3em]">Vista Consolidada</span>
             </div>
          </div>
 
@@ -166,13 +166,13 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
                     </div>
                     <div className="flex items-center justify-between w-full">
                       <div>
-                        <h4 className="text-sm font-black text-white uppercase tracking-tight">{project.client}</h4>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div className={`w-2 h-2 rounded-full ${
+                        <h4 className="text-[13px] font-medium text-white uppercase tracking-wider">{project.client}</h4>
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className={`w-1.5 h-1.5 rounded-full ${
                             project.healthFlag === 'Verde' ? 'bg-emerald-500' : 
                             project.healthFlag === 'Amarilla' ? 'bg-amber-500' : 'bg-rose-500'
-                          } shadow-[0_0_8px_currentColor]`} />
-                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                          } shadow-[0_0_10px_currentColor]`} />
+                          <span className="text-[8px] font-medium text-slate-600 uppercase tracking-[0.2em]">
                             {project.healthFlag === 'Verde' ? 'ÓPTIMO' : 
                              project.healthFlag === 'Amarilla' ? 'ATENCIÓN' : 'CRÍTICO'}
                           </span>
@@ -194,10 +194,10 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
                     </div>
                   </div>
                   <div className="flex flex-col items-end">
-                    <span className="text-lg font-black text-white leading-none">
+                    <span className="text-2xl font-light text-white leading-none tracking-tighter">
                       {Math.round((Object.values(project.quarterlyAssessment || {}).filter(v => typeof v === 'number') as number[]).reduce((a, b) => a + b, 0) / 50 * 100)}%
                     </span>
-                    <span className="text-[8px] font-black text-rc-teal uppercase tracking-widest">Calidad</span>
+                    <span className="text-[8px] font-medium text-rc-teal uppercase tracking-[0.4em] mt-1">Calidad</span>
                   </div>
                 </div>
 
@@ -207,10 +207,10 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
                       <div className="flex items-center gap-3 truncate">
                         <Zap size={10} className="text-rc-teal shrink-0" />
                         <div className="flex flex-col truncate">
-                           <span className="text-[10px] font-black text-slate-400 truncate uppercase">{service.name}</span>
+                           <span className="text-[10px] font-medium text-slate-400 truncate uppercase tracking-wider">{service.name}</span>
                            {(service.extensionCount || service.positionsCount) && (
-                              <span className="text-[8px] font-black text-rc-teal/60 uppercase tracking-widest">
-                                 {service.extensionCount ? `${service.extensionCount} Ext.` : `${service.positionsCount} Pos.`}
+                              <span className="text-[8px] font-medium text-rc-teal/40 uppercase tracking-[0.2em] mt-0.5">
+                                 {service.extensionCount ? `${service.extensionCount} Extensiones` : `${service.positionsCount} Posiciones`}
                               </span>
                            )}
                         </div>
@@ -226,18 +226,18 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
 
       {/* 3. Operational Performance Grid */}
       <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <TrendingUp size={18} className="text-rc-teal" />
-          <h3 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em]">Métricas de Rendimiento Operativo</h3>
+        <div className="flex items-center gap-4">
+          <TrendingUp size={16} className="text-rc-teal opacity-50" />
+          <h3 className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.5em]">Métricas de Rendimiento Operativo</h3>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
            {pillarMetrics.map((metric) => (
-             <div key={metric.pillar} className="p-5 bg-black/20 border border-white/5 rounded-[24px] flex flex-col items-center text-center group hover:border-rc-teal/30 transition-all">
-                <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">{metric.pillar}</span>
-                <div className="text-2xl font-black text-white mb-2">{metric.value}%</div>
-                <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+             <div key={metric.pillar} className="p-8 bg-white/[0.01] border border-white/5 rounded-[32px] flex flex-col items-center text-center group hover:bg-white/[0.02] transition-all">
+                <span className="text-[8px] font-medium text-slate-600 uppercase tracking-[0.3em] mb-4">{metric.pillar}</span>
+                <div className="text-3xl font-light text-white mb-6 tracking-tighter">{metric.value}%</div>
+                <div className="w-full h-1 bg-white/[0.03] rounded-full overflow-hidden">
                    <div 
-                    className="h-full bg-rc-teal transition-all duration-1000" 
+                    className="h-full bg-rc-teal shadow-[0_0_10px_rgba(59,188,169,0.3)] transition-all duration-1000" 
                     style={{ width: `${metric.value}%` }} 
                    />
                 </div>

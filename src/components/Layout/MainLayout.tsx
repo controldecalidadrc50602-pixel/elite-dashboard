@@ -10,7 +10,7 @@ const MainLayout: React.FC = () => {
     <div className="h-screen w-full flex items-center justify-center bg-[#0B0E14]">
        <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-rc-teal/20 border-t-rc-teal rounded-full animate-spin" />
-          <span className="text-[10px] font-black text-rc-teal uppercase tracking-[0.3em] animate-pulse">Initializing HC V4</span>
+          <span className="text-[10px] font-medium text-rc-teal uppercase tracking-[0.4em] opacity-40 animate-pulse">Initializing HC V4</span>
        </div>
     </div>
   );

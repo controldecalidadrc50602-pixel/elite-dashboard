@@ -61,8 +61,8 @@ const BrandingModal: React.FC<BrandingModalProps> = ({ isOpen, onClose, onSave, 
                 <Building2 size={20} />
               </div>
               <div>
-                <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tight uppercase">Configuración de Marca</h3>
-                <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em]">Elite Identity Management</p>
+                <h3 className="text-2xl font-light text-[var(--text-primary)] tracking-tight uppercase">Configuración de Marca</h3>
+                <p className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.4em] opacity-60">Elite Identity Management</p>
               </div>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors text-[var(--text-secondary)]">
@@ -72,8 +72,8 @@ const BrandingModal: React.FC<BrandingModalProps> = ({ isOpen, onClose, onSave, 
 
           <form onSubmit={handleSubmit} className="p-8 space-y-8 overflow-y-auto max-h-[70vh]">
             {/* Logo Section */}
-            <div className="space-y-4">
-              <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">Logo Corporativo</label>
+            <div className="space-y-6">
+              <label className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.4em] opacity-40">Logo Corporativo</label>
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="w-32 h-32 bg-black/20 rounded-3xl border-2 border-dashed border-white/10 flex items-center justify-center overflow-hidden relative group">
                   {config.logoUrl ? (
@@ -100,8 +100,8 @@ const BrandingModal: React.FC<BrandingModalProps> = ({ isOpen, onClose, onSave, 
                       Sube el logo de tu empresa en formato PNG o SVG con fondo transparente. 
                       Recomendado: 512x512px.
                     </p>
-                    <label className="inline-flex items-center gap-2 px-6 py-3 bg-rc-teal/10 text-rc-teal rounded-2xl cursor-pointer hover:bg-rc-teal/20 transition-all font-black text-[10px] uppercase tracking-widest">
-                      <Upload size={16} /> Seleccionar Archivo
+                    <label className="inline-flex items-center gap-4 px-8 py-4 bg-rc-teal/5 text-rc-teal rounded-full cursor-pointer hover:bg-rc-teal/10 transition-all font-medium text-[10px] uppercase tracking-[0.3em] border border-rc-teal/10">
+                      <Upload size={16} strokeWidth={1.5} /> Seleccionar Archivo
                       <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                     </label>
                 </div>
@@ -109,8 +109,8 @@ const BrandingModal: React.FC<BrandingModalProps> = ({ isOpen, onClose, onSave, 
             </div>
 
             {/* Company Name */}
-            <div className="space-y-4">
-              <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">Nombre de la Compañía</label>
+            <div className="space-y-6">
+              <label className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.4em] opacity-40">Nombre de la Compañía</label>
               <input 
                 type="text"
                 value={config.companyName}
@@ -125,16 +125,16 @@ const BrandingModal: React.FC<BrandingModalProps> = ({ isOpen, onClose, onSave, 
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+                className="flex-1 px-8 py-5 rounded-full text-[11px] font-medium uppercase tracking-[0.3em] text-[var(--text-secondary)] hover:text-white hover:bg-white/5 transition-all"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
-                className="flex-[2] bg-rc-teal text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-rc-teal/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="flex-[2] bg-white text-black px-10 py-5 rounded-full text-[11px] font-medium uppercase tracking-[0.2em] shadow-2xl hover:bg-slate-200 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
               >
-                {isSaving ? 'Guardando...' : <><Check size={18} /> Guardar Identidad</>}
+                {isSaving ? 'Guardando...' : <><Check size={18} strokeWidth={2.5} /> Guardar Identidad</>}
               </button>
             </div>
           </form>

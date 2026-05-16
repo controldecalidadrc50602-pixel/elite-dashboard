@@ -159,8 +159,8 @@ const TaskManager: React.FC<TaskManagerProps> = ({ projectId }) => {
               <CheckSquare size={32} strokeWidth={1.5} />
            </div>
            <div>
-              <h1 className="text-4xl font-light tracking-tighter text-[var(--text-primary)] leading-none">{t('tasks.title')}</h1>
-              <p className="text-[var(--text-secondary)] font-medium text-[11px] uppercase tracking-widest mt-2 opacity-60">
+              <h1 className="text-5xl font-light tracking-tighter text-[var(--text-primary)] leading-none">{t('tasks.title')}</h1>
+              <p className="text-[var(--text-secondary)] font-medium text-[10px] uppercase tracking-[0.4em] mt-6 opacity-40">
                 {tasks.length} {t('tasks.active_assignments')}
               </p>
            </div>
@@ -177,9 +177,9 @@ const TaskManager: React.FC<TaskManagerProps> = ({ projectId }) => {
           </div>
           <button 
             onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
-            className="bg-[var(--rc-turquoise)] hover:bg-[var(--rc-turquoise)]/90 text-[var(--bg-primary)] px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-wider flex items-center gap-3 transition-all shadow-lg shadow-[var(--rc-turquoise)]/20 active:scale-[0.98]"
+            className="bg-white text-black px-10 py-4 rounded-full text-[11px] font-medium uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-2xl hover:bg-slate-200 active:scale-95"
           >
-            <Plus size={20} strokeWidth={2.5} /> {t('tasks.new_task')}
+            <Plus size={18} strokeWidth={2} /> {t('tasks.new_task')}
           </button>
         </div>
       </div>
@@ -189,12 +189,12 @@ const TaskManager: React.FC<TaskManagerProps> = ({ projectId }) => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-black/[0.02] dark:bg-white/[0.02] border-b border-[var(--glass-border)]">
-                <th className="px-10 py-6 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider w-[120px]">{t('tasks.table_state')}</th>
-                <th className="px-10 py-6 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Tarea / Responsable</th>
-                <th className="px-10 py-6 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Área / Proyecto</th>
-                <th className="px-10 py-6 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider w-[180px]">Prioridad</th>
-                <th className="px-10 py-6 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider text-center w-[220px]">Tiempo</th>
-                <th className="px-10 py-6 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider text-right w-[140px]">{t('tasks.table_actions')}</th>
+                <th className="px-10 py-8 text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em] w-[120px]">{t('tasks.table_state')}</th>
+                <th className="px-10 py-8 text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em]">Tarea / Responsable</th>
+                <th className="px-10 py-8 text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em]">Área / Proyecto</th>
+                <th className="px-10 py-8 text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em] w-[180px]">Prioridad</th>
+                <th className="px-10 py-8 text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em] text-center w-[220px]">Tiempo</th>
+                <th className="px-10 py-8 text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em] text-right w-[140px]">{t('tasks.table_actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--glass-border)]">
@@ -223,22 +223,22 @@ const TaskManager: React.FC<TaskManagerProps> = ({ projectId }) => {
                       {task.status === 'Closed' ? <CheckCircle2 size={16} strokeWidth={2.5} /> : <Circle size={16} strokeWidth={2.5} />}
                     </button>
                   </td>
-                  <td className="px-10 py-6">
-                    <div className="font-semibold text-[var(--text-primary)] text-[14px] tracking-tight group-hover:text-[var(--rc-turquoise)] transition-colors">
+                  <td className="px-10 py-10">
+                    <div className="font-medium text-[var(--text-primary)] text-[15px] tracking-tight group-hover:text-[var(--rc-turquoise)] transition-colors">
                       {task.title}
                     </div>
-                    <div className="text-[11px] font-medium text-[var(--rc-turquoise)] mt-1 opacity-60 flex items-center gap-2 uppercase tracking-wider">
+                    <div className="text-[10px] font-medium text-rc-teal mt-2 opacity-40 flex items-center gap-2 uppercase tracking-[0.2em]">
                        {task.assignedTo || 'Sin asignar'}
                     </div>
                   </td>
-                  <td className="px-10 py-6">
-                    <div className="flex flex-col">
-                      <span className="text-[12px] font-semibold text-[var(--text-primary)] tracking-tight">{task.area}</span>
-                      <span className="text-[10px] font-medium text-[var(--text-secondary)] tracking-wide opacity-50 uppercase truncate max-w-[180px]">{task.projectName}</span>
+                  <td className="px-10 py-10">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[11px] font-medium text-white tracking-wider uppercase">{task.area}</span>
+                      <span className="text-[9px] font-medium text-slate-600 tracking-[0.2em] uppercase truncate max-w-[180px]">{task.projectName}</span>
                     </div>
                   </td>
-                  <td className="px-10 py-6">
-                    <span className={`px-4 py-1 rounded-lg text-[10px] font-semibold uppercase tracking-wider border ${getPriorityColor(task.priority)}`}>
+                  <td className="px-10 py-10">
+                    <span className={`px-4 py-1.5 rounded-full text-[9px] font-medium uppercase tracking-[0.2em] border ${getPriorityColor(task.priority)}`}>
                       {task.priority}
                     </span>
                   </td>

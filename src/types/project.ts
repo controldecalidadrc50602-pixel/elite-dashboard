@@ -131,16 +131,16 @@ export interface StrategySLA {
 }
 
 export interface QuarterlyAssessment {
-  responseTime: number;
-  communicationQuality: number;
-  effectiveResolution: number;
-  proactivity: number;
-  technicalKnowledge: number;
-  reliability: number;
-  flexibility: number;
-  innovation: number;
-  serviceCulture: number;
-  valuePerception: number;
+  sla: number;
+  comunicacion: number;
+  resolucion: number;
+  experiencia: number;
+  continuidad: number;
+  orden: number;
+  conversion: number;
+  adaptacion: number;
+  cultura: number;
+  valor: number;
 }
 
 export interface Project {

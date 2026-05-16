@@ -14,84 +14,92 @@ const IdentitySection: React.FC<Props> = ({ formData, onUpdate, onFileChange }) 
     <motion.div 
       initial={{ opacity: 0, y: 10 }} 
       animate={{ opacity: 1, y: 0 }} 
-      className="space-y-16 font-light"
+      className="space-y-6 font-light"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-[280px,1fr] gap-16">
-        <div className="space-y-8">
+      <div className="flex flex-col md:flex-row gap-10 items-center">
+        {/* Logo Uploader - Compact 140x140 */}
+        <div className="shrink-0">
           <div className="relative group">
-            <div className="relative aspect-square bg-white/[0.02] rounded-[40px] border border-white/5 flex items-center justify-center overflow-hidden transition-all duration-700 shadow-2xl">
+            <div className="relative w-[140px] h-[140px] bg-white/[0.01] rounded-[32px] border border-dashed border-white/10 flex items-center justify-center overflow-hidden transition-all duration-500 hover:border-rc-teal/30">
               {formData.logoUrl ? (
-                <img src={formData.logoUrl} alt="Preview" className="w-full h-full object-contain p-12" />
+                <img src={formData.logoUrl} alt="Preview" className="w-full h-full object-contain p-6" />
               ) : (
-                <div className="text-center p-8 opacity-20 group-hover:opacity-40 transition-opacity">
-                  <Upload size={40} className="mx-auto mb-4 text-white" />
-                  <span className="text-[10px] font-medium uppercase tracking-[0.3em] block text-white">Logotipo</span>
+                <div className="text-center p-4 opacity-20 group-hover:opacity-40 transition-opacity">
+                  <Upload size={28} className="mx-auto mb-2 text-white" />
+                  <span className="text-[8px] font-medium uppercase tracking-[0.2em] block text-white text-center">Asset</span>
                 </div>
               )}
-              <label className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-all duration-500 backdrop-blur-xl">
-                <Upload size={24} className="text-black mb-2" />
-                <span className="text-[9px] font-bold text-black uppercase tracking-[0.2em]">Cargar imagen</span>
+              <label className="absolute inset-0 bg-[#0D1117] opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-all duration-500 backdrop-blur-md">
+                <Upload size={20} className="text-rc-teal mb-1" />
+                <span className="text-[8px] font-bold text-rc-teal uppercase tracking-[0.1em]">Cambiar</span>
                 <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
               </label>
             </div>
           </div>
-          <p className="text-[10px] text-slate-700 uppercase tracking-widest text-center leading-relaxed">
-            Identidad visual corporativa validada.
-          </p>
         </div>
 
-        <div className="space-y-12">
-          <div className="space-y-6">
-            <label className="text-[11px] font-medium text-slate-500 uppercase tracking-[0.4em] block">
-              Nombre de la Corporación / Cliente
+        {/* Primary Info Grid */}
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 w-full">
+          <div className="space-y-1">
+            <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] block">
+              Corporación / Cliente
             </label>
             <input 
               required 
               value={formData.client || ''}
               onChange={e => onUpdate({ client: e.target.value })}
               placeholder="CLIENTE ESTRATÉGICO"
-              className="bg-transparent border-none p-0 text-5xl font-light text-white focus:ring-0 w-full tracking-tighter placeholder:text-white/5"
+              className="bg-transparent border-none p-0 text-3xl font-light text-white focus:ring-0 w-full tracking-tighter placeholder:text-white/5"
             />
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8 border-t border-white/5">
-            <div className="space-y-6">
-              <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] block">
-                Responsable de Cuenta
-              </label>
-              <input 
-                value={formData.accountManager || ''}
-                onChange={e => onUpdate({ accountManager: e.target.value })}
-                placeholder="Nombre del Auditor / Lead"
-                className="bg-transparent border-none p-0 text-xl font-light text-white focus:ring-0 w-full tracking-tight"
-              />
-            </div>
-            <div className="space-y-6">
-              <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] block">Nivel de Alerta Operativa</label>
-              <select 
-                value={formData.healthFlag || 'Verde'}
-                onChange={e => onUpdate({ healthFlag: e.target.value as any })}
-                className="bg-transparent border-none p-0 text-xl font-light text-rc-teal focus:ring-0 w-full appearance-none cursor-pointer uppercase tracking-wide"
-              >
-                <option value="Verde" className="bg-[#0A0A0C]">Estatus Óptimo</option>
-                <option value="Amarilla" className="bg-[#0A0A0C]">Atención Preventiva</option>
-                <option value="Roja" className="bg-[#0A0A0C]">Alerta de Riesgo</option>
-              </select>
-            </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] block">
+              Responsable de Cuenta
+            </label>
+            <input 
+              value={formData.accountManager || ''}
+              onChange={e => onUpdate({ accountManager: e.target.value })}
+              placeholder="Nombre del Auditor"
+              className="bg-transparent border-none p-0 text-2xl font-light text-rc-teal focus:ring-0 w-full tracking-tight"
+            />
           </div>
 
-          <div className="space-y-6 pt-8 border-t border-white/5">
-            <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] block">
-              Propósito y Objetivo de Negocio
-            </label>
-            <textarea 
-              value={formData.strategicObjective || ''}
-              onChange={e => onUpdate({ strategicObjective: e.target.value })}
-              placeholder="Defina la visión de éxito para esta cuenta..."
-              className="bg-transparent border-none p-0 text-lg font-light text-white/80 focus:ring-0 w-full h-32 resize-none leading-relaxed placeholder:text-white/5"
+          <div className="space-y-1">
+            <label className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em] block">Alerta Operativa</label>
+            <select 
+              value={formData.healthFlag || 'Verde'}
+              onChange={e => onUpdate({ healthFlag: e.target.value as any })}
+              className="bg-transparent border-none p-0 text-lg font-light text-white/60 focus:ring-0 w-full appearance-none cursor-pointer uppercase tracking-widest"
+            >
+              <option value="Verde" className="bg-[#0D1117]">Estatus Óptimo</option>
+              <option value="Amarilla" className="bg-[#0D1117]">Atención Preventiva</option>
+              <option value="Roja" className="bg-[#0D1117]">Alerta de Riesgo</option>
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em] block">Fecha de Inicio</label>
+            <input 
+              type="date"
+              value={formData.startDate || ''}
+              onChange={e => onUpdate({ startDate: e.target.value })}
+              className="bg-transparent border-none p-0 text-lg font-light text-white/60 focus:ring-0 w-full uppercase tracking-widest"
             />
           </div>
         </div>
+      </div>
+
+      <div className="space-y-4 pt-8 border-t border-white/5">
+        <label className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.3em] block">
+          Propósito y Objetivo Estratégico
+        </label>
+        <textarea 
+          value={formData.strategicObjective || ''}
+          onChange={e => onUpdate({ strategicObjective: e.target.value })}
+          placeholder="Defina la visión de éxito para esta cuenta..."
+          className="bg-transparent border-none p-0 text-base font-light text-white/60 focus:ring-0 w-full max-h-24 resize-none leading-relaxed placeholder:text-white/5"
+        />
       </div>
     </motion.div>
   );

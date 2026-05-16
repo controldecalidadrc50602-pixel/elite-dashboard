@@ -35,10 +35,10 @@ const OpsPulseSection: React.FC<Props> = ({ opsPulse, onUpdate }) => {
     <motion.div 
       initial={{ opacity: 0, x: 20 }} 
       animate={{ opacity: 1, x: 0 }} 
-      className="space-y-16 font-light"
+      className="space-y-6 font-light"
     >
       {/* Operaciones - Métricas de Capacidad */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-16 pb-12 border-b border-white/5">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-white/5">
         <div className="w-full md:w-1/3 space-y-6">
           <label className="text-sm font-light text-slate-500 uppercase tracking-[0.3em] block mb-4">
             HC Contratado
@@ -74,17 +74,17 @@ const OpsPulseSection: React.FC<Props> = ({ opsPulse, onUpdate }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-16">
-        <div className="space-y-12">
-          <div className="space-y-10">
-            <div className="flex items-center justify-between border-b border-white/5 pb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <div className="space-y-6">
+          <div className="space-y-6">
+            <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <div className="space-y-1">
                 <h3 className="text-xl font-light text-white tracking-tight">Matriz de Turnos</h3>
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest">Distribución horaria de la carga</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-widest">Distribución horaria</p>
               </div>
               <button 
                 type="button" onClick={addShift}
-                className="px-6 py-2 bg-white/5 text-white rounded-full hover:bg-white/10 border border-white/10 transition-all text-xs font-light tracking-wide"
+                className="px-4 py-2 bg-white/5 text-white rounded-full hover:bg-white/10 border border-white/10 transition-all text-[10px] font-light tracking-wide uppercase"
               >
                 + Añadir Turno
               </button>
@@ -95,34 +95,34 @@ const OpsPulseSection: React.FC<Props> = ({ opsPulse, onUpdate }) => {
                 <motion.div 
                   layout
                   key={shift.id} 
-                  className="p-8 bg-white/[0.02] border border-white/5 rounded-[32px] space-y-6 hover:bg-white/[0.04] transition-all duration-500 group relative"
+                  className="p-6 bg-white/[0.01] border border-white/5 rounded-[32px] space-y-4 hover:bg-white/[0.03] transition-all duration-500 group relative"
                 >
                   <button 
                     type="button" onClick={() => removeShift(shift.id)}
                     className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center text-rose-500/20 hover:text-rose-500 transition-all"
                   >
-                    <X size={14} />
+                    <X size={12} />
                   </button>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <input 
                       value={shift.name}
                       onChange={e => updateShift(idx, { name: e.target.value })}
-                      className="bg-transparent border-none p-0 text-xs font-medium text-rc-teal uppercase tracking-[0.2em] focus:ring-0 w-full"
+                      className="bg-transparent border-none p-0 text-[10px] font-medium text-rc-teal uppercase tracking-[0.2em] focus:ring-0 w-full"
                     />
                     <input 
                       value={shift.timeRange}
                       onChange={e => updateShift(idx, { timeRange: e.target.value })}
-                      className="bg-transparent border-none p-0 text-xl font-light text-white focus:ring-0 w-full tracking-tight"
+                      className="bg-transparent border-none p-0 text-lg font-light text-white focus:ring-0 w-full tracking-tight"
                     />
                   </div>
                   
                   <div className="flex items-center gap-4 pt-4 border-t border-white/5">
-                    <span className="text-[10px] font-medium text-slate-600 uppercase tracking-widest">Headcount</span>
+                    <span className="text-[9px] font-medium text-slate-600 uppercase tracking-widest">HC</span>
                     <input 
                       type="number" value={shift.peopleCount}
                       onChange={e => updateShift(idx, { peopleCount: parseInt(e.target.value) || 0 })}
-                      className="bg-transparent border-none p-0 text-2xl font-light text-white focus:ring-0 w-full"
+                      className="bg-transparent border-none p-0 text-xl font-light text-white focus:ring-0 w-full"
                     />
                   </div>
                 </motion.div>
@@ -131,15 +131,15 @@ const OpsPulseSection: React.FC<Props> = ({ opsPulse, onUpdate }) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
-          <div className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] space-y-8">
-            <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] block text-center">Estado de Contingencia</label>
-            <div className="flex justify-center gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+          <div className="p-8 bg-white/[0.01] border border-white/5 rounded-[32px] space-y-6">
+            <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] block text-center">Contingencia</label>
+            <div className="flex justify-center gap-2">
               {['Disponible', 'En Uso', 'Crítico'].map(status => (
                 <button
                   key={status} type="button"
                   onClick={() => onUpdate({ backupStatus: status as any })}
-                  className={`px-6 py-3 rounded-full text-[10px] font-medium uppercase tracking-[0.2em] transition-all duration-300 ${
+                  className={`px-4 py-2 rounded-full text-[9px] font-medium uppercase tracking-[0.2em] transition-all duration-300 ${
                     opsPulse?.backupStatus === status 
                     ? 'bg-white text-black' 
                     : 'bg-white/5 text-slate-500 hover:text-white'
@@ -151,11 +151,11 @@ const OpsPulseSection: React.FC<Props> = ({ opsPulse, onUpdate }) => {
             </div>
           </div>
 
-          <div className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] flex flex-col items-center justify-center space-y-4">
-             <p className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.3em]">Eficiencia Operativa</p>
+          <div className="p-8 bg-white/[0.01] border border-white/5 rounded-[32px] flex flex-col items-center justify-center space-y-2">
+             <p className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.3em]">Eficiencia</p>
              <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-light text-rc-teal glow-text">{( (opsPulse?.hcReal || 0) / (opsPulse?.hcContracted || 1) * 100).toFixed(0)}%</span>
-                <span className="text-slate-600 text-sm uppercase tracking-widest">Capacidad</span>
+                <span className="text-4xl font-light text-rc-teal glow-text">{( (opsPulse?.hcReal || 0) / (opsPulse?.hcContracted || 1) * 100).toFixed(0)}%</span>
+                <span className="text-slate-600 text-[10px] uppercase tracking-widest">Capacidad</span>
              </div>
           </div>
         </div>

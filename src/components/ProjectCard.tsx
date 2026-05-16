@@ -37,17 +37,17 @@ const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({
              {project.logoUrl ? (
                <img src={project.logoUrl} alt={project.client} className="w-10 h-10 object-contain" />
              ) : (
-               <span className="text-xl font-black text-rc-teal uppercase">{project.client.charAt(0)}</span>
+               <span className="text-xl font-medium text-rc-teal uppercase opacity-40">{project.client.charAt(0)}</span>
              )}
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="text-[var(--text-primary)] font-black text-2xl leading-tight group-hover:text-rc-teal transition-colors truncate uppercase tracking-tighter">
+            <h4 className="text-[var(--text-primary)] font-light text-3xl leading-tight group-hover:text-rc-teal transition-all duration-500 truncate uppercase tracking-tighter">
                {project.client}
             </h4>
-            <div className="flex items-center gap-3 text-[var(--text-secondary)] text-[11px] font-black mt-1 uppercase tracking-widest opacity-50">
-              <span className="flex items-center gap-1"><Zap size={12} className="text-rc-teal" /> {project.techDNA?.operationMode}</span>
-              <span className="w-1 h-1 rounded-full bg-white/20" />
-              <span className="flex items-center gap-1"><Globe size={12} /> {project.techDNA?.isp}</span>
+            <div className="flex items-center gap-3 text-slate-600 text-[10px] font-medium mt-3 uppercase tracking-[0.3em] opacity-60">
+              <span className="flex items-center gap-1.5"><Zap size={12} className="text-rc-teal" strokeWidth={1.5} /> {project.techDNA?.operationMode}</span>
+              <span className="w-1 h-1 rounded-full bg-white/10" />
+              <span className="flex items-center gap-1.5"><Globe size={12} strokeWidth={1.5} /> {project.techDNA?.isp}</span>
             </div>
           </div>
         </div>
@@ -55,13 +55,13 @@ const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({
 
       {/* Flag Badge */}
       <div className="flex mb-6 relative z-10">
-        <div className={`flex items-center gap-2 px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border shadow-2xl ${flagStyle}`}>
+        <div className={`flex items-center gap-3 px-6 py-2.5 rounded-full text-[9px] font-medium uppercase tracking-[0.3em] border shadow-2xl ${flagStyle}`}>
           {project.healthFlag === 'Roja' || project.healthFlag === 'Negra' ? (
-             <AlertTriangle size={14} className="animate-pulse" />
+             <AlertTriangle size={14} className="animate-pulse" strokeWidth={1.5} />
           ) : (
-             <ShieldCheck size={14} />
+             <ShieldCheck size={14} strokeWidth={1.5} />
           )}
-          Bandera {project.healthFlag}
+          Estado: {project.healthFlag}
         </div>
       </div>
 
@@ -80,8 +80,8 @@ const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({
         {/* HC Comparison */}
         <div className="space-y-2">
             <div className="flex items-center justify-between">
-                <span className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest opacity-60">Pulse HC</span>
-                <span className="text-[10px] font-black text-rc-teal">{project.opsPulse?.hcReal || 0}/{project.opsPulse?.hcContracted || 0}</span>
+                <span className="text-[8px] font-medium text-slate-600 uppercase tracking-[0.4em] opacity-40">Pulse HC</span>
+                <span className="text-[10px] font-medium text-rc-teal tracking-tighter">{project.opsPulse?.hcReal || 0} / {project.opsPulse?.hcContracted || 0}</span>
             </div>
             <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden">
                 <motion.div 
@@ -95,12 +95,12 @@ const ProjectCard: React.FC<{ project: Project, onOpenDetail: () => void }> = ({
         {/* Services / Assets Summary */}
         <div className="flex items-center justify-end gap-6">
             <div className="flex flex-col items-end">
-                <span className="text-xl font-black text-[var(--text-primary)] leading-none">{project?.services?.length || 0}</span>
-                <span className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest opacity-60">Services</span>
+                <span className="text-xl font-light text-white leading-none tracking-tighter">{project?.services?.length || 0}</span>
+                <span className="text-[8px] font-medium text-slate-600 uppercase tracking-[0.4em] opacity-40 mt-1">Services</span>
             </div>
             <div className="flex flex-col items-end">
-                <span className="text-xl font-black text-rc-teal leading-none">{project?.assets?.length || 0}</span>
-                <span className="text-[8px] font-black text-[var(--text-secondary)] uppercase tracking-widest opacity-60">Assets</span>
+                <span className="text-xl font-light text-rc-teal leading-none tracking-tighter">{project?.assets?.length || 0}</span>
+                <span className="text-[8px] font-medium text-slate-600 uppercase tracking-[0.4em] opacity-40 mt-1">Assets</span>
             </div>
         </div>
       </div>

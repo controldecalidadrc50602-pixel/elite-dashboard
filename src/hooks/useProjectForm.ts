@@ -30,6 +30,18 @@ export const useProjectForm = ({ project, isOpen, onSave, onClose }: UseProjectF
       maturityIndex: 'Nivel 1: Inicial', 
       growthPotential: '',
       status: 'Verde' 
+    },
+    quarterlyAssessment: {
+      sla: 5,
+      comunicacion: 5,
+      resolucion: 5,
+      experiencia: 5,
+      continuidad: 5,
+      orden: 5,
+      conversion: 5,
+      adaptacion: 5,
+      cultura: 5,
+      valor: 5
     }
   };
 
@@ -45,7 +57,8 @@ export const useProjectForm = ({ project, isOpen, onSave, onClose }: UseProjectF
         assets: project.assets || initialData.assets,
         strategy: project.strategy || initialData.strategy,
         adminStatus: project.adminStatus || 'En Proceso',
-        clientEvaluation: project.clientEvaluation || initialData.clientEvaluation
+        clientEvaluation: project.clientEvaluation || initialData.clientEvaluation,
+        quarterlyAssessment: project.quarterlyAssessment || initialData.quarterlyAssessment
       });
     } else {
       setFormData(initialData);
@@ -121,7 +134,8 @@ export const useProjectForm = ({ project, isOpen, onSave, onClose }: UseProjectF
       assets: formData.assets as HardwareAsset[],
       strategy: formData.strategy as StrategySLA,
       adminStatus: formData.adminStatus as any || 'En Proceso',
-      clientEvaluation: formData.clientEvaluation as ClientEvaluation
+      clientEvaluation: formData.clientEvaluation as ClientEvaluation,
+      quarterlyAssessment: formData.quarterlyAssessment as any
     };
 
     onSave(finalProject);

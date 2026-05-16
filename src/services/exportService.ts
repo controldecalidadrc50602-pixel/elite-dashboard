@@ -218,18 +218,18 @@ export const exportService = {
 
     applyBranding(doc);
 
-    // Global Metrics Calculation
+    // Global Metrics Calculation (Zoho V4.2 Pillars)
     const pillars = [
-      { key: 'responseTime', label: 'Tiempo de Respuesta' },
-      { key: 'communicationQuality', label: 'Comunicación Fluida' },
-      { key: 'effectiveResolution', label: 'Capacidad de Resolución' },
-      { key: 'proactivity', label: 'Proactividad Operativa' },
-      { key: 'technicalKnowledge', label: 'Conocimiento Técnico' },
-      { key: 'reliability', label: 'Confiabilidad / Backup' },
-      { key: 'flexibility', label: 'Flexibilidad de Cambio' },
-      { key: 'innovation', label: 'Aporte de Innovación' },
-      { key: 'serviceCulture', label: 'Cultura de Servicio' },
-      { key: 'valuePerception', label: 'Percepción de Valor' }
+      { key: 'sla', label: 'SLA' },
+      { key: 'comunicacion', label: 'Comunicación' },
+      { key: 'resolucion', label: 'Resolución' },
+      { key: 'experiencia', label: 'Experiencia' },
+      { key: 'continuidad', label: 'Continuidad' },
+      { key: 'orden', label: 'Orden' },
+      { key: 'conversion', label: 'Conversión' },
+      { key: 'adaptacion', label: 'Adaptación' },
+      { key: 'cultura', label: 'Cultura' },
+      { key: 'valor', label: 'Valor' }
     ];
 
     const globalPillarAverages = pillars.map(p => {
@@ -268,107 +268,129 @@ export const exportService = {
       }
     });
 
-    // Alert Section
-    const finalY = (doc as any).lastAutoTable.finalY || 180;
-    doc.addPage();
-    applyBranding(doc);
-
-    doc.setTextColor(10, 10, 11);
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('ANÁLISIS DE RIESGO Y CHURN', 20, 60);
-
-    const atRisk = projects.filter(p => p.healthFlag !== 'Verde');
-    
-    autoTable(doc, {
-      startY: 70,
-      head: [['Cliente', 'Estado de Salud', 'Evaluación Administrativa']],
-      body: atRisk.map(p => [
-        p.client.toUpperCase(),
-        p.healthFlag,
-        p.clientEvaluation?.status || 'N/A'
-      ]),
-      theme: 'striped',
-      headStyles: { fillColor: [244, 63, 94], textColor: [255, 255, 255] },
-      styles: { fontSize: 9 }
-    });
-
     doc.save(`Reporte_Calidad_Global_Rc506_${new Date().toISOString().split('T')[0]}.pdf`);
   },
 
   /**
-   * EXPORT INDIVIDUAL PROJECT PDF (SMART VIEW ENHANCED)
+   * EXPORT INDIVIDUAL PROJECT PDF (SMART VIEW ENHANCED V4.2)
    */
-  exportIndividualPDF: (project: Project, t: any) => {
+  exportIndividualPDF: (project: Project) => {
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
     const applyBranding = (pdf: jsPDF) => {
       pdf.setFillColor(10, 10, 11);
-      pdf.rect(0, 0, pageWidth, 45, 'F');
+      pdf.rect(0, 0, pageWidth, 50, 'F');
+      
       pdf.setTextColor(59, 188, 169);
-      pdf.setFontSize(22);
-      pdf.text('RC', pageWidth - 35, 20);
+      pdf.setFontSize(24);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('RC', pageWidth - 35, 22);
       pdf.setTextColor(255, 255, 255);
-      pdf.text('506', pageWidth - 23, 20);
+      pdf.text('506', pageWidth - 22, 22);
       
       pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(14);
-      pdf.text(project.client.toUpperCase(), 20, 20);
+      pdf.setFontSize(16);
+      pdf.text(project.client.toUpperCase(), 20, 22);
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(100, 116, 139);
+      pdf.text('EXPEDIENTE ESTRATÉGICO ELITE V4.2', 20, 28);
+      pdf.text(`Responsable: ${project.accountManager || 'N/A'}`, 20, 34);
+
+      // Footer
+      pdf.setFillColor(10, 10, 11);
+      pdf.rect(0, pageHeight - 15, pageWidth, 15, 'F');
+      pdf.setTextColor(255, 255, 255);
       pdf.setFontSize(8);
-      pdf.text('EXPEDIENTE CRM SMARTVIEW', 20, 26);
+      pdf.text('Confidencial - Propiedad Intelectual Rc506', 20, pageHeight - 6);
+      pdf.text(`Generado: ${new Date().toLocaleString()}`, pageWidth - 60, pageHeight - 6);
     };
 
     applyBranding(doc);
 
-    // Quarterly Assessment Data
+    // Health Score Dynamic Calculation
     const assessment = project.quarterlyAssessment || {
-      responseTime: 0, communicationQuality: 0, effectiveResolution: 0, proactivity: 0, technicalKnowledge: 0,
-      reliability: 0, flexibility: 0, innovation: 0, serviceCulture: 0, valuePerception: 0
+      sla: 5, comunicacion: 5, resolucion: 5, experiencia: 5, continuidad: 5,
+      orden: 5, conversion: 5, adaptacion: 5, cultura: 5, valor: 5
     };
 
+    const avgPillars = Math.round(
+      Object.values(assessment).reduce((a, b) => a + (typeof b === 'number' ? b : 0), 0) / 10
+    );
+
+    // Header Metrics Box
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(20, 60, pageWidth - 40, 35, 3, 3, 'F');
+    
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(28);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${avgPillars}.0`, 45, 82, { align: 'center' });
+    doc.setFontSize(8);
+    doc.setTextColor(100, 116, 139);
+    doc.text('HEALTH INDEX', 45, 88, { align: 'center' });
+
+    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('RESUMEN OPERATIVO', 80, 72);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`País: ${project.techDNA?.country || 'N/A'}`, 80, 78);
+    doc.text(`Arquitectura: ${project.techDNA?.operationMode || 'N/A'}`, 80, 83);
+    doc.text(`Inicio de Servicio: ${project.startDate}`, 80, 88);
+
+    // Detailed Pillars Table (Zoho V4.2 Style)
     const pillarData = [
-      ['Tiempo de Respuesta', assessment.responseTime],
-      ['Comunicación Fluida', assessment.communicationQuality],
-      ['Capacidad de Resolución', assessment.effectiveResolution],
-      ['Proactividad Operativa', assessment.proactivity],
-      ['Conocimiento Técnico', assessment.technicalKnowledge],
-      ['Confiabilidad / Backup', assessment.reliability],
-      ['Flexibilidad de Cambio', assessment.flexibility],
-      ['Aporte de Innovación', assessment.innovation],
-      ['Cultura de Servicio', assessment.serviceCulture],
-      ['Percepción de Valor', assessment.valuePerception]
+      ['Pilar SLA', assessment.sla, assessment.sla >= 4 ? 'Óptimo' : 'Mejorable'],
+      ['Comunicación', assessment.comunicacion, assessment.comunicacion >= 4 ? 'Óptimo' : 'Mejorable'],
+      ['Resolución', assessment.resolucion, assessment.resolucion >= 4 ? 'Óptimo' : 'Mejorable'],
+      ['Experiencia', assessment.experiencia, assessment.experiencia >= 4 ? 'Óptimo' : 'Mejorable'],
+      ['Continuidad', assessment.continuidad, assessment.continuidad >= 4 ? 'Óptimo' : 'Mejorable'],
+      ['Orden', assessment.orden, assessment.orden >= 4 ? 'Óptimo' : 'Mejorable'],
+      ['Conversión', assessment.conversion, assessment.conversion >= 4 ? 'Óptimo' : 'Mejorable'],
+      ['Adaptación', assessment.adaptacion, assessment.adaptacion >= 4 ? 'Óptimo' : 'Mejorable'],
+      ['Cultura', assessment.cultura, assessment.cultura >= 4 ? 'Óptimo' : 'Mejorable'],
+      ['Valor', assessment.valor, assessment.valor >= 4 ? 'Óptimo' : 'Mejorable']
     ];
 
     autoTable(doc, {
-      startY: 60,
-      head: [['Pilar Estratégico', 'Puntuación (1-5)']],
+      startY: 105,
+      head: [['Dimensión Estratégica', 'Score', 'Estatus']],
       body: pillarData,
-      theme: 'grid',
-      headStyles: { fillColor: [59, 188, 169] },
-      styles: { fontSize: 10 }
+      theme: 'striped',
+      headStyles: { fillColor: [10, 10, 11], textColor: [255, 255, 255] },
+      styles: { fontSize: 9, cellPadding: 4 },
+      columnStyles: {
+        1: { halign: 'center', fontStyle: 'bold' },
+        2: { halign: 'center' }
+      }
     });
 
-    const finalY = (doc as any).lastAutoTable.finalY + 20;
-    
-    doc.setFontSize(12);
+    // Tech DNA Section
+    const finalY = (doc as any).lastAutoTable.finalY + 15;
+    doc.setFontSize(11);
     doc.setTextColor(10, 10, 11);
-    doc.text('ADN TÉCNICO Y OPERATIVO', 20, finalY);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INFRAESTRUCTURA Y CONECTIVIDAD (TECH DNA)', 20, finalY);
 
     autoTable(doc, {
       startY: finalY + 5,
       body: [
-        ['Modalidad', project.techDNA?.operationMode || 'N/A'],
-        ['País', project.techDNA?.country || 'N/A'],
-        ['Troncal Virtual', project.techDNA?.sipTrunkVirtual || 'N/A'],
-        ['Personal Real', `${project.opsPulse?.hcReal || 0} HC`],
-        ['Personal Contratado', `${project.opsPulse?.hcContracted || 0} HC`]
+        ['ISP Principal', project.techDNA?.isp || 'N/A', 'Tipo Enlace', project.techDNA?.connectivityType || 'N/A'],
+        ['Troncal SIP', project.techDNA?.sipTrunkVirtual || 'N/A', 'Redundancia', project.techDNA?.redundancy ? 'ACTIVA' : 'NINGUNA'],
+        ['Velocidad Red', `${project.techDNA?.internetSpeed || 0} Mbps`, 'Personal HC', `${project.opsPulse?.hcReal || 0} / ${project.opsPulse?.hcContracted || 0}`]
       ],
-      theme: 'plain',
-      styles: { fontSize: 9 }
+      theme: 'grid',
+      styles: { fontSize: 8, cellPadding: 3 },
+      columnStyles: {
+        0: { fontStyle: 'bold', fillColor: [248, 250, 252] },
+        2: { fontStyle: 'bold', fillColor: [248, 250, 252] }
+      }
     });
 
-    doc.save(`Expediente_SmartView_${project.client.replace(/\s+/g, '_')}.pdf`);
+    doc.save(`Reporte_Elite_V4.2_${project.client.replace(/\s+/g, '_')}.pdf`);
   }
 };

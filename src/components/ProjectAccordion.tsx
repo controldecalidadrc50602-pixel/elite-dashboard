@@ -56,10 +56,10 @@ const ProjectAccordion: React.FC<Props> = ({ project, onOpenDetail }) => {
             )}
           </div>
           <div className="truncate">
-            <h4 className="text-[13px] font-semibold text-[var(--text-primary)] tracking-tight truncate group-hover:text-[var(--rc-turquoise)] transition-colors">
+            <h4 className="text-[14px] font-medium text-[var(--text-primary)] tracking-tight truncate group-hover:text-rc-teal transition-all duration-500">
               {project.client}
             </h4>
-            <p className="text-[10px] font-medium text-[var(--text-secondary)] opacity-50 tracking-wide mt-0.5">#{project.id}</p>
+            <p className="text-[9px] font-medium text-slate-600 uppercase tracking-[0.2em] mt-1.5 opacity-40">#{project.id.slice(0, 8)}</p>
           </div>
         </div>
 
@@ -79,18 +79,32 @@ const ProjectAccordion: React.FC<Props> = ({ project, onOpenDetail }) => {
                 </div>
              </div>
           </div>
-          <div className="flex flex-col gap-1.5">
-             <span className="text-[9px] font-medium text-[var(--text-secondary)] uppercase tracking-wider opacity-60">Salud</span>
-             <div className="flex items-center gap-2 text-[var(--rc-turquoise)]">
-                <Activity size={12} strokeWidth={2.5} />
-                <span className="text-[13px] font-semibold tabular-nums">{latestEval?.quantitative || 0}</span>
+          <div className="flex flex-col gap-2">
+             <span className="text-[8px] font-medium text-slate-600 uppercase tracking-[0.4em] opacity-40">HC Pulse</span>
+             <div className="flex items-center gap-4">
+                <span className="text-[11px] font-medium text-[var(--text-primary)] tabular-nums tracking-tighter">
+                   {project.opsPulse?.hcReal || 0} / {project.opsPulse?.hcContracted || 0}
+                </span>
+                <div className="w-20 h-1 bg-white/[0.03] rounded-full overflow-hidden">
+                   <div 
+                      className="h-full bg-rc-teal shadow-[0_0_8px_rgba(59,188,169,0.3)]" 
+                      style={{ width: `${Math.min(100, ((project.opsPulse?.hcReal || 0) / (project.opsPulse?.hcContracted || 1)) * 100)}%` }} 
+                   />
+                </div>
+             </div>
+          </div>
+          <div className="flex flex-col gap-2">
+             <span className="text-[8px] font-medium text-slate-600 uppercase tracking-[0.4em] opacity-40">Salud</span>
+             <div className="flex items-center gap-3 text-rc-teal">
+                <Activity size={12} strokeWidth={1.5} />
+                <span className="text-[12px] font-medium tabular-nums">{latestEval?.quantitative || 0}</span>
              </div>
           </div>
         </div>
 
         {/* Flag Status Column */}
         <div className="flex justify-end pr-8">
-          <div className={`text-[10px] font-semibold uppercase tracking-wider px-4 py-1.5 rounded-lg ${flagStyles} border flex items-center gap-2`}>
+          <div className={`text-[9px] font-medium uppercase tracking-[0.3em] px-5 py-2 rounded-full ${flagStyles} border flex items-center gap-3 shadow-2xl`}>
              <div className={`w-1.5 h-1.5 rounded-full ${flagStyles.split(' ')[0]} bg-current`} />
              {project.healthFlag || 'Verde'}
           </div>
@@ -139,7 +153,7 @@ const ProjectAccordion: React.FC<Props> = ({ project, onOpenDetail }) => {
               <div className="md:col-span-4 flex flex-col justify-end">
                 <button 
                   onClick={(e) => { e.stopPropagation(); onOpenDetail(); }}
-                  className="w-full bg-[var(--rc-turquoise)] hover:bg-[var(--rc-turquoise)]/90 text-[var(--bg-primary)] py-5 rounded-2xl text-[11px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-3 shadow-lg shadow-[var(--rc-turquoise)]/20 active:scale-[0.98]"
+                  className="w-full bg-white text-black py-5 rounded-full text-[11px] font-medium uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-4 shadow-2xl hover:bg-slate-200 active:scale-95"
                 >
                   <ExternalLink size={18} strokeWidth={1.5} /> Gestionar Elite V3.5
                 </button>

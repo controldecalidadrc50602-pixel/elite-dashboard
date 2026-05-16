@@ -58,7 +58,7 @@ const Sidebar: React.FC = () => {
               {({ isActive }) => (
                 <>
                   <Icon size={19} strokeWidth={isActive ? 2.5 : 1.5} />
-                  <span className={`text-[7px] font-black uppercase tracking-[0.1em] text-center px-1 ${isActive ? 'opacity-100' : 'opacity-40'}`}>
+                  <span className={`text-[7px] font-medium uppercase tracking-[0.2em] text-center px-1 ${isActive ? 'opacity-100' : 'opacity-40'}`}>
                     {item.label}
                   </span>
                   {isActive && (

@@ -132,7 +132,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-rc-teal hover:bg-[#34b096] shadow-xl shadow-rc-teal/20 text-white font-black py-5 rounded-2xl flex items-center justify-center gap-3 group transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase text-[11px] tracking-widest active:scale-[0.98]"
+            className="w-full bg-white text-black py-5 rounded-2xl flex items-center justify-center gap-4 transition-all text-[11px] uppercase tracking-[0.2em] shadow-2xl hover:bg-slate-200 active:scale-95"
           >
             {loading ? 'Validando Acceso...' : 'Sincronizar Panel'}
             {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
@@ -150,7 +150,7 @@ const Login = () => {
           onClick={handleGoogleLogin}
           type="button"
           disabled={loading}
-          className="w-full bg-white text-slate-900 hover:bg-slate-100 font-black py-5 rounded-2xl flex items-center justify-center gap-4 transition-all text-[11px] uppercase tracking-widest shadow-lg hover:shadow-white/10 active:scale-[0.98]"
+          className="w-full bg-white text-slate-900 hover:bg-slate-100 font-medium py-5 rounded-2xl flex items-center justify-center gap-4 transition-all text-[11px] uppercase tracking-widest shadow-lg hover:shadow-white/10 active:scale-[0.98]"
         >
           <GoogleIcon />
           Entrar con Google

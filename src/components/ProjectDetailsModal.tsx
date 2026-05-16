@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project, QuarterlyAssessment, ClientEvaluation } from '../types/project';
+import { exportService } from '../services/exportService';
 
 interface Props {
   project: Project | null;
@@ -71,39 +72,39 @@ const ProjectDetailsModal: React.FC<Props> = ({
             className="absolute inset-0 bg-black/90 backdrop-blur-3xl" 
           />
           <motion.div 
-            initial={{ scale: 0.95, opacity: 0, y: 30 }} 
+            initial={{ scale: 0.98, opacity: 0, y: 20 }} 
             animate={{ scale: 1, opacity: 1, y: 0 }} 
-            exit={{ scale: 0.95, opacity: 0, y: 30 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="relative w-[85vw] h-[90vh] bg-[#161B22] border border-white/5 rounded-[48px] shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col z-[110]"
+            exit={{ scale: 0.98, opacity: 0, y: 20 }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className="relative w-[85vw] h-[90vh] bg-[#0B0E14] border border-white/5 rounded-[48px] shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col z-[110] font-light"
           >
             {/* Action Bar Superior */}
-            <div className="p-10 border-b border-white/5 flex items-center justify-between bg-black/20 backdrop-blur-xl">
-               <div className="flex items-center gap-8">
-                  <div className="w-20 h-20 bg-white/[0.03] rounded-[32px] border border-white/10 flex items-center justify-center p-4 shadow-2xl">
+            <div className="p-10 border-b border-white/5 flex items-center justify-between bg-[#0B0E14]/50 backdrop-blur-3xl">
+               <div className="flex items-center gap-10">
+                  <div className="w-20 h-20 bg-white/[0.01] rounded-[32px] border border-white/5 flex items-center justify-center p-6 transition-all group-hover:border-rc-teal/30">
                      {editedProject.logoUrl ? (
-                        <img src={editedProject.logoUrl} className="w-full h-full object-contain" />
+                        <img src={editedProject.logoUrl} className="w-full h-full object-contain filter grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
                      ) : (
-                        <ShieldCheck className="text-rc-teal opacity-40" size={40} />
+                        <ShieldCheck className="text-white opacity-10" size={32} />
                      )}
                   </div>
                   <div>
-                     <div className="flex items-center gap-4">
-                        <h2 className="text-4xl font-black text-white tracking-tighter uppercase leading-none">{editedProject.client}</h2>
-                        <div className={`px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${getFlagColor(editedProject.healthFlag)}`}>
-                           <div className={`w-2 h-2 rounded-full ${editedProject.healthFlag === 'Verde' ? 'bg-emerald-400' : editedProject.healthFlag === 'Amarilla' ? 'bg-amber-400' : 'bg-rose-500'}`} />
-                           HC {editedProject.healthFlag}
+                     <div className="flex items-center gap-6">
+                        <h2 className="text-5xl font-light text-white tracking-tighter leading-none">{editedProject.client}</h2>
+                        <div className={`px-4 py-1.5 rounded-full border text-[9px] font-medium uppercase tracking-[0.2em] flex items-center gap-2 ${getFlagColor(editedProject.healthFlag)}`}>
+                           <div className={`w-1.5 h-1.5 rounded-full ${editedProject.healthFlag === 'Verde' ? 'bg-emerald-400' : editedProject.healthFlag === 'Amarilla' ? 'bg-amber-400' : 'bg-rose-500'}`} />
+                           Salud: {editedProject.healthFlag}
                         </div>
                      </div>
-                     <div className="flex items-center gap-4 mt-4">
+                     <div className="flex items-center gap-3 mt-6">
                         {['En Proceso', 'Prueba', 'Activo', 'Inactivo'].map(status => (
                            <button
                               key={status}
                               onClick={() => setEditedProject({ ...editedProject, adminStatus: status as any })}
-                              className={`px-5 py-2 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] transition-all ${
+                              className={`px-5 py-2 rounded-full text-[9px] font-medium uppercase tracking-[0.2em] transition-all duration-500 ${
                                  editedProject.adminStatus === status 
-                                 ? 'bg-rc-teal text-black shadow-lg shadow-rc-teal/30' 
-                                 : 'bg-white/5 text-slate-500 hover:text-white'
+                                 ? 'bg-white text-black' 
+                                 : 'bg-white/5 text-slate-500 hover:text-white hover:bg-white/10'
                               }`}
                            >
                               {status}
@@ -114,153 +115,160 @@ const ProjectDetailsModal: React.FC<Props> = ({
                </div>
 
                <div className="flex items-center gap-4">
-                  <button onClick={() => onEditRequest?.(editedProject)} className="flex flex-col items-center gap-2 p-4 bg-white/5 hover:bg-rc-teal hover:text-black rounded-3xl border border-white/10 text-slate-400 transition-all group">
-                     <Edit3 size={20} />
-                     <span className="text-[8px] font-black uppercase tracking-widest">Ajustes</span>
+                  <button 
+                    onClick={() => exportService.exportIndividualPDF(editedProject)}
+                    className="flex flex-col items-center gap-2 p-4 bg-rc-teal/5 hover:bg-rc-teal/10 rounded-[32px] border border-rc-teal/20 text-rc-teal transition-all"
+                  >
+                     <FileText size={18} strokeWidth={1.5} />
+                     <span className="text-[8px] font-medium uppercase tracking-widest">Reporte PDF</span>
+                  </button>
+                  <button onClick={() => onEditRequest?.(editedProject)} className="flex flex-col items-center gap-2 p-4 bg-white/5 hover:bg-white/10 rounded-[32px] border border-white/5 text-slate-400 hover:text-white transition-all">
+                     <Edit3 size={18} strokeWidth={1.5} />
+                     <span className="text-[8px] font-medium uppercase tracking-widest">Ajustes</span>
                   </button>
                   <button 
                     onClick={() => onArchive?.(editedProject)}
-                    className="flex flex-col items-center gap-2 p-4 bg-white/5 hover:bg-amber-500/20 rounded-3xl border border-white/10 text-slate-400 hover:text-amber-400 transition-all"
+                    className="flex flex-col items-center gap-2 p-4 bg-white/5 hover:bg-amber-500/10 rounded-[32px] border border-white/5 text-slate-400 hover:text-amber-400 transition-all"
                   >
-                     <Archive size={20} />
-                     <span className="text-[8px] font-black uppercase tracking-widest">Archivar</span>
+                     <Archive size={18} strokeWidth={1.5} />
+                     <span className="text-[8px] font-medium uppercase tracking-widest">Archivar</span>
                   </button>
-                  <button onClick={() => onDelete?.(editedProject.id)} className="flex flex-col items-center gap-2 p-4 bg-rose-500/10 hover:bg-rose-500/20 rounded-3xl border border-rose-500/20 text-rose-500 transition-all">
-                     <Trash size={20} />
-                     <span className="text-[8px] font-black uppercase tracking-widest">Eliminar</span>
+                  <button onClick={() => onDelete?.(editedProject.id)} className="flex flex-col items-center gap-2 p-4 bg-rose-500/5 hover:bg-rose-500/10 rounded-[32px] border border-rose-500/10 text-rose-500/40 hover:text-rose-500 transition-all">
+                     <Trash size={18} strokeWidth={1.5} />
+                     <span className="text-[8px] font-medium uppercase tracking-widest">Eliminar</span>
                   </button>
-                  <div className="h-12 w-px bg-white/10 mx-3" />
-                  <button onClick={onClose} className="p-5 bg-white/5 hover:bg-white/10 rounded-3xl text-white transition-all border border-white/5">
-                     <X size={28} strokeWidth={2.5} />
+                  <div className="h-10 w-px bg-white/5 mx-4" />
+                  <button onClick={onClose} className="p-4 bg-white/5 hover:bg-white/10 rounded-full text-white transition-all border border-white/5">
+                     <X size={24} strokeWidth={1} />
                   </button>
                </div>
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex px-12 gap-4 border-b border-white/5 bg-black/10">
+            <div className="flex px-12 gap-2 border-b border-white/5 bg-black/10">
                {tabs.map(tab => (
                   <button
                      key={tab.id}
                      onClick={() => setActiveTab(tab.id as any)}
-                     className={`flex items-center gap-4 px-10 py-6 text-[12px] font-black uppercase tracking-[0.2em] transition-all relative ${
-                        activeTab === tab.id ? 'text-rc-teal' : 'text-slate-500 hover:text-white'
+                     className={`flex items-center gap-4 px-8 py-6 text-[11px] font-medium uppercase tracking-[0.3em] transition-all relative ${
+                        activeTab === tab.id ? 'text-white' : 'text-slate-600 hover:text-white'
                      }`}
                   >
-                     <tab.icon size={18} />
+                     <tab.icon size={16} strokeWidth={activeTab === tab.id ? 2 : 1.5} />
                      {tab.label}
                      {activeTab === tab.id && (
-                        <motion.div layoutId="modal-tab-active" className="absolute bottom-0 left-0 right-0 h-1 bg-rc-teal rounded-t-full shadow-[0_0_20px_rgba(59,188,169,0.8)]" />
+                        <motion.div layoutId="modal-tab-active" className="absolute bottom-0 left-0 right-0 h-0.5 bg-rc-teal" />
                      )}
                   </button>
                ))}
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-12 bg-gradient-to-b from-black/20 to-transparent">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-16">
                <AnimatePresence mode="wait">
                   <motion.div
                      key={activeTab}
-                     initial={{ opacity: 0, y: 10 }}
+                     initial={{ opacity: 0, y: 5 }}
                      animate={{ opacity: 1, y: 0 }}
-                     exit={{ opacity: 0, y: -10 }}
-                     transition={{ duration: 0.2 }}
+                     exit={{ opacity: 0, y: -5 }}
+                     transition={{ duration: 0.4 }}
                      className="max-w-7xl mx-auto w-full min-h-full"
                   >
                      {activeTab === 'summary' && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                           <div className="space-y-10">
-                              <h3 className="text-[11px] font-black text-white uppercase tracking-[0.4em] flex items-center gap-4 opacity-40">
-                                 <Globe size={16} className="text-rc-teal" /> ADN Tecnológico
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+                           <div className="space-y-12">
+                              <h3 className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.5em] flex items-center gap-4 opacity-60">
+                                 <Globe size={14} className="text-rc-teal" strokeWidth={1.5} /> ADN Tecnológico
                               </h3>
-                              <div className="space-y-5">
+                              <div className="space-y-4">
                                  {[
                                     { label: 'País de Origen', value: editedProject.techDNA?.country },
                                     { label: 'Sip Trunk Virtual', value: editedProject.techDNA?.sipTrunkVirtual },
                                     { label: 'ISP / Conectividad', value: editedProject.techDNA?.isp },
                                     { label: 'Modelo Operativo', value: editedProject.techDNA?.operationMode }
                                  ].map(item => (
-                                    <div key={item.label} className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl flex justify-between items-center group hover:border-rc-teal/30 transition-all backdrop-blur-xl">
-                                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{item.label}</span>
-                                       <span className="text-[11px] font-black text-white uppercase tracking-tighter">{item.value || 'Pendiente'}</span>
+                                    <div key={item.label} className="p-6 bg-white/[0.01] border border-white/5 rounded-3xl flex justify-between items-center group hover:bg-white/[0.02] transition-all">
+                                       <span className="text-[9px] font-medium text-slate-600 uppercase tracking-widest">{item.label}</span>
+                                       <span className="text-[11px] font-medium text-white uppercase tracking-tighter">{item.value || 'Pendiente'}</span>
                                     </div>
                                  ))}
                               </div>
                            </div>
 
-                           <div className="md:col-span-2 space-y-10">
-                              <h3 className="text-[11px] font-black text-white uppercase tracking-[0.4em] flex items-center gap-4 opacity-40">
-                                 <TrendingUp size={16} className="text-rc-teal" /> Indicadores HC
+                           <div className="md:col-span-2 space-y-12">
+                              <h3 className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.5em] flex items-center gap-4 opacity-60">
+                                 <TrendingUp size={14} className="text-rc-teal" strokeWidth={1.5} /> Indicadores Estratégicos
                               </h3>
-                              <div className="grid grid-cols-2 gap-8">
-                                 <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[48px] flex flex-col items-center justify-center gap-6 group hover:border-rc-teal/30 transition-all backdrop-blur-xl">
-                                    <div className="text-7xl font-black text-white tracking-tighter flex items-baseline gap-2">
+                              <div className="grid grid-cols-2 gap-10">
+                                 <div className="p-12 bg-white/[0.01] border border-white/5 rounded-[48px] flex flex-col items-center justify-center gap-6 group hover:border-rc-teal/20 transition-all">
+                                    <div className="text-7xl font-light text-white tracking-tighter flex items-baseline gap-2">
                                        {Object.values(editedProject?.quarterlyAssessment || {}).reduce((a: any, b: any) => a + (typeof b === 'number' ? b : 0), 0)}
-                                       <span className="text-3xl text-rc-teal/50">%</span>
+                                       <span className="text-2xl text-rc-teal opacity-40">%</span>
                                     </div>
-                                    <span className="text-[10px] font-black text-rc-teal uppercase tracking-[0.4em]">Health Score Global</span>
+                                    <span className="text-[10px] font-medium text-rc-teal uppercase tracking-[0.5em]">Health Score Global</span>
                                  </div>
-                                 <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[48px] flex flex-col items-center justify-center gap-6 group hover:border-rc-teal/30 transition-all backdrop-blur-xl">
-                                    <div className="text-7xl font-black text-white tracking-tighter">
+                                 <div className="p-12 bg-white/[0.01] border border-white/5 rounded-[48px] flex flex-col items-center justify-center gap-6 group hover:border-rc-teal/20 transition-all">
+                                    <div className="text-7xl font-light text-white tracking-tighter">
                                        {(editedProject.services || []).length}
                                     </div>
-                                    <span className="text-[10px] font-black text-rc-teal uppercase tracking-[0.4em]">Suscripciones Activas</span>
+                                    <span className="text-[10px] font-medium text-rc-teal uppercase tracking-[0.5em]">Servicios Activos</span>
                                  </div>
                               </div>
-                              <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[48px] space-y-6 backdrop-blur-xl">
+                              <div className="p-12 bg-white/[0.01] border border-white/5 rounded-[48px] space-y-8 backdrop-blur-xl">
                                  <div className="flex items-center justify-between">
-                                    <h4 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Observaciones de Inteligencia</h4>
-                                    <ArrowUpRight size={18} className="text-rc-teal opacity-50" />
+                                    <h4 className="text-[10px] font-medium text-slate-600 uppercase tracking-[0.4em]">Análisis de Inteligencia</h4>
+                                    <ArrowUpRight size={16} className="text-rc-teal opacity-30" />
                                  </div>
-                                 <p className="text-sm text-slate-400 leading-relaxed font-medium italic">
-                                    "El análisis proyectado indica una maduración tecnológica óptima. El cliente se encuentra en la ventana ideal para la implementación de capas de automatización IA y expansión de capacidad en Contact Center."
+                                 <p className="text-lg text-slate-400 leading-relaxed font-light italic">
+                                    "La arquitectura proyectada muestra una maduración tecnológica superior. Se recomienda la integración de capas predictivas y optimización de flujos omnicanal para el próximo ciclo."
                                  </p>
                               </div>
                            </div>
                         </div>
                      )}
 
-                     {activeTab === 'quality' && (
+                      {activeTab === 'quality' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                            {[
-                              { key: 'responseTime', label: 'Tiempo de Respuesta', desc: 'Velocidad en feedback y toma de decisiones.' },
-                              { key: 'communicationQuality', label: 'Calidad de Comunicación', desc: 'Claridad y asertividad en canales oficiales.' },
-                              { key: 'effectiveResolution', label: 'Resolución Efectiva', desc: 'Capacidad de cerrar pendientes operando.' },
-                              { key: 'proactivity', label: 'Proactividad / Cultura', desc: 'Iniciativa en la mejora de procesos.' },
-                              { key: 'technicalKnowledge', label: 'Conocimiento del Servicio', desc: 'Entendimiento de las herramientas Rc506.' },
-                              { key: 'reliability', label: 'Continuidad Operativa', desc: 'Estabilidad en los procesos del cliente.' },
-                              { key: 'flexibility', label: 'Adaptación al Cambio', desc: 'Apertura a nuevas metodologías.' },
-                              { key: 'innovation', label: 'Valor Añadido', desc: 'Uso estratégico de la información.' },
-                              { key: 'serviceCulture', label: 'ADN Institucional', desc: 'Alineación con los estándares Rc506.' },
-                              { key: 'valuePerception', label: 'Percepción de Valor', desc: 'Nivel de satisfacción y reconocimiento.' }
+                              { key: 'sla', label: 'SLA', desc: 'Cumplimiento de acuerdos de nivel de servicio.' },
+                              { key: 'comunicacion', label: 'Comunicación', desc: 'Claridad y fluidez en canales oficiales.' },
+                              { key: 'resolucion', label: 'Resolución', desc: 'Efectividad en el cierre de incidencias.' },
+                              { key: 'experiencia', label: 'Experiencia', desc: 'Nivel de satisfacción del usuario final.' },
+                              { key: 'continuidad', label: 'Continuidad', desc: 'Estabilidad y resiliencia de la operación.' },
+                              { key: 'orden', label: 'Orden', desc: 'Organización de procesos y documentación.' },
+                              { key: 'conversion', label: 'Conversión', desc: 'Efectividad en objetivos de negocio.' },
+                              { key: 'adaptacion', label: 'Adaptación', desc: 'Flexibilidad ante cambios estratégicos.' },
+                              { key: 'cultura', label: 'Cultura', desc: 'Alineación con valores de la corporación.' },
+                              { key: 'valor', label: 'Valor', desc: 'Percepción de retorno sobre inversión.' }
                            ].map((pillar) => {
                               const score = (editedProject.quarterlyAssessment as any)?.[pillar.key] || 0;
                               return (
-                                 <div key={pillar.key} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] space-y-6 hover:border-rc-teal/30 transition-all group">
+                                 <div key={pillar.key} className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] space-y-8 transition-all hover:bg-white/[0.02]">
                                     <div className="flex justify-between items-start">
-                                       <div>
-                                          <span className="text-[12px] font-black text-white uppercase tracking-tight block mb-1">{pillar.label}</span>
-                                          <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{pillar.desc}</p>
+                                       <div className="space-y-2">
+                                          <span className="text-[14px] font-medium text-white uppercase tracking-tight block">{pillar.label}</span>
+                                          <p className="text-[9px] text-slate-600 font-medium uppercase tracking-[0.2em]">{pillar.desc}</p>
                                        </div>
-                                       <span className={`text-[14px] font-black ${score >= 4 ? 'text-rc-teal' : score >= 3 ? 'text-amber-400' : 'text-rose-500'}`}>
+                                       <span className={`text-[18px] font-light ${score >= 4 ? 'text-rc-teal' : score >= 3 ? 'text-amber-400' : 'text-rose-500'}`}>
                                           {score}.0
                                        </span>
                                     </div>
-                                    <div className="flex gap-3 h-2">
+                                    <div className="flex gap-2 h-1.5">
                                        {[1, 2, 3, 4, 5].map(n => (
                                           <div 
                                              key={n} 
                                              onClick={() => {
                                                 const currentAssessment = editedProject.quarterlyAssessment || {
-                                                   responseTime: 0,
-                                                   communicationQuality: 0,
-                                                   effectiveResolution: 0,
-                                                   proactivity: 0,
-                                                   technicalKnowledge: 0,
-                                                   reliability: 0,
-                                                   flexibility: 0,
-                                                   innovation: 0,
-                                                   serviceCulture: 0,
-                                                   valuePerception: 0
+                                                   sla: 5,
+                                                   comunicacion: 5,
+                                                   resolucion: 5,
+                                                   experiencia: 5,
+                                                   continuidad: 5,
+                                                   orden: 5,
+                                                   conversion: 5,
+                                                   adaptacion: 5,
+                                                   cultura: 5,
+                                                   valor: 5
                                                 };
                                                 setEditedProject({
                                                    ...editedProject,
@@ -270,9 +278,9 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                                    }
                                                 });
                                              }}
-                                             className={`flex-1 rounded-full cursor-pointer transition-all duration-500 ${
+                                             className={`flex-1 rounded-full cursor-pointer transition-all duration-700 ${
                                                 score >= n 
-                                                ? 'bg-rc-teal shadow-[0_0_10px_rgba(59,188,169,0.5)]' 
+                                                ? 'bg-rc-teal shadow-[0_0_15px_rgba(59,188,169,0.3)]' 
                                                 : 'bg-white/5 hover:bg-white/10'
                                              }`} 
                                           />
@@ -285,89 +293,89 @@ const ProjectDetailsModal: React.FC<Props> = ({
                      )}
 
                      {activeTab === 'services' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                            {(editedProject.services || []).length > 0 ? (
                               (editedProject.services || []).map((service) => (
-                                 <div key={service.id} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] space-y-6 hover:border-rc-teal/30 transition-all group backdrop-blur-xl">
+                                 <div key={service.id} className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] space-y-8 transition-all hover:bg-white/[0.02]">
                                     <div className="flex justify-between items-start">
-                                       <div className="flex items-center gap-4">
-                                          <div className="w-12 h-12 bg-rc-teal/10 rounded-2xl flex items-center justify-center text-rc-teal border border-rc-teal/10">
-                                             <Zap size={20} />
+                                       <div className="flex items-center gap-6">
+                                          <div className="w-14 h-14 bg-white/[0.03] rounded-3xl flex items-center justify-center text-rc-teal border border-white/5">
+                                             <Zap size={24} strokeWidth={1} />
                                           </div>
                                           <div>
-                                             <span className="text-[12px] font-black text-white uppercase tracking-tight block">{service.name}</span>
-                                             <span className="text-[9px] text-rc-teal font-bold uppercase tracking-widest">{service.type}</span>
+                                             <span className="text-[16px] font-medium text-white uppercase tracking-tight block">{service.name}</span>
+                                             <span className="text-[10px] text-rc-teal font-medium uppercase tracking-[0.3em] mt-1">{service.type}</span>
                                           </div>
                                        </div>
-                                       <div className={`px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest ${service.score >= 4 ? 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5' : 'text-amber-400 border-amber-400/20 bg-amber-400/5'}`}>
-                                          Score: {service.score}.0
+                                       <div className={`px-4 py-2 rounded-full border text-[10px] font-medium uppercase tracking-widest ${service.score >= 4 ? 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5' : 'text-amber-400 border-amber-400/20 bg-amber-400/5'}`}>
+                                          {service.score}.0 Score
                                        </div>
                                     </div>
-                                    <p className="text-xs text-slate-400 leading-relaxed font-medium line-clamp-3 italic">
-                                       "{service.description || 'Sin descripción detallada disponible.'}"
+                                    <p className="text-sm text-slate-400 leading-relaxed font-light italic opacity-80">
+                                       "{service.description || 'Proceso estratégico en ejecución continua.'}"
                                     </p>
 
                                     {/* Métricas Dinámicas */}
                                     {(service.extensionCount || service.positionsCount || service.botmakerType) && (
-                                       <div className="flex items-center gap-6 p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                       <div className="flex items-center gap-10 p-6 bg-white/[0.01] border border-white/5 rounded-3xl">
                                           {service.extensionCount ? (
                                              <div className="flex flex-col">
-                                                <span className="text-[8px] font-black text-rc-teal uppercase tracking-[0.2em] mb-1">Extensiones</span>
-                                                <span className="text-lg font-black text-white leading-none">{service.extensionCount}</span>
+                                                <span className="text-[9px] font-medium text-slate-600 uppercase tracking-[0.2em] mb-2">Extensiones</span>
+                                                <span className="text-2xl font-light text-white leading-none">{service.extensionCount}</span>
                                              </div>
                                           ) : null}
                                           {service.positionsCount ? (
                                              <div className="flex flex-col">
-                                                <span className="text-[8px] font-black text-rc-teal uppercase tracking-[0.2em] mb-1">Posiciones</span>
-                                                <span className="text-lg font-black text-white leading-none">{service.positionsCount}</span>
+                                                <span className="text-[9px] font-medium text-slate-600 uppercase tracking-[0.2em] mb-2">Posiciones</span>
+                                                <span className="text-2xl font-light text-white leading-none">{service.positionsCount}</span>
                                              </div>
                                           ) : null}
                                           {service.botmakerType ? (
                                              <div className="flex flex-col">
-                                                <span className="text-[8px] font-black text-rc-teal uppercase tracking-[0.2em] mb-1">Modelo Bot</span>
-                                                <span className="text-[10px] font-black text-white leading-none truncate max-w-[150px] uppercase">{service.botmakerType.split(' + ')[0]}</span>
+                                                <span className="text-[9px] font-medium text-slate-600 uppercase tracking-[0.2em] mb-2">Motor Bot</span>
+                                                <span className="text-[11px] font-medium text-white leading-none truncate max-w-[150px] uppercase">{service.botmakerType.split(' + ')[0]}</span>
                                              </div>
                                           ) : null}
                                        </div>
                                     )}
 
-                                    <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                                       <div className="flex items-center gap-2">
-                                          <Calendar size={14} className="text-slate-500" />
-                                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Go-Live: {service.startDate}</span>
+                                    <div className="pt-6 border-t border-white/5 flex items-center justify-between opacity-40">
+                                       <div className="flex items-center gap-3">
+                                          <Calendar size={14} strokeWidth={1} />
+                                          <span className="text-[9px] font-medium uppercase tracking-widest">Go-Live: {service.startDate}</span>
                                        </div>
-                                       <div className="flex items-center gap-2">
-                                          <ShieldCheck size={14} className="text-rc-teal" />
-                                          <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Activo</span>
+                                       <div className="flex items-center gap-3">
+                                          <ShieldCheck size={14} strokeWidth={1} />
+                                          <span className="text-[9px] font-medium uppercase tracking-widest">Validado</span>
                                        </div>
                                     </div>
                                  </div>
                               ))
                            ) : (
-                              <div className="col-span-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-[48px]">
-                                 <Layers className="text-slate-700 mb-6" size={48} />
-                                 <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px]">No hay servicios registrados en este expediente</p>
+                              <div className="col-span-full py-24 flex flex-col items-center justify-center border border-dashed border-white/5 rounded-[48px] bg-white/[0.01]">
+                                 <Layers className="text-slate-800 mb-8" size={48} strokeWidth={1} />
+                                 <p className="text-slate-600 font-medium uppercase tracking-[0.4em] text-[11px]">Bóveda de servicios vacía</p>
                               </div>
                            )}
                         </div>
                      )}
 
                      {activeTab === 'milestones' && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                            {(editedProject.assets || []).length > 0 ? (
                               (editedProject.assets || []).map((asset) => (
-                                 <div key={asset.id} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] space-y-6 hover:border-rc-teal/30 transition-all group backdrop-blur-xl">
-                                    <div className="w-14 h-14 bg-white/5 rounded-[24px] flex items-center justify-center text-slate-400 group-hover:text-rc-teal transition-colors">
-                                       <Headphones size={28} />
+                                 <div key={asset.id} className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] space-y-8 transition-all hover:bg-white/[0.02]">
+                                    <div className="w-16 h-16 bg-white/[0.03] rounded-[28px] flex items-center justify-center text-slate-500 group-hover:text-rc-teal transition-colors border border-white/5">
+                                       <Headphones size={32} strokeWidth={1} />
                                     </div>
                                     <div>
-                                       <span className="text-[14px] font-black text-white uppercase tracking-tight block mb-1">{asset.model}</span>
-                                       <div className="flex items-center gap-2">
+                                       <span className="text-[16px] font-medium text-white uppercase tracking-tight block mb-2">{asset.model}</span>
+                                       <div className="flex items-center gap-3 opacity-60">
                                           <User size={12} className="text-rc-teal" />
-                                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Posición: {asset.assignedPosition}</span>
+                                          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Asignación: {asset.assignedPosition}</span>
                                        </div>
                                     </div>
-                                    <div className={`px-5 py-2.5 rounded-2xl border text-[9px] font-black uppercase tracking-[0.2em] w-fit ${
+                                    <div className={`px-5 py-2.5 rounded-full border text-[9px] font-medium uppercase tracking-[0.2em] w-fit ${
                                        asset.status === 'Operativo' ? 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5' : 
                                        asset.status === 'Mantenimiento' ? 'text-amber-400 border-amber-400/20 bg-amber-400/5' : 
                                        'text-rose-500 border-rose-500/20 bg-rose-500/5'
@@ -377,16 +385,16 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                  </div>
                               ))
                            ) : (
-                              <div className="col-span-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-[48px]">
-                                 <Cpu className="text-slate-700 mb-6" size={48} />
-                                 <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px]">No hay activos de hardware asignados</p>
+                              <div className="col-span-full py-24 flex flex-col items-center justify-center border border-dashed border-white/5 rounded-[48px] bg-white/[0.01]">
+                                 <Cpu className="text-slate-800 mb-8" size={48} strokeWidth={1} />
+                                 <p className="text-slate-600 font-medium uppercase tracking-[0.4em] text-[11px]">Sin activos de hardware</p>
                               </div>
                            )}
                         </div>
                      )}
 
                      {activeTab === 'admin' && (
-                        <div className="max-w-3xl mx-auto space-y-5">
+                        <div className="max-w-3xl mx-auto space-y-4">
                            {[
                               { id: 'paymentPunctuality', label: 'Puntualidad en Gestión de Pagos' },
                               { id: 'timelyDocumentation', label: 'Entrega Oportuna de Información' },
@@ -413,15 +421,15 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                        }
                                     });
                                  }}
-                                 className="p-8 bg-white/[0.03] border border-white/5 rounded-[32px] flex items-center justify-between group cursor-pointer hover:bg-white/5 transition-all border-l-4 border-l-transparent hover:border-l-rc-teal"
+                                 className="p-8 bg-white/[0.01] border border-white/5 rounded-[32px] flex items-center justify-between group cursor-pointer hover:bg-white/[0.03] transition-all"
                               >
-                                 <span className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] group-hover:text-white transition-colors">{item.label}</span>
-                                 <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center transition-all duration-500 ${
+                                 <span className="text-[12px] font-medium text-slate-500 uppercase tracking-[0.2em] group-hover:text-white transition-colors">{item.label}</span>
+                                 <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-700 ${
                                     editedProject.clientEvaluation?.[item.id as keyof typeof editedProject.clientEvaluation] 
-                                    ? 'bg-rc-teal border-rc-teal text-black shadow-lg shadow-rc-teal/30 scale-110' 
+                                    ? 'bg-white border-white text-black scale-110 shadow-[0_0_20px_rgba(255,255,255,0.2)]' 
                                     : 'border-white/10 text-transparent'
                                  }`}>
-                                    <Check size={20} strokeWidth={4} />
+                                    <Check size={16} strokeWidth={3} />
                                  </div>
                               </div>
                            ))}
@@ -432,27 +440,27 @@ const ProjectDetailsModal: React.FC<Props> = ({
             </div>
 
             {/* Global Footer Actions */}
-            <div className="p-12 bg-black/40 border-t border-white/5 flex items-center justify-between backdrop-blur-3xl">
-               <div className="flex items-center gap-8">
-                  <div className="flex -space-x-4">
+            <div className="p-12 bg-[#0B0E14] border-t border-white/5 flex items-center justify-between">
+               <div className="flex items-center gap-10">
+                  <div className="flex -space-x-3">
                      {[1,2,3,4].map(i => (
-                        <div key={i} className="w-12 h-12 rounded-full border-4 border-[#161B22] bg-slate-800 flex items-center justify-center text-[10px] font-black text-white uppercase shadow-xl">
+                        <div key={i} className="w-12 h-12 rounded-full border-4 border-[#0B0E14] bg-white/[0.02] flex items-center justify-center text-[9px] font-medium text-slate-500 uppercase">
                            {i === 1 ? 'AI' : i === 2 ? 'PM' : i === 3 ? 'OP' : 'QA'}
                         </div>
                      ))}
                   </div>
-                  <div>
-                    <span className="text-[10px] font-black text-white uppercase tracking-[0.4em] block">Sincronización HC Rc506</span>
-                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-1">Audit Mode: Enabled</span>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-medium text-white uppercase tracking-[0.5em] block opacity-80">Ecosistema Rc506</span>
+                    <span className="text-[8px] font-medium text-slate-600 uppercase tracking-widest">Validación de Protocolo V4.2</span>
                   </div>
                </div>
-               <div className="flex items-center gap-6">
-                  <button onClick={onClose} className="px-10 py-6 text-[11px] font-black text-slate-500 uppercase tracking-[0.3em] hover:text-white transition-colors">Cerrar</button>
+               <div className="flex items-center gap-10">
+                  <button onClick={onClose} className="text-[11px] font-medium text-slate-600 uppercase tracking-[0.3em] hover:text-white transition-colors">Cerrar</button>
                   <button 
                      onClick={handleSave}
-                     className="px-16 py-6 bg-rc-teal text-black text-[12px] font-black uppercase tracking-[0.3em] rounded-[24px] shadow-[0_0_40px_rgba(59,188,169,0.3)] hover:scale-105 active:scale-95 transition-all"
+                     className="px-12 py-5 bg-white text-black text-[11px] font-medium uppercase tracking-[0.2em] rounded-full hover:bg-slate-200 active:scale-95 transition-all shadow-2xl"
                   >
-                     Confirmar Cambios Estratégicos
+                     Sincronizar Estrategia
                   </button>
                </div>
             </div>
