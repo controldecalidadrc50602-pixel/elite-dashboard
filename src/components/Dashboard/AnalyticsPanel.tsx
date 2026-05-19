@@ -21,7 +21,10 @@ import {
   ShieldCheck,
   Calendar,
   Layers,
-  ChevronRight
+  ChevronRight,
+  Archive,
+  XCircle,
+  CheckCircle2
 } from 'lucide-react';
 import { Project, Evaluation, ClientService } from '../../types/project';
 
@@ -45,6 +48,87 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
   const hasRealEvaluations = useMemo(() => {
     return projects.some(p => p.evaluations && p.evaluations.length > 0);
   }, [projects]);
+
+  const [selectedDensity, setSelectedDensity] = useState<number | null>(null);
+
+  // Métrica 3: Estado General de Clientes (Activos, Inactivos, Bóveda, Pruebas)
+  const clientStatusStats = useMemo(() => {
+    let active = 0;
+    let inactive = 0;
+    let archived = 0;
+    let trial = 0;
+
+    projects.forEach(p => {
+      if (p.adminStatus === 'Activo') active++;
+      else if (p.adminStatus === 'Inactivo') inactive++;
+      else if (p.adminStatus === 'Archivado') archived++;
+      else if (p.adminStatus === 'Prueba' || p.adminStatus === 'En Proceso') trial++;
+    });
+
+    return { active, inactive, archived, trial };
+  }, [projects]);
+
+  // Métrica 4: Densidad de Servicios Activos por Cliente (Cross-selling)
+  const densityMetrics = useMemo(() => {
+    const densityMap: { [key: number]: {
+      id: string;
+      clientName: string;
+      healthFlag: Project['healthFlag'];
+      servicesList: string[];
+      score: number;
+    }[] } = {
+      1: [],
+      2: [],
+      3: [],
+      4: [] // 4 o más
+    };
+
+    projects.forEach(p => {
+      // Excluir inactivos o archivados de la venta cruzada
+      if (p.adminStatus === 'Archivado' || p.adminStatus === 'Inactivo') return;
+
+      const servicesCount = p.services?.length || 0;
+      if (servicesCount === 0) return;
+
+      const clientInfo = {
+        id: p.id,
+        clientName: p.client,
+        healthFlag: p.healthFlag,
+        servicesList: p.services.map(s => s.type || 'Other'),
+        score: p.evaluations && p.evaluations.length > 0
+          ? p.evaluations[p.evaluations.length - 1].quantitative
+          : p.services && p.services.length > 0
+            ? Math.round((p.services.reduce((acc, s) => acc + (s.score || 0), 0) / (p.services.length * 5)) * 100)
+            : 80
+      };
+
+      if (servicesCount === 1) densityMap[1].push(clientInfo);
+      else if (servicesCount === 2) densityMap[2].push(clientInfo);
+      else if (servicesCount === 3) densityMap[3].push(clientInfo);
+      else if (servicesCount >= 4) densityMap[4].push(clientInfo);
+    });
+
+    return [
+      { id: 1, label: '1 Servicio', 'Clientes': densityMap[1].length, clients: densityMap[1] },
+      { id: 2, label: '2 Servicios', 'Clientes': densityMap[2].length, clients: densityMap[2] },
+      { id: 3, label: '3 Servicios', 'Clientes': densityMap[3].length, clients: densityMap[3] },
+      { id: 4, label: '4+ Servicios', 'Clientes': densityMap[4].length, clients: densityMap[4] }
+    ];
+  }, [projects]);
+
+  // Autoseleccionar el primer rango de densidad que tenga clientes
+  React.useEffect(() => {
+    if (!selectedDensity) {
+      const activeDensity = densityMetrics.find(d => d['Clientes'] > 0);
+      if (activeDensity) {
+        setSelectedDensity(activeDensity.id);
+      }
+    }
+  }, [densityMetrics, selectedDensity]);
+
+  const activeDensityData = useMemo(() => {
+    return densityMetrics.find(d => d.id === selectedDensity) || null;
+  }, [densityMetrics, selectedDensity]);
 
   // 1. Algoritmo de Generación y Normalización de Datos Históricos (últimos 6 meses)
   const historicalData = useMemo(() => {
@@ -265,6 +349,49 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
             <Zap size={14} />
             Servicios Activos
           </button>
+        </div>
+      </div>
+
+      {/* Mini Tarjetas de Estado General de la Cartera */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10 relative z-10">
+        <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-rc-teal/20 transition-all group">
+          <div>
+            <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Clientes Activos</span>
+            <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.active}</span>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-rc-teal/10 border border-rc-teal/20 text-rc-teal flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,188,169,0.05)] group-hover:scale-105 transition-transform">
+            <CheckCircle2 size={16} />
+          </div>
+        </div>
+
+        <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-amber-500/20 transition-all group">
+          <div>
+            <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">En Piloto / Pruebas</span>
+            <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.trial}</span>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.05)] group-hover:scale-105 transition-transform">
+            <Zap size={16} />
+          </div>
+        </div>
+
+        <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-rose-500/20 transition-all group">
+          <div>
+            <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Clientes Inactivos</span>
+            <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.inactive}</span>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(244,63,94,0.05)] group-hover:scale-105 transition-transform">
+            <XCircle size={16} />
+          </div>
+        </div>
+
+        <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-purple-500/20 transition-all group">
+          <div>
+            <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Clientes en Bóveda</span>
+            <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.archived}</span>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.05)] group-hover:scale-105 transition-transform">
+            <Archive size={16} />
+          </div>
         </div>
       </div>
 
@@ -617,6 +744,146 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                     <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
                       <Layers size={32} className="text-slate-600 mb-4" />
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider">Selecciona un servicio para auditar</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Separador Elegante */}
+              <div className="h-px w-full bg-white/5 my-10 shrink-0 lg:col-span-12" />
+
+              {/* Bloque B: Densidad de Venta Cruzada (Servicios por Cliente) */}
+              <div className="lg:col-span-6 space-y-6">
+                <div className="space-y-2">
+                  <span className="text-xs font-bold text-white uppercase tracking-wider">Densidad de Venta Cruzada (Cross-selling)</span>
+                  <p className="text-[9px] text-slate-500 uppercase tracking-widest leading-relaxed">
+                    Cantidad de clientes agrupados por número de servicios contratados. Haz clic en una barra para ver la cartera correspondiente.
+                  </p>
+                </div>
+
+                <div className="h-[280px] bg-black/25 border border-white/5 rounded-[32px] p-6">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={densityMetrics}
+                      margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+                      onClick={(state) => {
+                        if (state && state.activeLabel) {
+                          // Buscar el id según la etiqueta seleccionada
+                          const match = densityMetrics.find(d => d.label === state.activeLabel);
+                          if (match) setSelectedDensity(match.id);
+                        }
+                      }}
+                    >
+                      <XAxis 
+                        dataKey="label" 
+                        stroke="#475569" 
+                        fontSize={9}
+                        fontWeight={500}
+                        tickLine={false}
+                        axisLine={false}
+                        dy={10}
+                      />
+                      <YAxis 
+                        stroke="#475569" 
+                        fontSize={9}
+                        fontWeight={500}
+                        tickLine={false}
+                        axisLine={false}
+                        dx={-10}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#0D1117',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                          borderRadius: '16px',
+                          boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+                        }}
+                        formatter={(value: any) => [`${value} Clientes`, 'Venta Cruzada']}
+                      />
+                      <Bar 
+                        dataKey="Clientes" 
+                        fill="#8B5CF6" 
+                        radius={[8, 8, 0, 0]}
+                        maxBarSize={35}
+                        cursor="pointer"
+                      >
+                        {densityMetrics.map((entry, index) => (
+                          <Cell 
+                            key={`cell-density-${index}`} 
+                            fill={entry.id === selectedDensity ? '#8B5CF6' : 'rgba(139,92,246,0.15)'}
+                            stroke={entry.id === selectedDensity ? '#8B5CF6' : 'rgba(139,92,246,0.3)'}
+                            strokeWidth={1}
+                            className="transition-all duration-300"
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Lista Detallada de Clientes y sus Múltiples Servicios (Derecha) */}
+              <div className="lg:col-span-6 flex flex-col h-[360px] border border-white/5 rounded-[32px] bg-black/20 p-6 overflow-hidden">
+                <div className="pb-4 border-b border-white/5 flex items-center justify-between shrink-0">
+                  <div>
+                    <span className="text-[9px] font-black text-purple-400 uppercase tracking-widest block">Expedientes Filtrados</span>
+                    <h4 className="text-sm font-semibold text-white mt-1 uppercase tracking-wider">
+                      Clientes con <span className="text-purple-400">{activeDensityData?.label}</span>
+                    </h4>
+                  </div>
+                  <div className="bg-white/5 px-3 py-1 rounded-full text-[9px] text-slate-400 font-bold uppercase tracking-widest border border-white/5">
+                    {activeDensityData?.clients.length || 0} Clientes
+                  </div>
+                </div>
+
+                {/* Lista scrollable */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar pt-4 space-y-3.5 pr-1">
+                  {activeDensityData && activeDensityData.clients.length > 0 ? (
+                    activeDensityData.clients.map((client) => (
+                      <motion.div
+                        key={client.id}
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col gap-3 group hover:border-purple-500/30 hover:bg-white/[0.03] transition-all"
+                      >
+                        <div className="flex items-center justify-between min-w-0">
+                          <div className="flex items-center gap-3 min-w-0">
+                            {/* Flag circular de salud */}
+                            <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                              client.healthFlag === 'Verde' ? 'bg-emerald-500' :
+                              client.healthFlag === 'Amarilla' ? 'bg-amber-500' : 'bg-rose-500'
+                            } shadow-[0_0_8px_currentColor]`} />
+                            
+                            <span className="text-xs font-semibold text-white group-hover:text-purple-400 transition-colors uppercase tracking-wider block truncate">
+                              {client.clientName}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-light text-white tracking-tighter">
+                              {client.score}%
+                            </span>
+                            <span className="text-[7px] text-slate-600 uppercase tracking-widest">Salud</span>
+                          </div>
+                        </div>
+
+                        {/* Listado de múltiples servicios contratados */}
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {client.servicesList.map((service, idx) => (
+                            <span 
+                              key={idx}
+                              className="text-[7px] font-black text-purple-300 bg-purple-500/5 border border-purple-500/10 px-2 py-0.5 rounded uppercase tracking-wider"
+                            >
+                              {service}
+                            </span>
+                          ))}
+                        </div>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
+                      <Layers size={32} className="text-slate-600 mb-4" />
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider">No hay clientes en este rango</p>
                     </div>
                   )}
                 </div>
