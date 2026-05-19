@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Project, QuarterlyAssessment } from '../../types/project';
 import StatCard from '../common/StatCard';
+import { AnalyticsPanel } from './AnalyticsPanel';
 
 interface AuditDashboardProps {
   projects: Project[];
@@ -129,6 +130,9 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
           color="rc-teal" 
         />
       </div>
+
+      {/* Analytics & Historical Hub */}
+      <AnalyticsPanel projects={projects} />
 
       {/* 2. Client Operational Matrix */}
       <div className="glass-panel p-10 rounded-[48px] border border-white/5 bg-black/10">
