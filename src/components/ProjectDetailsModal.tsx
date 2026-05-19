@@ -5,10 +5,18 @@ import {
   X, Trash2, Calendar, Star, ShieldCheck, Edit3, AlertCircle, Save, Bell, 
   CheckCircle, AlertTriangle, FileText, Activity, Globe, Headphones, Cpu, Zap, Wifi, Layers,
   ChevronDown, MessageSquare, User, Users, Clock, History, Phone, ShieldAlert, Archive, Trash,
-  TrendingUp, ArrowUpRight, Check
+  TrendingUp, ArrowUpRight, Check, Plus, Tag
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Project, QuarterlyAssessment, ClientEvaluation } from '../types/project';
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  ResponsiveContainer 
+} from 'recharts';
+import { Project, QuarterlyAssessment, ClientEvaluation, Evaluation, PeriodAction } from '../types/project';
 import { exportService } from '../services/exportService';
 import { useAuth } from '../context/AuthContext';
 
@@ -36,9 +44,354 @@ const ProjectDetailsModal: React.FC<Props> = ({
   const [activeTab, setActiveTab] = useState<'summary' | 'services' | 'quality' | 'admin' | 'milestones'>('summary');
   const [editedProject, setEditedProject] = useState<Project | null>(project);
 
+  // Escala Temporal: Mensual o Anual
+  const [timeScale, setTimeScale] = useState<'month' | 'year'>('month');
+
+  // Estados para nueva acción de bitácora
+  const [newActionText, setNewActionText] = useState('');
+  const [newActionCategory, setNewActionCategory] = useState<'Técnico' | 'SLA' | 'Procesos' | 'Relación' | 'Otros'>('Otros');
+
   React.useEffect(() => {
     setEditedProject(project);
   }, [project]);
+
+  const MONTH_NAMES = React.useMemo(() => [
+    'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+  ], []);
+
+  // Generar meses/años transcurridos desde startDate hasta hoy
+  const periods = React.useMemo(() => {
+    if (!editedProject) return [];
+    const end = new Date();
+    const start = editedProject.startDate ? new Date(editedProject.startDate) : new Date(end.getFullYear(), end.getMonth() - 5, 1);
+    
+    let startYear = isNaN(start.getTime()) ? end.getFullYear() : start.getFullYear();
+    let startMonth = isNaN(start.getTime()) ? end.getMonth() : start.getMonth();
+
+    const generated: { month: number; year: number; label: string }[] = [];
+
+    if (timeScale === 'month') {
+      let currentYear = startYear;
+      let currentMonth = startMonth;
+
+      while (currentYear < end.getFullYear() || (currentYear === end.getFullYear() && currentMonth <= end.getMonth())) {
+        generated.push({
+          month: currentMonth + 1,
+          year: currentYear,
+          label: `${MONTH_NAMES[currentMonth]} ${String(currentYear).slice(-2)}`
+        });
+        currentMonth++;
+        if (currentMonth > 11) {
+          currentMonth = 0;
+          currentYear++;
+        }
+      }
+    } else {
+      // Escala Anual
+      for (let year = startYear; year <= end.getFullYear(); year++) {
+        generated.push({
+          month: 0, // 0 indica evaluación consolidada anual
+          year: year,
+          label: `Año ${year}`
+        });
+      }
+    }
+
+    if (generated.length === 0) {
+      if (timeScale === 'month') {
+        generated.push({
+          month: end.getMonth() + 1,
+          year: end.getFullYear(),
+          label: `${MONTH_NAMES[end.getMonth()]} ${String(end.getFullYear()).slice(-2)}`
+        });
+      } else {
+        generated.push({
+          month: 0,
+          year: end.getFullYear(),
+          label: `Año ${end.getFullYear()}`
+        });
+      }
+    }
+
+    return generated;
+  }, [editedProject?.startDate, MONTH_NAMES, timeScale]);
+
+  const [selectedPeriod, setSelectedPeriod] = useState<{ month: number; year: number } | null>(null);
+
+  // Sincronizar período seleccionado al cambiar escala temporal
+  React.useEffect(() => {
+    if (periods.length > 0) {
+      const exists = periods.some(p => p.month === selectedPeriod?.month && p.year === selectedPeriod?.year);
+      if (!exists) {
+        const last = periods[periods.length - 1];
+        setSelectedPeriod({ month: last.month, year: last.year });
+      }
+    }
+  }, [periods, selectedPeriod]);
+
+  // Obtener evaluación del período (cargada o agregada)
+  const activeEval = React.useMemo(() => {
+    if (!editedProject || !selectedPeriod) return null;
+    
+    if (selectedPeriod.month > 0) {
+      // Vista mensual estándar
+      return editedProject.evaluations?.find(
+        e => e.month === selectedPeriod.month && e.year === selectedPeriod.year
+      ) || null;
+    } else {
+      // Vista anual consolidada: agregamos todas las evaluaciones de ese año
+      const yearEvals = editedProject.evaluations?.filter(e => e.year === selectedPeriod.year) || [];
+      if (yearEvals.length === 0) return null;
+
+      const count = yearEvals.length;
+      const sumScore = yearEvals.reduce((sum, e) => sum + e.quantitative, 0);
+      const avgScore = Math.round(sumScore / count);
+
+      const aggregatedPillars: QuarterlyAssessment = {
+        sla: 0,
+        comunicacion: 0,
+        resolucion: 0,
+        experiencia: 0,
+        continuidad: 0,
+        orden: 0,
+        conversion: 0,
+        adaptacion: 0,
+        cultura: 0,
+        valor: 0
+      };
+
+      let hasPillars = false;
+      yearEvals.forEach(e => {
+        if (e.pillars) {
+          hasPillars = true;
+          Object.keys(aggregatedPillars).forEach(k => {
+            (aggregatedPillars as any)[k] += (e.pillars as any)[k] || 0;
+          });
+        }
+      });
+
+      if (hasPillars) {
+        Object.keys(aggregatedPillars).forEach(k => {
+          (aggregatedPillars as any)[k] = Math.round((aggregatedPillars as any)[k] / count);
+        });
+      } else {
+        Object.keys(aggregatedPillars).forEach(k => {
+          (aggregatedPillars as any)[k] = 5;
+        });
+      }
+
+      // Consolidar observaciones cualitativas
+      const consolidatedQualitative = yearEvals
+        .map(e => `[${MONTH_NAMES[e.month - 1]}] ${e.qualitative}`)
+        .filter(q => q.trim().length > 5)
+        .join('\n\n');
+
+      // Consolidar acciones
+      const consolidatedActions: PeriodAction[] = [];
+      yearEvals.forEach(e => {
+        if (e.actions) {
+          e.actions.forEach(act => {
+            consolidatedActions.push({
+              ...act,
+              description: `[${MONTH_NAMES[e.month - 1]}] ${act.description}`
+            });
+          });
+        }
+      });
+
+      const latestMonthEval = [...yearEvals].sort((a, b) => b.month - a.month)[0];
+      const yearStatus = latestMonthEval?.status || 'Stable';
+
+      return {
+        month: 0,
+        year: selectedPeriod.year,
+        quantitative: avgScore,
+        qualitative: consolidatedQualitative || 'No hay observaciones registradas en este año.',
+        status: yearStatus,
+        pillars: aggregatedPillars,
+        actions: consolidatedActions
+      } as Evaluation;
+    }
+  }, [editedProject?.evaluations, selectedPeriod, MONTH_NAMES]);
+
+  const activePillars = React.useMemo(() => {
+    if (activeEval?.pillars) return activeEval.pillars;
+    return editedProject?.quarterlyAssessment || {
+      sla: 5,
+      comunicacion: 5,
+      resolucion: 5,
+      experiencia: 5,
+      continuidad: 5,
+      orden: 5,
+      conversion: 5,
+      adaptacion: 5,
+      cultura: 5,
+      valor: 5
+    };
+  }, [activeEval, editedProject?.quarterlyAssessment]);
+
+  const activeStatus = activeEval?.status || 'Stable';
+  const activeQualitative = activeEval?.qualitative || '';
+
+  const updateEvaluationForPeriod = (
+    updater: (existing: Evaluation) => Partial<Evaluation>
+  ) => {
+    if (!editedProject || !selectedPeriod) return;
+    
+    // La vista anual es agregada, no editable de forma directa
+    if (selectedPeriod.month === 0) return;
+    
+    const evals = [...(editedProject.evaluations || [])];
+    const index = evals.findIndex(e => e.month === selectedPeriod.month && e.year === selectedPeriod.year);
+
+    const defaultPillars = editedProject.quarterlyAssessment || {
+      sla: 5,
+      comunicacion: 5,
+      resolucion: 5,
+      experiencia: 5,
+      continuidad: 5,
+      orden: 5,
+      conversion: 5,
+      adaptacion: 5,
+      cultura: 5,
+      valor: 5
+    };
+
+    const baseEval: Evaluation = {
+      month: selectedPeriod.month,
+      year: selectedPeriod.year,
+      quantitative: 100,
+      qualitative: '',
+      status: 'Stable',
+      pillars: defaultPillars,
+      actions: []
+    };
+
+    const existing = index >= 0 ? evals[index] : baseEval;
+    const updatedFields = updater(existing);
+    
+    const merged: Evaluation = {
+      ...existing,
+      ...updatedFields,
+    };
+
+    // Calcular cuantitativo
+    if (merged.pillars) {
+      const sum = Object.values(merged.pillars).reduce((a, b) => a + (typeof b === 'number' ? b : 0), 0);
+      merged.quantitative = Math.round((sum / 50) * 100);
+    }
+
+    if (index >= 0) {
+      evals[index] = merged;
+    } else {
+      evals.push(merged);
+    }
+
+    // Ordenar descendente
+    evals.sort((a, b) => {
+      if (a.year !== b.year) return b.year - a.year;
+      return b.month - a.month;
+    });
+
+    const latestEval = evals[0];
+    let nextHealthFlag = editedProject.healthFlag;
+    if (latestEval) {
+      if (latestEval.status === 'Stable' || latestEval.status === 'Growth') nextHealthFlag = 'Verde';
+      else if (latestEval.status === 'At Risk') nextHealthFlag = 'Amarilla';
+      else if (latestEval.status === 'Critical') nextHealthFlag = 'Roja';
+    }
+
+    setEditedProject({
+      ...editedProject,
+      evaluations: evals,
+      quarterlyAssessment: latestEval?.pillars || editedProject.quarterlyAssessment,
+      healthFlag: nextHealthFlag
+    });
+  };
+
+  const handleAddAction = () => {
+    if (!newActionText.trim() || !selectedPeriod || selectedPeriod.month === 0) return;
+    
+    const newAction: PeriodAction = {
+      id: Math.random().toString(36).substr(2, 9),
+      description: newActionText.trim(),
+      status: 'Pending',
+      category: newActionCategory
+    };
+
+    updateEvaluationForPeriod((existing) => ({
+      actions: [...(existing.actions || []), newAction]
+    }));
+
+    setNewActionText('');
+  };
+
+  const handleToggleAction = (actionId: string) => {
+    if (!selectedPeriod || selectedPeriod.month === 0) return;
+    updateEvaluationForPeriod((existing) => ({
+      actions: (existing.actions || []).map(act => 
+        act.id === actionId 
+          ? { ...act, status: act.status === 'Completed' ? 'Pending' : 'Completed' } as PeriodAction
+          : act
+      )
+    }));
+  };
+
+  const handleDeleteAction = (actionId: string) => {
+    if (!selectedPeriod || selectedPeriod.month === 0) return;
+    updateEvaluationForPeriod((existing) => ({
+      actions: (existing.actions || []).filter(act => act.id !== actionId)
+    }));
+  };
+
+  const chartData = React.useMemo(() => {
+    return periods.map(p => {
+      if (p.month > 0) {
+        // Escala Mensual
+        const existing = editedProject?.evaluations?.find(e => e.month === p.month && e.year === p.year);
+        
+        let score = 0;
+        let isReal = false;
+        if (existing) {
+          score = existing.quantitative;
+          isReal = true;
+        } else {
+          const sum = Object.values(editedProject?.quarterlyAssessment || {}).reduce((a, b) => a + (typeof b === 'number' ? b : 0), 0);
+          score = sum > 0 ? Math.round((sum / 50) * 100) : 80;
+        }
+
+        return {
+          name: p.label,
+          month: p.month,
+          year: p.year,
+          'Calidad': score,
+          isReal
+        };
+      } else {
+        // Escala Anual
+        const yearEvals = editedProject?.evaluations?.filter(e => e.year === p.year) || [];
+        let score = 0;
+        let isReal = false;
+
+        if (yearEvals.length > 0) {
+          const sum = yearEvals.reduce((s, e) => s + e.quantitative, 0);
+          score = Math.round(sum / yearEvals.length);
+          isReal = true;
+        } else {
+          const sum = Object.values(editedProject?.quarterlyAssessment || {}).reduce((a, b) => a + (typeof b === 'number' ? b : 0), 0);
+          score = sum > 0 ? Math.round((sum / 50) * 100) : 80;
+        }
+
+        return {
+          name: p.label,
+          month: 0,
+          year: p.year,
+          'Calidad': score,
+          isReal
+        };
+      }
+    });
+  }, [periods, editedProject?.evaluations, editedProject?.quarterlyAssessment]);
 
   if (!project || !editedProject) return null;
 
@@ -237,69 +590,408 @@ const ProjectDetailsModal: React.FC<Props> = ({
                      )}
 
                       {activeTab === 'quality' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                           {[
-                              { key: 'sla', label: 'SLA', desc: 'Cumplimiento de acuerdos de nivel de servicio.' },
-                              { key: 'comunicacion', label: 'Comunicación', desc: 'Claridad y fluidez en canales oficiales.' },
-                              { key: 'resolucion', label: 'Resolución', desc: 'Efectividad en el cierre de incidencias.' },
-                              { key: 'experiencia', label: 'Experiencia', desc: 'Nivel de satisfacción del usuario final.' },
-                              { key: 'continuidad', label: 'Continuidad', desc: 'Estabilidad y resiliencia de la operación.' },
-                              { key: 'orden', label: 'Orden', desc: 'Organización de procesos y documentación.' },
-                              { key: 'conversion', label: 'Conversión', desc: 'Efectividad en objetivos de negocio.' },
-                              { key: 'adaptacion', label: 'Adaptación', desc: 'Flexibilidad ante cambios estratégicos.' },
-                              { key: 'cultura', label: 'Cultura', desc: 'Alineación con valores de la corporación.' },
-                              { key: 'valor', label: 'Valor', desc: 'Percepción de retorno sobre inversión.' }
-                           ].map((pillar) => {
-                              const score = (editedProject.quarterlyAssessment as any)?.[pillar.key] || 0;
-                              return (
-                                 <div key={pillar.key} className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] space-y-8 transition-all hover:bg-white/[0.02]">
-                                    <div className="flex justify-between items-start">
-                                       <div className="space-y-2">
-                                          <span className="text-[14px] font-medium text-white uppercase tracking-tight block">{pillar.label}</span>
-                                          <p className="text-[9px] text-slate-600 font-medium uppercase tracking-[0.2em]">{pillar.desc}</p>
-                                       </div>
-                                       <span className={`text-[18px] font-light ${score >= 4 ? 'text-rc-teal' : score >= 3 ? 'text-amber-400' : 'text-rose-500'}`}>
-                                          {score}.0
-                                       </span>
+                        <div className="space-y-12">
+                          {/* TOP SECTION: HISTORICAL SELECTOR & TREND CHART */}
+                          <div className="glass-panel p-8 rounded-[40px] border border-white/5 bg-black/25 space-y-8">
+                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-6 shrink-0">
+                                <div>
+                                  <span className="text-[9px] font-semibold text-rc-teal uppercase tracking-[0.4em] block mb-2">Historial de Calidad</span>
+                                  <h4 className="text-xl font-light text-white uppercase tracking-tight">Tendencia Temporal</h4>
+                                </div>
+                                
+                                {/* Selector de Escala Temporal (Mensual / Anual) */}
+                                <div className="flex p-1 bg-white/5 border border-white/10 rounded-full w-fit">
+                                  <button
+                                    onClick={() => setTimeScale('month')}
+                                    className={`px-4 py-1.5 rounded-full text-[9px] font-medium uppercase tracking-[0.15em] transition-all duration-300 ${
+                                      timeScale === 'month'
+                                        ? 'bg-white text-black font-bold shadow-[0_2px_10px_rgba(255,255,255,0.15)]'
+                                        : 'text-slate-400 hover:text-white'
+                                    }`}
+                                  >
+                                    Mensual
+                                  </button>
+                                  <button
+                                    onClick={() => setTimeScale('year')}
+                                    className={`px-4 py-1.5 rounded-full text-[9px] font-medium uppercase tracking-[0.15em] transition-all duration-300 ${
+                                      timeScale === 'year'
+                                        ? 'bg-white text-black font-bold shadow-[0_2px_10px_rgba(255,255,255,0.15)]'
+                                        : 'text-slate-400 hover:text-white'
+                                    }`}
+                                  >
+                                    Anual
+                                  </button>
+                                </div>
+                              </div>
+                              
+                              {/* Selector Horizontal de Períodos */}
+                              <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-2 max-w-full lg:max-w-[65%]">
+                                {periods.map((p) => {
+                                  const isSelected = selectedPeriod?.month === p.month && selectedPeriod?.year === p.year;
+                                  const hasEval = p.month > 0
+                                    ? editedProject.evaluations?.some(e => e.month === p.month && e.year === p.year)
+                                    : editedProject.evaluations?.some(e => e.year === p.year);
+                                  return (
+                                    <button
+                                      key={`${p.month}-${p.year}`}
+                                      onClick={() => setSelectedPeriod({ month: p.month, year: p.year })}
+                                      className={`px-5 py-3 rounded-2xl text-[10px] font-medium uppercase tracking-wider shrink-0 transition-all flex items-center gap-2 border ${
+                                        isSelected
+                                          ? 'bg-white border-white text-black font-semibold shadow-[0_0_20px_rgba(255,255,255,0.15)] scale-105'
+                                          : 'bg-white/[0.02] border-white/5 text-slate-400 hover:text-white hover:bg-white/[0.05]'
+                                      }`}
+                                    >
+                                      {hasEval && (
+                                        <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-rc-teal' : 'bg-rc-teal animate-pulse'}`} />
+                                      )}
+                                      {p.label}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            {/* Recharts AreaChart */}
+                            <div className="h-[200px] w-full bg-black/10 border border-white/5 rounded-3xl p-4">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart
+                                  data={chartData}
+                                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                                >
+                                  <defs>
+                                    <linearGradient id="clientQualityGrad" x1="0" y1="0" x2="0" y2="1">
+                                      <stop offset="5%" stopColor="#3BBCA9" stopOpacity={0.25}/>
+                                      <stop offset="95%" stopColor="#3BBCA9" stopOpacity={0}/>
+                                    </linearGradient>
+                                  </defs>
+                                  <XAxis 
+                                    dataKey="name" 
+                                    stroke="#475569" 
+                                    fontSize={8}
+                                    fontWeight={600}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    dy={5}
+                                  />
+                                  <YAxis 
+                                    stroke="#475569" 
+                                    fontSize={8}
+                                    fontWeight={600}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    domain={[0, 100]}
+                                    tickFormatter={(val) => `${val}%`}
+                                  />
+                                  <Tooltip
+                                    contentStyle={{
+                                      backgroundColor: 'var(--bg-secondary)',
+                                      border: '1px solid var(--glass-border)',
+                                      borderRadius: '16px',
+                                      fontSize: '9px',
+                                    }}
+                                    labelStyle={{ color: 'white', fontWeight: 'bold' }}
+                                    itemStyle={{ color: '#3BBCA9' }}
+                                  />
+                                  <Area 
+                                    type="monotone" 
+                                    dataKey="Calidad" 
+                                    stroke="#3BBCA9" 
+                                    strokeWidth={2}
+                                    fillOpacity={1} 
+                                    fill="url(#clientQualityGrad)" 
+                                    dot={(props: any) => {
+                                      const { cx, cy, payload } = props;
+                                      const isCurrent = selectedPeriod?.month === payload.month && selectedPeriod?.year === payload.year;
+                                      return (
+                                        <circle
+                                          key={`${payload.month}-${payload.year}`}
+                                          cx={cx}
+                                          cy={cy}
+                                          r={isCurrent ? 6 : 4}
+                                          stroke="#3BBCA9"
+                                          strokeWidth={2}
+                                          fill={isCurrent ? '#ffffff' : payload.isReal ? '#3BBCA9' : '#0f172a'}
+                                        />
+                                      );
+                                    }}
+                                  />
+                                </AreaChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+
+                          {/* BOTTOM SECTION: MONTH DETAILED ASSESSMENT */}
+                          {selectedPeriod && (
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                              {/* Left Columns (2/3): Pillars Assessment */}
+                              <div className="lg:col-span-2 space-y-6">
+                                <div className="flex justify-between items-center mb-4">
+                                  <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-[0.3em] flex items-center gap-3">
+                                    <Star size={14} className="text-rc-teal" /> 10 Pilares de Calidad ({periods.find(p => p.month === selectedPeriod.month && p.year === selectedPeriod.year)?.label})
+                                  </h4>
+                                  <span className="text-xs font-bold text-rc-teal uppercase bg-rc-teal/5 border border-rc-teal/20 px-4 py-1.5 rounded-full">
+                                    Health: {activeEval?.quantitative || Math.round((Object.values(activePillars).reduce((a, b) => a + (typeof b === 'number' ? b : 0), 0) / 50) * 100)}%
+                                  </span>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                  {[
+                                     { key: 'sla', label: 'SLA', desc: 'Cumplimiento de acuerdos de nivel de servicio.' },
+                                     { key: 'comunicacion', label: 'Comunicación', desc: 'Claridad y fluidez en canales oficiales.' },
+                                     { key: 'resolucion', label: 'Resolución', desc: 'Efectividad en el cierre de incidencias.' },
+                                     { key: 'experiencia', label: 'Experiencia', desc: 'Nivel de satisfacción del usuario final.' },
+                                     { key: 'continuidad', label: 'Continuidad', desc: 'Estabilidad y resiliencia de la operación.' },
+                                     { key: 'orden', label: 'Orden', desc: 'Organización de procesos y documentación.' },
+                                     { key: 'conversion', label: 'Conversión', desc: 'Efectividad en objetivos de negocio.' },
+                                     { key: 'adaptacion', label: 'Adaptación', desc: 'Flexibilidad ante cambios estratégicos.' },
+                                     { key: 'cultura', label: 'Cultura', desc: 'Alineación con valores de la corporación.' },
+                                     { key: 'valor', label: 'Valor', desc: 'Percepción de retorno sobre inversión.' }
+                                  ].map((pillar) => {
+                                     const score = (activePillars as any)?.[pillar.key] || 0;
+                                     return (
+                                        <div key={pillar.key} className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] space-y-8 transition-all hover:bg-white/[0.02]">
+                                           <div className="flex justify-between items-start">
+                                              <div className="space-y-2">
+                                                 <span className="text-[14px] font-medium text-white uppercase tracking-tight block">{pillar.label}</span>
+                                                 <p className="text-[9px] text-slate-600 font-medium uppercase tracking-[0.2em]">{pillar.desc}</p>
+                                              </div>
+                                              <span className={`text-[18px] font-light ${score >= 4 ? 'text-rc-teal' : score >= 3 ? 'text-amber-400' : 'text-rose-500'}`}>
+                                                 {score}.0
+                                              </span>
+                                           </div>
+                                           <div className="flex gap-2 h-1.5">
+                                              {[1, 2, 3, 4, 5].map(n => (
+                                                 <div 
+                                                    key={n} 
+                                                    onClick={isAdmin && selectedPeriod?.month > 0 ? () => {
+                                                       updateEvaluationForPeriod(
+                                                         (existing) => ({
+                                                           pillars: {
+                                                             ...(existing.pillars || activePillars),
+                                                             [pillar.key]: n
+                                                           }
+                                                         })
+                                                       );
+                                                    } : undefined}
+                                                    className={`flex-1 rounded-full transition-all duration-700 ${
+                                                       score >= n 
+                                                       ? 'bg-rc-teal shadow-[0_0_15px_rgba(59,188,169,0.3)]' 
+                                                       : 'bg-white/5'
+                                                    } ${isAdmin && selectedPeriod?.month > 0 ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`} 
+                                                 />
+                                              ))}
+                                           </div>
+                                        </div>
+                                     );
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Right Column (1/3): Qualitative Observations & Status */}
+                              <div className="space-y-8">
+                                <div className="space-y-4">
+                                  <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-[0.3em] flex items-center gap-3">
+                                    <MessageSquare size={14} className="text-rc-teal" /> Diagnóstico Estratégico
+                                  </h4>
+                                  
+                                  {/* Health Status Selector */}
+                                  <div className="p-6 bg-white/[0.01] border border-white/5 rounded-3xl space-y-4">
+                                    <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest block">Salud Operacional</span>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      {[
+                                        { id: 'Stable', label: 'Estable', color: 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5' },
+                                        { id: 'Growth', label: 'Crecimiento', color: 'text-rc-teal border-rc-teal/20 bg-rc-teal/5' },
+                                        { id: 'At Risk', label: 'En Riesgo', color: 'text-amber-400 border-amber-400/20 bg-amber-400/5' },
+                                        { id: 'Critical', label: 'Crítico', color: 'text-rose-500 border-rose-500/20 bg-rose-500/5' }
+                                      ].map((st) => {
+                                        const isSelected = activeStatus === st.id;
+                                        return (
+                                          <button
+                                            key={st.id}
+                                            disabled={!isAdmin || selectedPeriod?.month === 0}
+                                            onClick={() => {
+                                              updateEvaluationForPeriod(
+                                                () => ({ status: st.id as any })
+                                              );
+                                            }}
+                                            className={`px-4 py-3 rounded-2xl text-[9px] font-medium uppercase tracking-wider transition-all border ${
+                                              isSelected
+                                                ? st.color + ' scale-105 border-opacity-100 font-bold shadow-lg'
+                                                : 'bg-white/[0.02] border-white/5 text-slate-500 hover:text-slate-300'
+                                            } ${isAdmin && selectedPeriod?.month > 0 ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+                                          >
+                                            {st.label}
+                                          </button>
+                                        );
+                                      })}
                                     </div>
-                                    <div className="flex gap-2 h-1.5">
-                                       {[1, 2, 3, 4, 5].map(n => (
-                                          <div 
-                                             key={n} 
-                                             onClick={isAdmin ? () => {
-                                                const currentAssessment = editedProject.quarterlyAssessment || {
-                                                   sla: 5,
-                                                   comunicacion: 5,
-                                                   resolucion: 5,
-                                                   experiencia: 5,
-                                                   continuidad: 5,
-                                                   orden: 5,
-                                                   conversion: 5,
-                                                   adaptacion: 5,
-                                                   cultura: 5,
-                                                   valor: 5
-                                                };
-                                                setEditedProject({
-                                                   ...editedProject,
-                                                   quarterlyAssessment: {
-                                                      ...currentAssessment,
-                                                      [pillar.key]: n
-                                                   }
-                                                });
-                                             } : undefined}
-                                             className={`flex-1 rounded-full transition-all duration-700 ${
-                                                score >= n 
-                                                ? 'bg-rc-teal shadow-[0_0_15px_rgba(59,188,169,0.3)]' 
-                                                : 'bg-white/5'
-                                             } ${isAdmin ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`} 
+                                  </div>
+
+                                  {/* Comments Textarea */}
+                                  <div className="p-6 bg-white/[0.01] border border-white/5 rounded-3xl space-y-4">
+                                    <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest block">Observaciones Cualitativas</span>
+                                    {isAdmin && selectedPeriod?.month > 0 ? (
+                                      <textarea
+                                        value={activeQualitative}
+                                        onChange={(e) => {
+                                          updateEvaluationForPeriod(
+                                            () => ({ qualitative: e.target.value })
+                                          );
+                                        }}
+                                        placeholder="Escribe el comentario estratégico de este mes..."
+                                        rows={6}
+                                        className="w-full bg-black/20 border border-white/5 rounded-2xl p-4 text-xs font-light text-white placeholder-slate-600 focus:outline-none focus:border-rc-teal/50 transition-colors custom-scrollbar"
+                                      />
+                                    ) : (
+                                      <p className="text-xs font-light text-slate-400 leading-relaxed italic p-4 bg-black/10 rounded-2xl border border-white/5 whitespace-pre-line custom-scrollbar max-h-[160px] overflow-y-auto">
+                                        {activeQualitative || (selectedPeriod?.month === 0 ? "No hay observaciones cualitativas consolidadas para este año." : "No hay observaciones cualitativas registradas para este período.")}
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  {/* Bitácora de Acciones Tácticas */}
+                                  <div className="p-6 bg-white/[0.01] border border-white/5 rounded-3xl space-y-6">
+                                    <div className="flex items-center justify-between">
+                                      <div className="space-y-1">
+                                        <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest block">Bitácora de Acciones</span>
+                                        <span className="text-[8px] text-rc-teal font-medium uppercase tracking-[0.2em] block">
+                                          {selectedPeriod.month === 0 ? 'Resumen Anual (Lectura)' : 'Intervenciones del Periodo'}
+                                        </span>
+                                      </div>
+                                      <div className="w-6 h-6 bg-rc-teal/10 border border-rc-teal/20 rounded-full flex items-center justify-center text-rc-teal text-[9px] font-bold">
+                                        {activeEval?.actions?.length || 0}
+                                      </div>
+                                    </div>
+
+                                    {/* Actions List */}
+                                    <div className="space-y-3 max-h-[220px] overflow-y-auto custom-scrollbar pr-1">
+                                      {(activeEval?.actions || []).length > 0 ? (
+                                        (activeEval?.actions || []).map((action) => {
+                                          const catColors = {
+                                            'Técnico': 'text-cyan-400 border-cyan-400/20 bg-cyan-400/5',
+                                            'SLA': 'text-amber-400 border-amber-400/20 bg-amber-400/5',
+                                            'Procesos': 'text-purple-400 border-purple-400/20 bg-purple-400/5',
+                                            'Relación': 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5',
+                                            'Otros': 'text-slate-400 border-slate-400/20 bg-slate-400/5'
+                                          };
+                                          const isCompleted = action.status === 'Completed';
+
+                                          return (
+                                            <div 
+                                              key={action.id} 
+                                              className={`p-4 rounded-2xl border bg-black/25 flex items-start gap-3 transition-all duration-300 ${
+                                                isCompleted ? 'border-white/5 opacity-60' : 'border-white/10 hover:border-white/20'
+                                              }`}
+                                            >
+                                              {selectedPeriod.month > 0 && isAdmin ? (
+                                                <button 
+                                                  onClick={() => handleToggleAction(action.id)}
+                                                  className={`w-5 h-5 rounded-lg border flex items-center justify-center shrink-0 transition-all ${
+                                                    isCompleted 
+                                                      ? 'bg-rc-teal border-rc-teal text-white' 
+                                                      : 'border-white/20 text-transparent hover:border-rc-teal/50'
+                                                  }`}
+                                                >
+                                                  <Check size={12} strokeWidth={3} />
+                                                </button>
+                                              ) : (
+                                                <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${isCompleted ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                                              )}
+
+                                              <div className="flex-1 space-y-1.5 min-w-0">
+                                                <p className={`text-xs font-light leading-relaxed break-words ${isCompleted ? 'line-through text-slate-500' : 'text-slate-200'}`}>
+                                                  {action.description}
+                                                </p>
+                                                <span className={`inline-block px-2.5 py-0.5 rounded-full border text-[7px] font-semibold uppercase tracking-wider ${catColors[action.category] || catColors['Otros']}`}>
+                                                  {action.category}
+                                                </span>
+                                              </div>
+
+                                              {selectedPeriod.month > 0 && isAdmin && (
+                                                <button 
+                                                  onClick={() => handleDeleteAction(action.id)}
+                                                  className="text-slate-600 hover:text-rose-500 transition-colors p-1"
+                                                >
+                                                  <Trash2 size={12} />
+                                                </button>
+                                              )}
+                                            </div>
+                                          );
+                                        })
+                                      ) : (
+                                        <div className="py-8 flex flex-col items-center justify-center border border-dashed border-white/5 rounded-2xl bg-white/[0.005]">
+                                          <Tag className="text-slate-800 mb-2" size={24} strokeWidth={1} />
+                                          <p className="text-slate-600 font-medium uppercase tracking-[0.2em] text-[8px]">Sin acciones registradas</p>
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    {/* Form Section (Admin Only & only in Month view) */}
+                                    {selectedPeriod.month > 0 && isAdmin ? (
+                                      <div className="space-y-4 pt-4 border-t border-white/5">
+                                        <div className="flex gap-2">
+                                          <input
+                                            type="text"
+                                            value={newActionText}
+                                            onChange={(e) => setNewActionText(e.target.value)}
+                                            placeholder="Nueva acción o hito..."
+                                            className="flex-1 bg-black/25 border border-white/5 rounded-xl px-4 py-2.5 text-xs font-light text-white placeholder-slate-600 focus:outline-none focus:border-rc-teal/50 transition-colors"
+                                            onKeyDown={(e) => {
+                                              if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleAddAction();
+                                              }
+                                            }}
                                           />
-                                       ))}
-                                    </div>
-                                 </div>
-                              );
-                           })}
+                                          <button
+                                            onClick={handleAddAction}
+                                            disabled={!newActionText.trim()}
+                                            className={`px-3 rounded-xl border flex items-center justify-center transition-all ${
+                                              newActionText.trim()
+                                                ? 'bg-rc-teal/10 border-rc-teal/20 text-rc-teal hover:bg-rc-teal/20'
+                                                : 'bg-white/5 border-white/5 text-slate-600 cursor-not-allowed'
+                                            }`}
+                                          >
+                                            <Plus size={16} />
+                                          </button>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2">
+                                          {(['Técnico', 'SLA', 'Procesos', 'Relación', 'Otros'] as const).map((cat) => {
+                                            const isSelected = newActionCategory === cat;
+                                            return (
+                                              <button
+                                                key={cat}
+                                                type="button"
+                                                onClick={() => setNewActionCategory(cat)}
+                                                className={`px-3 py-1.5 rounded-lg text-[8px] font-medium uppercase tracking-wider transition-all border ${
+                                                  isSelected
+                                                    ? 'bg-white/10 border-white/20 text-white font-bold'
+                                                    : 'bg-white/[0.01] border-white/5 text-slate-500 hover:text-slate-300'
+                                                }`}
+                                              >
+                                                {cat}
+                                              </button>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
+                                    ) : selectedPeriod.month === 0 ? (
+                                      <div className="p-3 bg-rc-teal/5 border border-rc-teal/10 rounded-2xl text-[9px] text-rc-teal leading-relaxed font-light flex items-start gap-2">
+                                        <AlertCircle size={14} className="shrink-0 mt-0.5" />
+                                        <span>
+                                          Las acciones en la vista <strong>Anual</strong> son consolidadas de los meses del año. Para registrar o editar acciones, cambie a la vista <strong>Mensual</strong>.
+                                        </span>
+                                      </div>
+                                    ) : null}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                     )}
+                      )}
 
                      {activeTab === 'services' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">

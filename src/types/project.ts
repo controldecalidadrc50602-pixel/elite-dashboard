@@ -45,6 +45,13 @@ export interface ClientService {
   shiftMatrix?: string;
 }
 
+export interface PeriodAction {
+  id: string;
+  description: string;
+  status: 'Pending' | 'Completed';
+  category: 'Técnico' | 'SLA' | 'Procesos' | 'Relación' | 'Otros';
+}
+
 export interface Evaluation {
   date?: string;
   month: number;
@@ -52,6 +59,8 @@ export interface Evaluation {
   quantitative: number;
   qualitative: string;
   status: 'Stable' | 'At Risk' | 'Critical' | 'Growth';
+  pillars?: QuarterlyAssessment;
+  actions?: PeriodAction[];
 }
 
 export interface Alert {

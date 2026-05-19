@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSearchParams } from 'react-router-dom';
-import { Lock, Mail, ArrowRight, ShieldCheck, KeyRound } from 'lucide-react';
+import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { brandingService, BrandingConfig } from '../services/brandingService';
 
@@ -166,25 +166,7 @@ const Login = () => {
           Entrar con Google
         </button>
 
-        <div className="mt-8 p-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] text-slate-400 space-y-2">
-          <div className="flex items-center gap-2 text-rc-teal font-semibold uppercase tracking-wider">
-            <KeyRound size={12} />
-            <span>Acceso de Demostración</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2 text-[9px]">
-            <div>
-              <span className="text-white block font-bold">CEO (Full Access)</span>
-              <span>ceo@admin.com<br />Pass: Rc506CR</span>
-            </div>
-            <div>
-              <span className="text-white block font-bold">DEV (Full Access)</span>
-              <span>developer@admin.com<br />Pass: Rc506Vzla</span>
-            </div>
-          </div>
-          <p className="pt-2 border-t border-white/5 text-center text-[9px] text-slate-500 font-medium">
-            Cualquier otra cuenta ingresa como <strong className="text-white">Consultor (Sólo Lectura)</strong>.
-          </p>
-        </div>
+
 
         <div className="mt-8 text-center opacity-40 hover:opacity-100 transition-opacity">
           <p className="label-executive">
