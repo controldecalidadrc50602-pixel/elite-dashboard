@@ -42,6 +42,7 @@ const MONTH_NAMES = [
 export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMode }) => {
   const [activeTab, setActiveTab] = useState<'evolution' | 'services'>('evolution');
   const [evolutionType, setEvolutionType] = useState<'trend' | 'distribution'>('trend');
+  const [chartMetric, setChartMetric] = useState<'quality' | 'volume' | 'flow'>('quality');
   const [selectedService, setSelectedService] = useState<string | null>(null);
 
   // Determinar si hay alguna evaluación real en Firestore
@@ -493,49 +494,74 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
               className="space-y-8"
             >
               {/* Controles de tipo de gráfico */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
+              <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 bg-white/[0.02] p-6 rounded-3xl border border-[var(--glass-border)]">
                 <div className="space-y-1">
-                  <span className="text-[11px] font-medium text-white uppercase tracking-wider">Visualización Operativa</span>
-                  <p className="text-[9px] text-slate-500 uppercase tracking-widest">Alterna entre el índice de calidad promedio o el volumen de salud mensual</p>
+                  <span className="text-[11px] font-bold text-[var(--text-primary)] uppercase tracking-wider">Visualización Operativa & Ecosistema</span>
+                  <p className="text-[9px] text-slate-500 uppercase tracking-widest">Alterna las curvas de calidad (SLA), volumen de cartera o altas/bajas de servicios</p>
                 </div>
-                <div className="flex gap-2.5 self-stretch sm:self-auto">
-                  <button
-                    onClick={() => setEvolutionType('trend')}
-                    className={`flex-1 sm:flex-none px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
-                      evolutionType === 'trend'
-                        ? 'bg-rc-teal text-black shadow-lg shadow-rc-teal/20 font-bold'
-                        : 'bg-white/5 text-slate-400 border border-white/5 hover:bg-white/10'
-                    }`}
-                  >
-                    Línea de Tendencia
-                  </button>
-                  <button
-                    onClick={() => setEvolutionType('distribution')}
-                    className={`flex-1 sm:flex-none px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
-                      evolutionType === 'distribution'
-                        ? 'bg-rc-teal text-black shadow-lg shadow-rc-teal/20 font-bold'
-                        : 'bg-white/5 text-slate-400 border border-white/5 hover:bg-white/10'
-                    }`}
-                  >
-                    Distribución de Salud
-                  </button>
+                
+                <div className="flex flex-wrap gap-3 w-full xl:w-auto">
+                  {/* Selector de Perspectiva (Métrica) */}
+                  <div className="flex bg-black/20 p-1.5 rounded-2xl border border-[var(--glass-border)]">
+                    {[
+                      { id: 'quality', label: 'Calidad (SLA)' },
+                      { id: 'volume', label: 'Volumen (Ecosistema)' },
+                      { id: 'flow', label: 'Flujo (Altas/Bajas)' }
+                    ].map(metric => (
+                      <button
+                        key={metric.id}
+                        onClick={() => setChartMetric(metric.id as any)}
+                        className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all ${
+                          chartMetric === metric.id
+                            ? 'bg-rc-teal text-black font-black shadow-md'
+                            : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        {metric.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Selector de Representación (Línea o Barras) */}
+                  <div className="flex gap-2 bg-black/10 p-1.5 rounded-2xl border border-[var(--glass-border)] ml-auto xl:ml-0">
+                    <button
+                      onClick={() => setEvolutionType('trend')}
+                      className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all ${
+                        evolutionType === 'trend'
+                          ? 'bg-white text-black font-bold'
+                          : 'text-slate-500 hover:text-slate-300'
+                      }`}
+                    >
+                      Tendencia
+                    </button>
+                    <button
+                      onClick={() => setEvolutionType('distribution')}
+                      className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all ${
+                        evolutionType === 'distribution'
+                          ? 'bg-white text-black font-bold'
+                          : 'text-slate-500 hover:text-slate-300'
+                      }`}
+                    >
+                      Salud
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Contenedor del Gráfico */}
-              <div className="h-[360px] w-full bg-black/25 border border-white/5 rounded-[32px] p-6 relative flex items-center justify-center">
+              <div className="h-[360px] w-full bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-[32px] p-6 relative flex items-center justify-center">
                 {demoMode === false && !hasRealEvaluations ? (
                   <div className="text-center max-w-lg mx-auto space-y-4 p-8">
                     <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto animate-pulse">
                       <ShieldCheck size={22} />
                     </div>
                     <div className="space-y-1">
-                      <h4 className="text-xs font-semibold text-white uppercase tracking-[0.2em]">Aislamiento de Datos Activo</h4>
-                      <p className="text-[9px] text-slate-400 uppercase tracking-widest leading-relaxed">
+                      <h4 className="text-xs font-semibold text-[var(--text-primary)] uppercase tracking-[0.2em]">Aislamiento de Datos Activo</h4>
+                      <p className="text-[9px] text-slate-500 uppercase tracking-widest leading-relaxed">
                         No hay evaluaciones de calidad mensuales registradas en Firestore
                       </p>
                     </div>
-                    <p className="text-[9px] text-slate-500 leading-relaxed uppercase tracking-[0.15em] pt-2">
+                    <p className="text-[9px] text-slate-400 leading-relaxed uppercase tracking-[0.15em] pt-2">
                       Para poblar este gráfico con datos reales, ingresa una evaluación cualitativa/cuantitativa desde la ficha individual de tus clientes. Si deseas previsualizar los gráficos interactivos de prueba, activa el <span className="text-amber-400 font-black">Modo Demo</span> en la cabecera superior.
                     </p>
                   </div>
@@ -550,47 +576,114 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                           <stop offset="5%" stopColor="#3BBCA9" stopOpacity={0.25}/>
                           <stop offset="95%" stopColor="#3BBCA9" stopOpacity={0}/>
                         </linearGradient>
+                        <linearGradient id="colorClients" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#6366F1" stopOpacity={0.25}/>
+                          <stop offset="95%" stopColor="#6366F1" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorServices" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.25}/>
+                          <stop offset="95%" stopColor="#F59E0B" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorAltas" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10B981" stopOpacity={0.25}/>
+                          <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorBajas" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#F43F5E" stopOpacity={0.25}/>
+                          <stop offset="95%" stopColor="#F43F5E" stopOpacity={0}/>
+                        </linearGradient>
                       </defs>
                       <XAxis 
                         dataKey="name" 
-                        stroke="#475569" 
+                        stroke="#94A3B8" 
                         fontSize={9}
-                        fontWeight={500}
+                        fontWeight={600}
                         tickLine={false}
                         axisLine={false}
                         dy={10}
                       />
                       <YAxis 
-                        domain={[0, 100]} 
-                        stroke="#475569" 
+                        stroke="#94A3B8" 
                         fontSize={9}
-                        fontWeight={500}
+                        fontWeight={600}
                         tickLine={false}
                         axisLine={false}
                         dx={-10}
-                        tickFormatter={(value) => `${value}%`}
+                        tickFormatter={(value) => chartMetric === 'quality' ? `${value}%` : value}
                       />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: '#0D1117',
-                          border: '1px solid rgba(255,255,255,0.08)',
-                          borderRadius: '16px',
-                          boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+                          backgroundColor: 'var(--bg-secondary)',
+                          border: '1px solid var(--glass-border)',
+                          borderRadius: '24px',
+                          boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
                         }}
-                        labelStyle={{ color: '#fff', fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}
-                        itemStyle={{ color: '#3BBCA9', fontSize: '11px', fontWeight: 'light' }}
-                        formatter={(value: any) => [`${value}% de Calidad Promedio`, 'Evolución']}
+                        labelStyle={{ color: 'var(--text-primary)', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                        itemStyle={{ fontSize: '11px', fontWeight: 'bold' }}
                       />
-                      <Area 
-                        type="monotone" 
-                        dataKey="Calidad Promedio" 
-                        stroke="#3BBCA9" 
-                        strokeWidth={2.5}
-                        fillOpacity={1} 
-                        fill="url(#colorQuality)" 
-                        dot={{ r: 4, stroke: '#3BBCA9', strokeWidth: 2, fill: '#0B0E14' }}
-                        activeDot={{ r: 6, stroke: '#3BBCA9', strokeWidth: 2, fill: '#3BBCA9' }}
-                      />
+                      
+                      {chartMetric === 'quality' && (
+                        <Area 
+                          type="monotone" 
+                          dataKey="Calidad Promedio" 
+                          stroke="#3BBCA9" 
+                          strokeWidth={3}
+                          fillOpacity={1} 
+                          fill="url(#colorQuality)" 
+                          dot={{ r: 4, stroke: '#3BBCA9', strokeWidth: 2, fill: 'var(--bg-secondary)' }}
+                          activeDot={{ r: 6, stroke: '#3BBCA9', strokeWidth: 2, fill: '#3BBCA9' }}
+                        />
+                      )}
+
+                      {chartMetric === 'volume' && (
+                        <>
+                          <Area 
+                            type="monotone" 
+                            name="Servicios Operativos"
+                            dataKey="Servicios Operativos"
+                            stroke="#F59E0B" 
+                            strokeWidth={3}
+                            fillOpacity={1} 
+                            fill="url(#colorServices)" 
+                            dot={{ r: 4, stroke: '#F59E0B', strokeWidth: 2, fill: 'var(--bg-secondary)' }}
+                          />
+                          <Area 
+                            type="monotone" 
+                            name="Clientes Activos"
+                            dataKey="Clientes Activos" 
+                            stroke="#6366F1" 
+                            strokeWidth={3}
+                            fillOpacity={1} 
+                            fill="url(#colorClients)" 
+                            dot={{ r: 4, stroke: '#6366F1', strokeWidth: 2, fill: 'var(--bg-secondary)' }}
+                          />
+                        </>
+                      )}
+
+                      {chartMetric === 'flow' && (
+                        <>
+                          <Area 
+                            type="monotone" 
+                            name="Nuevas Altas (+)"
+                            dataKey="Altas" 
+                            stroke="#10B981" 
+                            strokeWidth={3}
+                            fillOpacity={1} 
+                            fill="url(#colorAltas)" 
+                            dot={{ r: 4, stroke: '#10B981', strokeWidth: 2, fill: 'var(--bg-secondary)' }}
+                          />
+                          <Area 
+                            type="monotone" 
+                            name="Bajas / Churn (-)"
+                            dataKey="Bajas" 
+                            stroke="#F43F5E" 
+                            strokeWidth={3}
+                            fillOpacity={1} 
+                            fill="url(#colorBajas)" 
+                            dot={{ r: 4, stroke: '#F43F5E', strokeWidth: 2, fill: 'var(--bg-secondary)' }}
+                          />
+                        </>
+                      )}
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
@@ -601,34 +694,53 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                     >
                       <XAxis 
                         dataKey="name" 
-                        stroke="#475569" 
+                        stroke="#94A3B8" 
                         fontSize={9}
-                        fontWeight={500}
+                        fontWeight={600}
                         tickLine={false}
                         axisLine={false}
                         dy={10}
                       />
                       <YAxis 
-                        stroke="#475569" 
+                        stroke="#94A3B8" 
                         fontSize={9}
-                        fontWeight={500}
+                        fontWeight={600}
                         tickLine={false}
                         axisLine={false}
                         dx={-10}
                       />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: '#0D1117',
-                          border: '1px solid rgba(255,255,255,0.08)',
-                          borderRadius: '16px',
-                          boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+                          backgroundColor: 'var(--bg-secondary)',
+                          border: '1px solid var(--glass-border)',
+                          borderRadius: '24px',
+                          boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
                         }}
-                        labelStyle={{ color: '#fff', fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase' }}
-                        itemStyle={{ fontSize: '10px' }}
+                        labelStyle={{ color: 'var(--text-primary)', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }}
+                        itemStyle={{ fontSize: '11px', fontWeight: 'bold' }}
                       />
-                      <Bar dataKey="Saludable/Óptimo" stackId="a" fill="#10B981" radius={[0, 0, 0, 0]} maxBarSize={35} />
-                      <Bar dataKey="En Atención" stackId="a" fill="#F59E0B" radius={[0, 0, 0, 0]} maxBarSize={35} />
-                      <Bar dataKey="En Riesgo Crítico" stackId="a" fill="#F43F5E" radius={[4, 4, 0, 0]} maxBarSize={35} />
+
+                      {chartMetric === 'quality' && (
+                        <>
+                          <Bar dataKey="Saludable/Óptimo" stackId="a" fill="#10B981" radius={[0, 0, 0, 0]} maxBarSize={35} />
+                          <Bar dataKey="En Atención" stackId="a" fill="#F59E0B" radius={[0, 0, 0, 0]} maxBarSize={35} />
+                          <Bar dataKey="En Riesgo Crítico" stackId="a" fill="#F43F5E" radius={[4, 4, 0, 0]} maxBarSize={35} />
+                        </>
+                      )}
+
+                      {chartMetric === 'volume' && (
+                        <>
+                          <Bar dataKey="Clientes Activos" fill="#6366F1" radius={[4, 4, 0, 0]} maxBarSize={25} />
+                          <Bar dataKey="Servicios Operativos" fill="#F59E0B" radius={[4, 4, 0, 0]} maxBarSize={25} />
+                        </>
+                      )}
+
+                      {chartMetric === 'flow' && (
+                        <>
+                          <Bar dataKey="Altas" name="Altas (+)" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={25} />
+                          <Bar dataKey="Bajas" name="Bajas (-)" fill="#F43F5E" radius={[4, 4, 0, 0]} maxBarSize={25} />
+                        </>
+                      )}
                     </BarChart>
                   </ResponsiveContainer>
                 )}

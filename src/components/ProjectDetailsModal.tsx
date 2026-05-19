@@ -69,17 +69,17 @@ const ProjectDetailsModal: React.FC<Props> = ({
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/90 backdrop-blur-3xl" 
+            className="absolute inset-0 bg-black/60 dark:bg-black/85 backdrop-blur-md" 
           />
           <motion.div 
-            initial={{ scale: 0.98, opacity: 0, y: 20 }} 
+            initial={{ scale: 0.96, opacity: 0, y: 30 }} 
             animate={{ scale: 1, opacity: 1, y: 0 }} 
-            exit={{ scale: 0.98, opacity: 0, y: 20 }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="relative w-[85vw] h-[90vh] bg-[#0B0E14] border border-white/5 rounded-[48px] shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col z-[110] font-light"
+            exit={{ scale: 0.96, opacity: 0, y: 30 }}
+            transition={{ type: "spring", damping: 42, stiffness: 220 }}
+            className="relative w-[85vw] h-[90vh] bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-[48px] shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col z-[110] font-light text-[var(--text-primary)]"
           >
             {/* Action Bar Superior */}
-            <div className="p-10 border-b border-white/5 flex items-center justify-between bg-[#0B0E14]/50 backdrop-blur-3xl">
+            <div className="p-10 border-b border-[var(--glass-border)] flex items-center justify-between bg-[var(--bg-secondary)]/50 backdrop-blur-3xl">
                <div className="flex items-center gap-10">
                   <div className="w-20 h-20 bg-white/[0.01] rounded-[32px] border border-white/5 flex items-center justify-center p-6 transition-all group-hover:border-rc-teal/30">
                      {editedProject.logoUrl ? (
@@ -137,21 +137,21 @@ const ProjectDetailsModal: React.FC<Props> = ({
                      <Trash size={18} strokeWidth={1.5} />
                      <span className="text-[8px] font-medium uppercase tracking-widest">Eliminar</span>
                   </button>
-                  <div className="h-10 w-px bg-white/5 mx-4" />
-                  <button onClick={onClose} className="p-4 bg-white/5 hover:bg-white/10 rounded-full text-white transition-all border border-white/5">
+                  <div className="h-10 w-px bg-[var(--glass-border)] mx-4" />
+                  <button onClick={onClose} className="p-4 bg-[var(--card-bg)] hover:bg-white/10 rounded-full text-[var(--text-primary)] transition-all border border-[var(--glass-border)]">
                      <X size={24} strokeWidth={1} />
                   </button>
                </div>
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex px-12 gap-2 border-b border-white/5 bg-black/10">
+            <div className="flex px-12 gap-2 border-b border-[var(--glass-border)] bg-black/5">
                {tabs.map(tab => (
                   <button
                      key={tab.id}
                      onClick={() => setActiveTab(tab.id as any)}
                      className={`flex items-center gap-4 px-8 py-6 text-[11px] font-medium uppercase tracking-[0.3em] transition-all relative ${
-                        activeTab === tab.id ? 'text-white' : 'text-slate-600 hover:text-white'
+                        activeTab === tab.id ? 'text-[var(--text-primary)] font-semibold' : 'text-slate-500 hover:text-[var(--text-primary)]'
                      }`}
                   >
                      <tab.icon size={16} strokeWidth={activeTab === tab.id ? 2 : 1.5} />
@@ -440,11 +440,11 @@ const ProjectDetailsModal: React.FC<Props> = ({
             </div>
 
             {/* Global Footer Actions */}
-            <div className="p-12 bg-[#0B0E14] border-t border-white/5 flex items-center justify-between">
+            <div className="p-12 bg-[var(--bg-secondary)] border-t border-[var(--glass-border)] flex items-center justify-between">
                <div className="flex items-center gap-10">
                   <div className="flex -space-x-3">
                      {[1,2,3,4].map(i => (
-                        <div key={i} className="w-12 h-12 rounded-full border-4 border-[#0B0E14] bg-white/[0.02] flex items-center justify-center text-[9px] font-medium text-slate-500 uppercase">
+                        <div key={i} className="w-12 h-12 rounded-full border-4 border-[var(--bg-secondary)] bg-white/[0.02] flex items-center justify-center text-[9px] font-semibold text-slate-500 uppercase">
                            {i === 1 ? 'AI' : i === 2 ? 'PM' : i === 3 ? 'OP' : 'QA'}
                         </div>
                      ))}
