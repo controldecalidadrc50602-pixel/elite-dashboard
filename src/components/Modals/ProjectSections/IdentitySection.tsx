@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Upload, Crown, Users, Target } from 'lucide-react';
 import { Project } from '../../../types/project';
 import ImageWithFallback from '../../common/ImageWithFallback';
+import HelpTooltip from '../../common/HelpTooltip';
 
 interface Props {
   formData: Partial<Project>;
@@ -45,8 +46,14 @@ const IdentitySection: React.FC<Props> = ({ formData, onUpdate, onFileChange }) 
         {/* Primary Info Grid */}
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 w-full">
           <div className="space-y-1">
-            <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] block">
+            <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] flex items-center">
               Corporación / Cliente
+              <HelpTooltip 
+                title="Corporación / Cliente" 
+                description="Nombre comercial o razón social oficial de la empresa o cliente estratégico a auditar en este expediente." 
+                example="Ejemplo: Coca-Cola FEMSA, Walmart de México, o P&G Latam."
+                position="top"
+              />
             </label>
             <input 
               required 
@@ -58,8 +65,14 @@ const IdentitySection: React.FC<Props> = ({ formData, onUpdate, onFileChange }) 
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] block">
+            <label className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] flex items-center">
               Responsable de Cuenta
+              <HelpTooltip 
+                title="Responsable de Cuenta" 
+                description="Auditor principal, consultor de calidad o Business Manager asignado a la supervisión operativa y analítica de este cliente." 
+                example="Ejemplo: Marilyn Calderón, Ing. José Arrieta, etc."
+                position="top"
+              />
             </label>
             <input 
               value={formData.accountManager || ''}
@@ -70,7 +83,15 @@ const IdentitySection: React.FC<Props> = ({ formData, onUpdate, onFileChange }) 
           </div>
 
           <div className="space-y-1">
-            <label className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em] block">Alerta Operativa</label>
+            <label className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em] flex items-center">
+              Alerta Operativa
+              <HelpTooltip 
+                title="Alerta Operativa" 
+                description="Métrica visual de estatus crítico. Verde para óptimo, Amarilla para desvíos leves que requieren prevención, y Roja para riesgo de abandono." 
+                example="La bandera semántica se sincroniza de inmediato en el mapa de control corporativo."
+                position="top"
+              />
+            </label>
             <select 
               value={formData.healthFlag || 'Verde'}
               onChange={e => onUpdate({ healthFlag: e.target.value as any })}
@@ -83,7 +104,15 @@ const IdentitySection: React.FC<Props> = ({ formData, onUpdate, onFileChange }) 
           </div>
 
           <div className="space-y-1">
-            <label className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em] block">Fecha de Inicio</label>
+            <label className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.4em] flex items-center">
+              Fecha de Inicio
+              <HelpTooltip 
+                title="Fecha de Inicio" 
+                description="Fecha oficial de inicio de operaciones del servicio, firma del contrato o alta en nuestro ecosistema." 
+                example="Sirve de punto de partida para los cálculos de SLA de retención y tiempo de vida (LTV)."
+                position="top"
+              />
+            </label>
             <input 
               type="date"
               value={formData.startDate || ''}
@@ -95,8 +124,14 @@ const IdentitySection: React.FC<Props> = ({ formData, onUpdate, onFileChange }) 
       </div>
 
       <div className="space-y-4 pt-8 border-t border-white/5">
-        <label className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.3em] block">
+        <label className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.3em] flex items-center">
           Propósito y Objetivo Estratégico
+          <HelpTooltip 
+            title="Objetivo Estratégico" 
+            description="La meta SMART de éxito para la cuenta en el ciclo actual. Defina el qué, cómo y cuándo de manera accionable." 
+            example="Ejemplo: Incrementar el SLA al 98.5% mediante optimización de la cola virtual y automatizaciones en el chatbot."
+            position="top"
+          />
         </label>
         <textarea 
           value={formData.strategicObjective || ''}

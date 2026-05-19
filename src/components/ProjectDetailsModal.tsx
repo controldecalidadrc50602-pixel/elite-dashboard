@@ -10,6 +10,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Project, QuarterlyAssessment, ClientEvaluation } from '../types/project';
 import { exportService } from '../services/exportService';
+import { useAuth } from '../context/AuthContext';
 
 interface Props {
   project: Project | null;
@@ -31,6 +32,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
   onEditRequest 
 }) => {
   const { t } = useTranslation();
+  const { isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState<'summary' | 'services' | 'quality' | 'admin' | 'milestones'>('summary');
   const [editedProject, setEditedProject] = useState<Project | null>(project);
 
@@ -97,19 +99,22 @@ const ProjectDetailsModal: React.FC<Props> = ({
                         </div>
                      </div>
                      <div className="flex items-center gap-3 mt-6">
-                        {['En Proceso', 'Prueba', 'Activo', 'Inactivo'].map(status => (
-                           <button
-                              key={status}
-                              onClick={() => setEditedProject({ ...editedProject, adminStatus: status as any })}
-                              className={`px-5 py-2 rounded-full text-[9px] font-medium uppercase tracking-[0.2em] transition-all duration-500 ${
-                                 editedProject.adminStatus === status 
-                                 ? 'bg-white text-black' 
-                                 : 'bg-white/5 text-slate-500 hover:text-white hover:bg-white/10'
-                              }`}
-                           >
-                              {status}
-                           </button>
-                        ))}
+                        {['En Proceso', 'Prueba', 'Activo', 'Inactivo'].map(status => {
+                           const isSelected = editedProject.adminStatus === status;
+                           return (
+                              <button
+                                 key={status}
+                                 onClick={isAdmin ? () => setEditedProject({ ...editedProject, adminStatus: status as any }) : undefined}
+                                 className={`px-5 py-2 rounded-full text-[9px] font-medium uppercase tracking-[0.2em] transition-all duration-500 ${
+                                    isSelected 
+                                    ? 'bg-white text-black' 
+                                    : 'bg-white/5 text-slate-500'
+                                 } ${isAdmin && !isSelected ? 'hover:text-white hover:bg-white/10 cursor-pointer' : 'cursor-default'}`}
+                              >
+                                 {status}
+                              </button>
+                           );
+                        })}
                      </div>
                   </div>
                </div>
@@ -122,21 +127,25 @@ const ProjectDetailsModal: React.FC<Props> = ({
                      <FileText size={18} strokeWidth={1.5} />
                      <span className="text-[8px] font-medium uppercase tracking-widest">Reporte PDF</span>
                   </button>
-                  <button onClick={() => onEditRequest?.(editedProject)} className="flex flex-col items-center gap-2 p-4 bg-white/5 hover:bg-white/10 rounded-[32px] border border-white/5 text-slate-400 hover:text-white transition-all">
-                     <Edit3 size={18} strokeWidth={1.5} />
-                     <span className="text-[8px] font-medium uppercase tracking-widest">Ajustes</span>
-                  </button>
-                  <button 
-                    onClick={() => onArchive?.(editedProject)}
-                    className="flex flex-col items-center gap-2 p-4 bg-white/5 hover:bg-amber-500/10 rounded-[32px] border border-white/5 text-slate-400 hover:text-amber-400 transition-all"
-                  >
-                     <Archive size={18} strokeWidth={1.5} />
-                     <span className="text-[8px] font-medium uppercase tracking-widest">Archivar</span>
-                  </button>
-                  <button onClick={() => onDelete?.(editedProject.id)} className="flex flex-col items-center gap-2 p-4 bg-rose-500/5 hover:bg-rose-500/10 rounded-[32px] border border-rose-500/10 text-rose-500/40 hover:text-rose-500 transition-all">
-                     <Trash size={18} strokeWidth={1.5} />
-                     <span className="text-[8px] font-medium uppercase tracking-widest">Eliminar</span>
-                  </button>
+                  {isAdmin && (
+                     <>
+                        <button onClick={() => onEditRequest?.(editedProject)} className="flex flex-col items-center gap-2 p-4 bg-white/5 hover:bg-white/10 rounded-[32px] border border-white/5 text-slate-400 hover:text-white transition-all cursor-pointer">
+                           <Edit3 size={18} strokeWidth={1.5} />
+                           <span className="text-[8px] font-medium uppercase tracking-widest">Ajustes</span>
+                        </button>
+                        <button 
+                          onClick={() => onArchive?.(editedProject)}
+                          className="flex flex-col items-center gap-2 p-4 bg-white/5 hover:bg-amber-500/10 rounded-[32px] border border-white/5 text-slate-400 hover:text-amber-400 transition-all cursor-pointer"
+                        >
+                           <Archive size={18} strokeWidth={1.5} />
+                           <span className="text-[8px] font-medium uppercase tracking-widest">Archivar</span>
+                        </button>
+                        <button onClick={() => onDelete?.(editedProject.id)} className="flex flex-col items-center gap-2 p-4 bg-rose-500/5 hover:bg-rose-500/10 rounded-[32px] border border-rose-500/10 text-rose-500/40 hover:text-rose-500 transition-all cursor-pointer">
+                           <Trash size={18} strokeWidth={1.5} />
+                           <span className="text-[8px] font-medium uppercase tracking-widest">Eliminar</span>
+                        </button>
+                     </>
+                   )}
                   <div className="h-10 w-px bg-[var(--glass-border)] mx-4" />
                   <button onClick={onClose} className="p-4 bg-[var(--card-bg)] hover:bg-white/10 rounded-full text-[var(--text-primary)] transition-all border border-[var(--glass-border)]">
                      <X size={24} strokeWidth={1} />
@@ -257,7 +266,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                        {[1, 2, 3, 4, 5].map(n => (
                                           <div 
                                              key={n} 
-                                             onClick={() => {
+                                             onClick={isAdmin ? () => {
                                                 const currentAssessment = editedProject.quarterlyAssessment || {
                                                    sla: 5,
                                                    comunicacion: 5,
@@ -277,12 +286,12 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                                       [pillar.key]: n
                                                    }
                                                 });
-                                             }}
-                                             className={`flex-1 rounded-full cursor-pointer transition-all duration-700 ${
+                                             } : undefined}
+                                             className={`flex-1 rounded-full transition-all duration-700 ${
                                                 score >= n 
                                                 ? 'bg-rc-teal shadow-[0_0_15px_rgba(59,188,169,0.3)]' 
-                                                : 'bg-white/5 hover:bg-white/10'
-                                             }`} 
+                                                : 'bg-white/5'
+                                             } ${isAdmin ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`} 
                                           />
                                        ))}
                                     </div>
@@ -406,7 +415,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                            ].map(item => (
                               <div 
                                  key={item.id}
-                                 onClick={() => {
+                                 onClick={isAdmin ? () => {
                                     const currentEval = (editedProject.clientEvaluation || {
                                        satisfactionLevel: 0,
                                        maturityIndex: 'Nivel 1: Inicial',
@@ -420,10 +429,12 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                           [item.id]: !currentEval[item.id as keyof typeof currentEval]
                                        }
                                     });
-                                 }}
-                                 className="p-8 bg-white/[0.01] border border-white/5 rounded-[32px] flex items-center justify-between group cursor-pointer hover:bg-white/[0.03] transition-all"
+                                 } : undefined}
+                                 className={`p-8 bg-white/[0.01] border border-white/5 rounded-[32px] flex items-center justify-between group transition-all ${
+                                    isAdmin ? 'cursor-pointer hover:bg-white/[0.03]' : 'cursor-default'
+                                 }`}
                               >
-                                 <span className="text-[12px] font-medium text-slate-500 uppercase tracking-[0.2em] group-hover:text-white transition-colors">{item.label}</span>
+                                 <span className={`text-[12px] font-medium text-slate-500 uppercase tracking-[0.2em] ${isAdmin ? 'group-hover:text-white' : ''} transition-colors`}>{item.label}</span>
                                  <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-700 ${
                                     editedProject.clientEvaluation?.[item.id as keyof typeof editedProject.clientEvaluation] 
                                     ? 'bg-white border-white text-black scale-110 shadow-[0_0_20px_rgba(255,255,255,0.2)]' 
@@ -454,15 +465,26 @@ const ProjectDetailsModal: React.FC<Props> = ({
                     <span className="text-[8px] font-medium text-slate-600 uppercase tracking-widest">Validación de Protocolo V4.2</span>
                   </div>
                </div>
-               <div className="flex items-center gap-10">
-                  <button onClick={onClose} className="text-[11px] font-medium text-slate-600 uppercase tracking-[0.3em] hover:text-white transition-colors">Cerrar</button>
-                  <button 
-                     onClick={handleSave}
-                     className="px-12 py-5 bg-white text-black text-[11px] font-medium uppercase tracking-[0.2em] rounded-full hover:bg-slate-200 active:scale-95 transition-all shadow-2xl"
-                  >
-                     Sincronizar Estrategia
-                  </button>
-               </div>
+                <div className="flex items-center gap-10">
+                   {isAdmin ? (
+                      <>
+                         <button onClick={onClose} className="text-[11px] font-medium text-slate-600 uppercase tracking-[0.3em] hover:text-white transition-colors cursor-pointer">Cancelar</button>
+                         <button 
+                            onClick={handleSave}
+                            className="px-12 py-5 bg-white text-black text-[11px] font-medium uppercase tracking-[0.2em] rounded-full hover:bg-slate-200 active:scale-95 transition-all shadow-2xl cursor-pointer"
+                         >
+                            Sincronizar Estrategia
+                         </button>
+                      </>
+                   ) : (
+                      <button 
+                         onClick={onClose}
+                         className="px-12 py-5 bg-white text-black text-[11px] font-medium uppercase tracking-[0.2em] rounded-full hover:bg-slate-200 active:scale-95 transition-all shadow-2xl cursor-pointer"
+                      >
+                         Cerrar Expediente
+                      </button>
+                   )}
+                </div>
             </div>
           </motion.div>
         </div>

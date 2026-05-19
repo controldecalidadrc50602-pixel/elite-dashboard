@@ -14,6 +14,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, pass: string) => Promise<{ error: any }>;
   loginWithGoogle: () => Promise<{ error: any }>;
+  loginAsGuest: () => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   isAdmin: boolean;
@@ -33,7 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (mockUser) {
         const parsed = JSON.parse(mockUser);
         setUser(parsed);
-        setIsAdmin(parsed.email === 'admin@admin.com');
+        setIsAdmin(parsed.email === 'ceo@admin.com' || parsed.email === 'developer@admin.com');
       }
       setLoading(false);
       return;
@@ -43,7 +44,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(firebaseUser);
       if (firebaseUser) {
         const token = await getIdTokenResult(firebaseUser);
-        setIsAdmin(!!token.claims.admin);
+        const isPredefinedAdmin = firebaseUser.email === 'ceo@admin.com' || firebaseUser.email === 'developer@admin.com';
+        setIsAdmin(!!token.claims.admin || isPredefinedAdmin);
       } else {
         setIsAdmin(false);
       }
@@ -55,14 +57,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, pass: string) => {
     if (!isFirebaseConfigured) {
-      if (email === 'admin@admin.com' && pass === 'admin') {
-        const mockUser = { email: 'admin@admin.com', uid: '123-demo', displayName: 'Admin User' };
+      // Admin 1: ceo@admin.com / Rc506CR
+      if (email === 'ceo@admin.com' && pass === 'Rc506CR') {
+        const mockUser = { email: 'ceo@admin.com', uid: 'ceo-demo', displayName: 'CEO - Rc506' };
         setUser(mockUser as any);
         setIsAdmin(true);
         localStorage.setItem('demo_user', JSON.stringify(mockUser));
         return { error: null };
       }
-      return { error: { message: 'Invalid credentials in Demo Mode' } };
+      
+      // Admin 2: developer@admin.com / Rc506Vzla
+      if (email === 'developer@admin.com' && pass === 'Rc506Vzla') {
+        const mockUser = { email: 'developer@admin.com', uid: 'dev-demo', displayName: 'Developer - Rc506' };
+        setUser(mockUser as any);
+        setIsAdmin(true);
+        localStorage.setItem('demo_user', JSON.stringify(mockUser));
+        return { error: null };
+      }
+
+      // Any other combination represents standard Read-Only Consultant
+      const mockUser = { email, uid: 'consultant-demo', displayName: 'Auditor Consultor' };
+      setUser(mockUser as any);
+      setIsAdmin(false);
+      localStorage.setItem('demo_user', JSON.stringify(mockUser));
+      return { error: null };
     }
 
     try {
@@ -80,12 +98,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      const isPredefinedAdmin = result.user.email === 'ceo@admin.com' || result.user.email === 'developer@admin.com';
+      const token = await getIdTokenResult(result.user);
+      setIsAdmin(!!token.claims.admin || isPredefinedAdmin);
       return { error: null };
     } catch (error) {
       console.error('Google login error:', error);
       return { error };
     }
+  };
+
+  const loginAsGuest = async () => {
+    const guestUser = { 
+      email: 'invitado@rc506.com', 
+      uid: 'guest-invite-token', 
+      displayName: 'Invitado Especial' 
+    };
+    setUser(guestUser as any);
+    setIsAdmin(false);
+    localStorage.setItem('demo_user', JSON.stringify(guestUser));
   };
 
   const logout = async () => {
@@ -104,6 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loading, 
       login, 
       loginWithGoogle,
+      loginAsGuest,
       logout, 
       isAuthenticated: !!user,
       isAdmin

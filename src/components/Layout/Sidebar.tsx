@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   LayoutGrid, 
@@ -9,17 +9,20 @@ import {
   Sun,
   Moon,
   Languages,
-  Archive
+  Archive,
+  Settings
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import SettingsModal from '../Modals/SettingsModal';
 
 const Sidebar: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
-  const { logout, user } = useAuth();
+  const { logout, user, isAdmin } = useAuth();
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const toggleLanguage = () => {
     const nextLang = i18n.language === 'es' ? 'en' : 'es';
@@ -76,23 +79,33 @@ const Sidebar: React.FC = () => {
 
       {/* Action Buttons & Profile */}
       <div className="mt-auto flex flex-col gap-5 items-center pb-4">
+         {isAdmin && (
+           <button 
+              onClick={() => setIsSettingsOpen(true)}
+              className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-500 hover:text-rc-teal transition-all duration-200 premium-button cursor-pointer"
+              title="Configuración de Sistema"
+           >
+              <Settings size={18} strokeWidth={1.5} />
+           </button>
+         )}
+
          <button 
             onClick={toggleTheme}
-            className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-500 hover:text-rc-teal transition-all duration-200 premium-button"
+            className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-500 hover:text-rc-teal transition-all duration-200 premium-button cursor-pointer"
          >
             {theme === 'dark' ? <Sun size={18} strokeWidth={1.5} /> : <Moon size={18} strokeWidth={1.5} />}
          </button>
          
          <button 
             onClick={toggleLanguage}
-            className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-500 hover:text-rc-teal transition-all duration-200 premium-button"
+            className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-500 hover:text-rc-teal transition-all duration-200 premium-button cursor-pointer"
          >
             <Languages size={18} strokeWidth={1.5} />
          </button>
 
          <button 
             onClick={logout}
-            className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-500 hover:text-rose-500 transition-all duration-200 premium-button"
+            className="w-11 h-11 rounded-xl glass-card flex items-center justify-center text-slate-500 hover:text-rose-500 transition-all duration-200 premium-button cursor-pointer"
          >
             <LogOut size={18} strokeWidth={1.5} />
          </button>
@@ -105,6 +118,9 @@ const Sidebar: React.FC = () => {
             />
          </div>
       </div>
+
+      {/* Configuration Settings Modal */}
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </aside>
   );
 };

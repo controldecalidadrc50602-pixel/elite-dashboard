@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { DemoModeProvider } from './context/DemoModeContext';
 import './lib/i18n';
 import App from './App';
 import './index.css';
@@ -12,9 +13,11 @@ createRoot(document.getElementById('root')!).render(
     <div className="app-container">
       <BrowserRouter>
         <ThemeProvider>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
+          <DemoModeProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </DemoModeProvider>
         </ThemeProvider>
       </BrowserRouter>
     </div>
