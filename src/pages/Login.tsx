@@ -20,21 +20,13 @@ const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [branding, setBranding] = useState<BrandingConfig>(brandingService.defaultConfig);
-  const { login, loginWithGoogle, loginAsGuest } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const unsub = brandingService.subscribeToBranding(setBranding);
     return unsub;
   }, []);
-
-  useEffect(() => {
-    const invite = searchParams.get('invite');
-    if (invite === 'guest-access') {
-      setLoading(true);
-      loginAsGuest().catch(() => setLoading(false));
-    }
-  }, [searchParams, loginAsGuest]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

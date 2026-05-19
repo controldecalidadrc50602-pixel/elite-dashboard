@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { auth, isFirebaseConfigured, googleProvider } from '../lib/firebase';
+import { auth, googleProvider } from '../lib/firebase';
 import { 
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
@@ -8,16 +8,17 @@ import {
   User as FirebaseUser,
   getIdTokenResult
 } from 'firebase/auth';
+import { ADMIN_UIDS, AUTHORIZED_EMAILS } from '../config/roles';
 
 interface AuthContextType {
-  user: FirebaseUser | null | any; // Any for mock user
+  user: FirebaseUser | null;
   loading: boolean;
   login: (email: string, pass: string) => Promise<{ error: any }>;
   loginWithGoogle: () => Promise<{ error: any }>;
-  loginAsGuest: () => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isAuthorized: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,28 +27,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    if (!isFirebaseConfigured) {
-      // Demo Mode
-      const mockUser = localStorage.getItem('demo_user');
-      if (mockUser) {
-        const parsed = JSON.parse(mockUser);
-        setUser(parsed);
-        setIsAdmin(parsed.email === 'ceo@admin.com' || parsed.email === 'developer@admin.com');
-      }
-      setLoading(false);
-      return;
-    }
-
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser);
       if (firebaseUser) {
         const token = await getIdTokenResult(firebaseUser);
-        const isPredefinedAdmin = firebaseUser.email === 'ceo@admin.com' || firebaseUser.email === 'developer@admin.com';
-        setIsAdmin(!!token.claims.admin || isPredefinedAdmin);
+        
+        // Verificación de RBAC contra los UIDs y Correos
+        const userEmail = firebaseUser.email?.toLowerCase() || '';
+        
+        const isPredefinedAdmin = ADMIN_UIDS.includes(firebaseUser.uid) || 
+                                  AUTHORIZED_EMAILS.includes(userEmail);
+                                  
+        const adminStatus = !!token.claims.admin || isPredefinedAdmin;
+        
+        // Aquí puedes definir si solo los administradores pueden entrar
+        // O si hay correos invitados en la lista AUTHORIZED_EMAILS
+        const hasAccess = isPredefinedAdmin || AUTHORIZED_EMAILS.includes(userEmail);
+
+        if (hasAccess) {
+          setUser(firebaseUser);
+          setIsAdmin(adminStatus);
+          setIsAuthorized(true);
+        } else {
+          // Si entra alguien no autorizado por Google, lo deslogueamos automáticamente por seguridad
+          await signOut(auth);
+          setUser(null);
+          setIsAdmin(false);
+          setIsAuthorized(false);
+        }
       } else {
+        setUser(null);
         setIsAdmin(false);
+        setIsAuthorized(false);
       }
       setLoading(false);
     });
@@ -56,33 +69,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, pass: string) => {
-    if (!isFirebaseConfigured) {
-      // Admin 1: ceo@admin.com / Rc506CR
-      if (email === 'ceo@admin.com' && pass === 'Rc506CR') {
-        const mockUser = { email: 'ceo@admin.com', uid: 'ceo-demo', displayName: 'CEO - Rc506' };
-        setUser(mockUser as any);
-        setIsAdmin(true);
-        localStorage.setItem('demo_user', JSON.stringify(mockUser));
-        return { error: null };
-      }
-      
-      // Admin 2: developer@admin.com / Rc506Vzla
-      if (email === 'developer@admin.com' && pass === 'Rc506Vzla') {
-        const mockUser = { email: 'developer@admin.com', uid: 'dev-demo', displayName: 'Developer - Rc506' };
-        setUser(mockUser as any);
-        setIsAdmin(true);
-        localStorage.setItem('demo_user', JSON.stringify(mockUser));
-        return { error: null };
-      }
-
-      // Any other combination represents standard Read-Only Consultant
-      const mockUser = { email, uid: 'consultant-demo', displayName: 'Auditor Consultor' };
-      setUser(mockUser as any);
-      setIsAdmin(false);
-      localStorage.setItem('demo_user', JSON.stringify(mockUser));
-      return { error: null };
-    }
-
     try {
       await signInWithEmailAndPassword(auth, email, pass);
       return { error: null };
@@ -93,15 +79,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const loginWithGoogle = async () => {
-    if (!isFirebaseConfigured) {
-      return { error: { message: 'Google login not available in Demo Mode' } };
-    }
-
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const isPredefinedAdmin = result.user.email === 'ceo@admin.com' || result.user.email === 'developer@admin.com';
-      const token = await getIdTokenResult(result.user);
-      setIsAdmin(!!token.claims.admin || isPredefinedAdmin);
+      
+      const userEmail = result.user.email?.toLowerCase() || '';
+      const isAllowed = ADMIN_UIDS.includes(result.user.uid) || AUTHORIZED_EMAILS.includes(userEmail);
+      
+      if (!isAllowed) {
+        await signOut(auth);
+        return { error: { message: 'unauthorized_domain_or_user' } };
+      }
+
       return { error: null };
     } catch (error) {
       console.error('Google login error:', error);
@@ -109,24 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const loginAsGuest = async () => {
-    const guestUser = { 
-      email: 'invitado@rc506.com', 
-      uid: 'guest-invite-token', 
-      displayName: 'Invitado Especial' 
-    };
-    setUser(guestUser as any);
-    setIsAdmin(false);
-    localStorage.setItem('demo_user', JSON.stringify(guestUser));
-  };
-
   const logout = async () => {
-    if (!isFirebaseConfigured) {
-      setUser(null);
-      setIsAdmin(false);
-      localStorage.removeItem('demo_user');
-      return;
-    }
     await signOut(auth);
   };
 
@@ -136,10 +107,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loading, 
       login, 
       loginWithGoogle,
-      loginAsGuest,
       logout, 
-      isAuthenticated: !!user,
-      isAdmin
+      isAuthenticated: !!user && isAuthorized,
+      isAdmin,
+      isAuthorized
     }}>
       {!loading && children}
     </AuthContext.Provider>
@@ -151,4 +122,5 @@ export const useAuth = () => {
   if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
+
 

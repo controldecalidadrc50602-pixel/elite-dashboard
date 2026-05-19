@@ -1,0 +1,20 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Regla global: Solo usuarios autenticados pueden leer datos
+    match /{document=**} {
+      allow read: if request.auth != null;
+    }
+
+    // Regla para proyectos: Solo los administradores pueden escribir (crear, modificar, borrar)
+    match /projects/{projectId} {
+      allow write: if request.auth != null && (
+        request.auth.uid == 'Fyk8U2raEXcIYUmaYj4AzLvYW5k1' || // CEO
+        request.auth.uid == 'FPRikFFFlZenSyUpicqM0ATrxns1' || // Developer
+        request.auth.token.email == 'ceo@admin.com' ||
+        request.auth.token.email == 'developer@admin.com'
+      );
+    }
+  }
+}
