@@ -107,31 +107,12 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                   </button>
                  <div className="h-8 w-px bg-white/5" />
                   {isAdmin && (
-                    <>
-                    <button 
-                     onClick={async () => {
-                       const localData = localStorage.getItem('elite_projects');
-                       if (localData) {
-                         const parsed = JSON.parse(localData);
-                         await projectService.saveProjects(parsed);
-                         setToast({ message: 'Migración Completada', type: 'success' });
-                         setTimeout(() => setToast(null), 3000);
-                       } else {
-                         setToast({ message: 'No hay datos locales', type: 'info' });
-                         setTimeout(() => setToast(null), 3000);
-                       }
-                     }}
-                     className="bg-rc-teal/10 text-rc-teal border border-rc-teal/20 px-6 py-3 rounded-full text-[11px] font-medium uppercase tracking-[0.1em] transition-all hover:bg-rc-teal hover:text-black active:scale-95 shadow-xl flex items-center gap-2 cursor-pointer animate-in fade-in zoom-in duration-300"
-                    >
-                       <Activity size={16} /> Migrar Local a Nube
-                    </button>
                     <button 
                      onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
                      className="bg-white text-black px-8 py-3 rounded-full text-[11px] font-medium uppercase tracking-[0.1em] transition-all hover:bg-slate-200 active:scale-95 shadow-xl flex items-center gap-2 cursor-pointer animate-in fade-in zoom-in duration-300"
                     >
                        <Plus size={16} /> Nuevo Expediente
                     </button>
-                    </>
                   )}
               </div>
            </div>
