@@ -174,4 +174,6 @@ export interface Project {
   strategy?: StrategySLA;
   clientEvaluation?: ClientEvaluation;
   quarterlyAssessment?: QuarterlyAssessment;
+  lastModifiedBy?: string;
+  lastModifiedAt?: string;
 }

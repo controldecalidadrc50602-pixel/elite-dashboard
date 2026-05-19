@@ -1,21 +1,32 @@
-import { db, isFirebaseConfigured } from '../lib/firebase';
+import { db, auth } from '../lib/firebase';
 import { 
   collection, 
   getDocs, 
   setDoc, 
   doc, 
-  deleteDoc, 
-  getDoc,
-  writeBatch
+  deleteDoc,
+  writeBatch,
+  onSnapshot
 } from 'firebase/firestore';
 import { Project } from '../types/project';
 
-const STORAGE_KEY = 'elite_projects';
 const PROJECTS_COLLECTION = 'projects';
+
+// Injecta campos de auditoría automáticamente
+const injectAuditFields = (project: Project): Project => {
+  const user = auth.currentUser;
+  const identifier = user?.email || user?.uid || 'Unknown Administrator';
+  return {
+    ...project,
+    lastModifiedBy: identifier,
+    lastModifiedAt: new Date().toISOString()
+  };
+};
 
 // Sanitiza los datos para Firestore (elimina undefined, que causa errores)
 const sanitizeForFirestore = (obj: any): any => {
-  return JSON.parse(JSON.stringify(obj, (key, value) => {
+  const auditedObj = injectAuditFields(obj as Project);
+  return JSON.parse(JSON.stringify(auditedObj, (key, value) => {
     // Si el valor es undefined, lo omitimos del objeto resultante
     return value === undefined ? undefined : value;
   }));
@@ -23,92 +34,81 @@ const sanitizeForFirestore = (obj: any): any => {
 
 export const projectService = {
   async getProjects(): Promise<Project[]> {
-    if (isFirebaseConfigured) {
-      try {
-        const querySnapshot = await getDocs(collection(db, PROJECTS_COLLECTION));
-        const projects: Project[] = [];
-        querySnapshot.forEach((doc) => {
-          projects.push({ ...doc.data() as Project, id: doc.id });
-        });
-        
-        // Si hay proyectos en Firestore, sincronizar con local por si acaso
-        if (projects.length > 0) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-        }
-        
-        return projects;
-      } catch (err) {
-        console.error('Firestore fetch error, falling back to local:', err);
-      }
+    try {
+      const querySnapshot = await getDocs(collection(db, PROJECTS_COLLECTION));
+      const projects: Project[] = [];
+      querySnapshot.forEach((doc) => {
+        projects.push({ ...doc.data() as Project, id: doc.id });
+      });
+      return projects;
+    } catch (err) {
+      console.error('Firestore fetch error:', err);
+      return [];
     }
-    
-    const localData = localStorage.getItem(STORAGE_KEY);
-    return localData ? JSON.parse(localData) : [];
+  },
+
+  subscribeToProjects(callback: (projects: Project[]) => void): () => void {
+    const q = collection(db, PROJECTS_COLLECTION);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const projects: Project[] = [];
+      querySnapshot.forEach((doc) => {
+        projects.push({ ...doc.data() as Project, id: doc.id });
+      });
+      callback(projects);
+    }, (err) => {
+      console.error('Firestore subscription error:', err);
+      callback([]);
+    });
+    return unsubscribe;
   },
 
   async saveProjects(projects: Project[]): Promise<void> {
-    if (isFirebaseConfigured) {
-      try {
-        const batch = writeBatch(db);
-        
-        for (const project of projects) {
-          const docRef = doc(db, PROJECTS_COLLECTION, project.id);
-          const sanitizedProject = sanitizeForFirestore(project);
-          batch.set(docRef, sanitizedProject, { merge: true });
-        }
-        
-        await batch.commit();
-      } catch (err) {
-        console.error('Firestore save error:', err);
-        throw err;
+    try {
+      const batch = writeBatch(db);
+      
+      for (const project of projects) {
+        const docRef = doc(db, PROJECTS_COLLECTION, project.id);
+        const sanitizedProject = sanitizeForFirestore(project);
+        batch.set(docRef, sanitizedProject, { merge: true });
       }
+      
+      await batch.commit();
+    } catch (err) {
+      console.error('Firestore save error:', err);
+      throw err;
     }
-    
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
   },
 
   async addProject(project: Project, allProjects: Project[]): Promise<Project[]> {
-    if (isFirebaseConfigured) {
-      try {
-        const sanitizedProject = sanitizeForFirestore(project);
-        await setDoc(doc(db, PROJECTS_COLLECTION, project.id), sanitizedProject);
-      } catch (err) {
-        console.error('Firestore add error:', err);
-      }
+    try {
+      const sanitizedProject = sanitizeForFirestore(project);
+      await setDoc(doc(db, PROJECTS_COLLECTION, project.id), sanitizedProject);
+      return [...allProjects, project];
+    } catch (err) {
+      console.error('Firestore add error:', err);
+      return allProjects;
     }
-    
-    const newProjects = [...allProjects, project];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newProjects));
-    return newProjects;
   },
 
   async updateProject(updatedProject: Project, allProjects: Project[]): Promise<Project[]> {
-    if (isFirebaseConfigured) {
-      try {
-        const sanitizedProject = sanitizeForFirestore(updatedProject);
-        await setDoc(doc(db, PROJECTS_COLLECTION, updatedProject.id), sanitizedProject, { merge: true });
-      } catch (err) {
-        console.error('Firestore update error:', err);
-      }
+    try {
+      const sanitizedProject = sanitizeForFirestore(updatedProject);
+      await setDoc(doc(db, PROJECTS_COLLECTION, updatedProject.id), sanitizedProject, { merge: true });
+      return allProjects.map(p => p.id === updatedProject.id ? updatedProject : p);
+    } catch (err) {
+      console.error('Firestore update error:', err);
+      return allProjects;
     }
-
-    const newProjects = allProjects.map(p => p.id === updatedProject.id ? updatedProject : p);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newProjects));
-    return newProjects;
   },
 
   async deleteProject(id: string, allProjects: Project[]): Promise<Project[]> {
-    if (isFirebaseConfigured) {
-      try {
-        await deleteDoc(doc(db, PROJECTS_COLLECTION, id));
-      } catch (err) {
-        console.error('Firestore delete error:', err);
-      }
+    try {
+      await deleteDoc(doc(db, PROJECTS_COLLECTION, id));
+      return allProjects.filter(p => p.id !== id);
+    } catch (err) {
+      console.error('Firestore delete error:', err);
+      return allProjects;
     }
-
-    const newProjects = allProjects.filter(p => p.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newProjects));
-    return newProjects;
   }
 };
 

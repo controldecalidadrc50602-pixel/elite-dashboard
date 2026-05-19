@@ -1153,8 +1153,12 @@ const ProjectDetailsModal: React.FC<Props> = ({
                      ))}
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] font-medium text-white uppercase tracking-[0.5em] block opacity-80">Ecosistema Rc506</span>
-                    <span className="text-[8px] font-medium text-slate-600 uppercase tracking-widest">Validación de Protocolo V4.2</span>
+                    <span className="text-[10px] font-medium text-white uppercase tracking-[0.5em] block opacity-80">
+                      {editedProject.lastModifiedBy ? `Audit: ${editedProject.lastModifiedBy}` : 'Ecosistema Rc506'}
+                    </span>
+                    <span className="text-[8px] font-medium text-slate-600 uppercase tracking-widest">
+                      {editedProject.lastModifiedAt ? `Última Modificación: ${new Date(editedProject.lastModifiedAt).toLocaleString()}` : 'Validación de Protocolo V4.2'}
+                    </span>
                   </div>
                </div>
                 <div className="flex items-center gap-10">

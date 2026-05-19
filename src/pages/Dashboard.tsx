@@ -40,17 +40,12 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
   const [toast, setToast] = useState<{message: string, type: 'success' | 'info'} | null>(null);
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const projectsData = await projectService.getProjects();
-        setProjects(projectsData);
-      } catch (err) {
-        console.error('Error loading data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
+    const unsubscribe = projectService.subscribeToProjects((projectsData) => {
+      setProjects(projectsData);
+      setLoading(false);
+    });
+    
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
