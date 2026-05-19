@@ -84,7 +84,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         
         {/* Intelligence Header */}
-        <div className="pt-10 px-16 pb-8 border-b border-white/5 bg-[#0B0E14]/80 backdrop-blur-3xl z-30">
+        <div className="pt-10 px-16 pb-8 glass-panel z-30 sticky top-0">
            <div className="flex items-center justify-between mb-10">
               <div>
                 <h2 className="text-xl font-light text-white tracking-tight">
@@ -160,11 +160,12 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                             onClick={() => { setSelectedProjectId(project.id); setIsSlideoverOpen(true); }}
                             className="cursor-pointer group flex flex-col items-center gap-6"
                           >
-                             <div className={`w-full aspect-square rounded-[48px] bg-white/[0.01] border border-white/5 flex items-center justify-center p-10 transition-all duration-700 relative overflow-hidden group-hover:border-rc-teal/30 ${
-                                project.healthFlag === 'Verde' ? 'group-hover:shadow-[0_20px_50px_rgba(16,185,129,0.05)]' : 
-                                project.healthFlag === 'Amarilla' ? 'group-hover:shadow-[0_20px_50px_rgba(245,158,11,0.05)]' : 
-                                'group-hover:shadow-[0_20px_50px_rgba(244,63,94,0.05)]'
+                             <div className={`w-full aspect-square rounded-[48px] glass-card flex items-center justify-center p-10 relative overflow-hidden transition-all duration-700 ${
+                                project.healthFlag === 'Verde' ? 'group-hover:border-emerald-500/40 group-hover:shadow-[0_0_40px_rgba(16,185,129,0.2),inset_0_0_20px_rgba(16,185,129,0.05)]' : 
+                                project.healthFlag === 'Amarilla' ? 'group-hover:border-amber-500/40 group-hover:shadow-[0_0_40px_rgba(245,158,11,0.2),inset_0_0_20px_rgba(245,158,11,0.05)]' : 
+                                'group-hover:border-rose-500/40 group-hover:shadow-[0_0_40px_rgba(244,63,94,0.2),inset_0_0_20px_rgba(244,63,94,0.05)]'
                              }`}>
+                                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                                 <ImageWithFallback 
                                   src={project.logoUrl} 
                                   className="w-full h-full object-contain filter grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-105" 

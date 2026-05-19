@@ -563,7 +563,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                               </h3>
                               <div className="grid grid-cols-2 gap-10">
                                  <div className="p-12 bg-white/[0.01] border border-white/5 rounded-[48px] flex flex-col items-center justify-center gap-6 group hover:border-rc-teal/20 transition-all">
-                                    <div className="text-7xl font-light text-white tracking-tighter flex items-baseline gap-2">
+                                    <div className="text-7xl font-mono-data font-light text-white tracking-tighter flex items-baseline gap-2">
                                        {Object.values(editedProject?.quarterlyAssessment || {}).reduce((a: any, b: any) => a + (typeof b === 'number' ? b : 0), 0)}
                                        <span className="text-2xl text-rc-teal opacity-40">%</span>
                                     </div>
@@ -704,15 +704,25 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                       const { cx, cy, payload } = props;
                                       const isCurrent = selectedPeriod?.month === payload.month && selectedPeriod?.year === payload.year;
                                       return (
-                                        <circle
-                                          key={`${payload.month}-${payload.year}`}
-                                          cx={cx}
-                                          cy={cy}
-                                          r={isCurrent ? 6 : 4}
-                                          stroke="#3BBCA9"
-                                          strokeWidth={2}
-                                          fill={isCurrent ? '#ffffff' : payload.isReal ? '#3BBCA9' : '#0f172a'}
-                                        />
+                                        <g key={`${payload.month}-${payload.year}`}>
+                                          {isCurrent && (
+                                            <circle
+                                              cx={cx}
+                                              cy={cy}
+                                              r={12}
+                                              fill="#3BBCA9"
+                                              className="animate-ping opacity-20"
+                                            />
+                                          )}
+                                          <circle
+                                            cx={cx}
+                                            cy={cy}
+                                            r={isCurrent ? 6 : 4}
+                                            stroke="#3BBCA9"
+                                            strokeWidth={2}
+                                            fill={isCurrent ? '#ffffff' : payload.isReal ? '#3BBCA9' : '#0f172a'}
+                                          />
+                                        </g>
                                       );
                                     }}
                                   />
