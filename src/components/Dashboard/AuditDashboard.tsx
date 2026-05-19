@@ -22,9 +22,10 @@ interface AuditDashboardProps {
   isSingleProject?: boolean;
   selectedProjectId?: string | null;
   onSelectProject?: (id: string | null) => void;
+  demoMode?: boolean;
 }
 
-const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProject, selectedProjectId, onSelectProject }) => {
+const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProject, selectedProjectId, onSelectProject, demoMode }) => {
   const selectedProject = useMemo(() => {
     if (isSingleProject) return projects[0];
     if (selectedProjectId) return projects.find(p => p.id === selectedProjectId) || null;
@@ -132,7 +133,7 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
       </div>
 
       {/* Analytics & Historical Hub */}
-      <AnalyticsPanel projects={projects} />
+      <AnalyticsPanel projects={projects} demoMode={demoMode} />
 
       {/* 2. Client Operational Matrix */}
       <div className="glass-panel p-10 rounded-[48px] border border-white/5 bg-black/10">

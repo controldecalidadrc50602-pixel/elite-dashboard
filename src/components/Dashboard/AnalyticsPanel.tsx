@@ -27,6 +27,7 @@ import { Project, Evaluation, ClientService } from '../../types/project';
 
 interface AnalyticsPanelProps {
   projects: Project[];
+  demoMode?: boolean;
 }
 
 // Helper para obtener nombres de meses
@@ -35,10 +36,15 @@ const MONTH_NAMES = [
   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
 ];
 
-export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects }) => {
+export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMode }) => {
   const [activeTab, setActiveTab] = useState<'evolution' | 'services'>('evolution');
   const [evolutionType, setEvolutionType] = useState<'trend' | 'distribution'>('trend');
   const [selectedService, setSelectedService] = useState<string | null>(null);
+
+  // Determinar si hay alguna evaluación real en Firestore
+  const hasRealEvaluations = useMemo(() => {
+    return projects.some(p => p.evaluations && p.evaluations.length > 0);
+  }, [projects]);
 
   // 1. Algoritmo de Generación y Normalización de Datos Históricos (últimos 6 meses)
   const historicalData = useMemo(() => {
@@ -70,8 +76,8 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects }) => {
           ev => ev.month === period.month && ev.year === period.year
         );
 
-        // Fallback inteligente: si no hay evaluación, la calculamos sintéticamente con coherencia temporal y base de salud
-        if (!evalForPeriod) {
+        // Fallback inteligente: SOLO si demoMode está activo (es decir, NO es false)
+        if (!evalForPeriod && demoMode !== false) {
           let baseScore = 85; // Verde
           let baseStatus: Evaluation['status'] = 'Stable';
 
@@ -106,14 +112,16 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects }) => {
           };
         }
 
-        // Acumular
-        totalQualityScore += evalForPeriod.quantitative;
-        countWithQuality++;
+        // Acumular solo si existe la evaluación para este mes (real o simulada)
+        if (evalForPeriod) {
+          totalQualityScore += evalForPeriod.quantitative;
+          countWithQuality++;
 
-        if (evalForPeriod.status === 'Growth') growthCount++;
-        else if (evalForPeriod.status === 'Stable') stableCount++;
-        else if (evalForPeriod.status === 'At Risk') riskCount++;
-        else if (evalForPeriod.status === 'Critical') criticalCount++;
+          if (evalForPeriod.status === 'Growth') growthCount++;
+          else if (evalForPeriod.status === 'Stable') stableCount++;
+          else if (evalForPeriod.status === 'At Risk') riskCount++;
+          else if (evalForPeriod.status === 'Critical') criticalCount++;
+        }
       });
 
       const avgQuality = countWithQuality > 0 ? Math.round(totalQualityScore / countWithQuality) : 0;
@@ -126,10 +134,10 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects }) => {
         'Saludable/Óptimo': stableCount + growthCount,
         'En Atención': riskCount,
         'En Riesgo Crítico': criticalCount,
-        totalClients: projects.length
+        totalClients: countWithQuality
       };
     });
-  }, [projects]);
+  }, [projects, demoMode]);
 
   // 2. Mapeo y análisis de Servicios Activos
   const serviceMetrics = useMemo(() => {
@@ -304,8 +312,23 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects }) => {
               </div>
 
               {/* Contenedor del Gráfico */}
-              <div className="h-[360px] w-full bg-black/25 border border-white/5 rounded-[32px] p-6 relative">
-                {evolutionType === 'trend' ? (
+              <div className="h-[360px] w-full bg-black/25 border border-white/5 rounded-[32px] p-6 relative flex items-center justify-center">
+                {demoMode === false && !hasRealEvaluations ? (
+                  <div className="text-center max-w-lg mx-auto space-y-4 p-8">
+                    <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto animate-pulse">
+                      <ShieldCheck size={22} />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-semibold text-white uppercase tracking-[0.2em]">Aislamiento de Datos Activo</h4>
+                      <p className="text-[9px] text-slate-400 uppercase tracking-widest leading-relaxed">
+                        No hay evaluaciones de calidad mensuales registradas en Firestore
+                      </p>
+                    </div>
+                    <p className="text-[9px] text-slate-500 leading-relaxed uppercase tracking-[0.15em] pt-2">
+                      Para poblar este gráfico con datos reales, ingresa una evaluación cualitativa/cuantitativa desde la ficha individual de tus clientes. Si deseas previsualizar los gráficos interactivos de prueba, activa el <span className="text-amber-400 font-black">Modo Demo</span> en la cabecera superior.
+                    </p>
+                  </div>
+                ) : evolutionType === 'trend' ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={historicalData}

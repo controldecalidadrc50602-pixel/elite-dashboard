@@ -36,6 +36,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'info'} | null>(null);
+  const [demoMode, setDemoMode] = useState<boolean>(() => localStorage.getItem('elite_demo_mode') !== 'false');
 
   useEffect(() => {
     const loadData = async () => {
@@ -96,9 +97,29 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                 <p className="text-[9px] font-light text-slate-500 uppercase tracking-[0.4em] mt-2 opacity-40">Business Intelligence & Strategic Portfolio</p>
               </div>
               <div className="flex items-center gap-6">
+                 {/* Interruptor de Modo Demostración / Datos Reales de Producción */}
+                 <button 
+                    onClick={() => {
+                      const nextMode = !demoMode;
+                      setDemoMode(nextMode);
+                      localStorage.setItem('elite_demo_mode', String(nextMode));
+                    }}
+                    className={`flex items-center gap-3 px-5 py-3 rounded-full border transition-all relative overflow-hidden cursor-pointer group ${
+                      demoMode 
+                        ? 'bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500/15' 
+                        : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/15'
+                    }`}
+                    title={demoMode ? "Cambiar a datos reales de producción" : "Cambiar a modo simulación de pruebas"}
+                 >
+                    <span className={`w-2 h-2 rounded-full ${demoMode ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400'} shadow-[0_0_8px_currentColor]`} />
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] transition-colors">
+                      {demoMode ? 'Modo Demo (Pruebas)' : 'Modo Real (Firestore)'}
+                    </span>
+                 </button>
+                 <div className="h-8 w-px bg-white/5" />
                  <button 
                     onClick={() => exportService.exportGlobalQualityPDF(projects)}
-                    className="flex items-center gap-3 px-6 py-3 bg-rc-teal/5 hover:bg-rc-teal/10 border border-rc-teal/20 rounded-full text-rc-teal transition-all group"
+                    className="flex items-center gap-3 px-6 py-3 bg-rc-teal/5 hover:bg-rc-teal/10 border border-rc-teal/20 rounded-full text-rc-teal transition-all group cursor-pointer"
                   >
                      <ShieldCheck size={16} strokeWidth={1.5} />
                      <span className="text-[10px] font-medium uppercase tracking-[0.2em]">Inteligencia Global</span>
@@ -106,7 +127,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                  <div className="h-8 w-px bg-white/5" />
                  <button 
                   onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
-                  className="bg-white text-black px-8 py-3 rounded-full text-[11px] font-medium uppercase tracking-[0.1em] transition-all hover:bg-slate-200 active:scale-95 shadow-xl flex items-center gap-2"
+                  className="bg-white text-black px-8 py-3 rounded-full text-[11px] font-medium uppercase tracking-[0.1em] transition-all hover:bg-slate-200 active:scale-95 shadow-xl flex items-center gap-2 cursor-pointer"
                  >
                     <Plus size={16} /> Nuevo Expediente
                  </button>
@@ -127,6 +148,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                     isSingleProject={false} 
                     selectedProjectId={selectedProjectId}
                     onSelectProject={(id) => setSelectedProjectId(id)}
+                    demoMode={demoMode}
                    />
                 </div>
               )}
