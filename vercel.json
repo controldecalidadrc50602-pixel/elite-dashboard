@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "cleanUrls": true,
   "headers": [
     {
       "source": "/index.html",
@@ -22,26 +21,6 @@
     }
   ],
   "rewrites": [
-    {
-      "source": "/assets/(.*)",
-      "destination": "/assets/$1"
-    },
-    {
-      "source": "/icons/(.*)",
-      "destination": "/icons/$1"
-    },
-    {
-      "source": "/favicon.(ico|png|svg)",
-      "destination": "/favicon.$1"
-    },
-    {
-      "source": "/manifest.json",
-      "destination": "/manifest.json"
-    },
-    {
-      "source": "/sw.js",
-      "destination": "/sw.js"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

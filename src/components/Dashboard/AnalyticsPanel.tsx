@@ -130,6 +130,28 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
     return densityMetrics.find(d => d.id === selectedDensity) || null;
   }, [densityMetrics, selectedDensity]);
 
+  // Recuento de Servicios para tarjetas dinámicas superiores
+  const serviceStats = useMemo(() => {
+    let botmaker = 0;
+    let yeastar = 0;
+    let ipbx = 0;
+    let contactCenter = 0;
+
+    projects.forEach(p => {
+      // Solo contar proyectos activos/en prueba para los servicios contratados activos
+      if (p.adminStatus === 'Archivado' || p.adminStatus === 'Inactivo') return;
+
+      p.services?.forEach(s => {
+        if (s.type === 'Botmaker') botmaker++;
+        else if (s.type === 'Yeastar') yeastar++;
+        else if (s.type === 'IPBX') ipbx++;
+        else if (s.type === 'Contact Center') contactCenter++;
+      });
+    });
+
+    return { botmaker, yeastar, ipbx, contactCenter };
+  }, [projects]);
+
   // 1. Algoritmo de Generación y Normalización de Datos Históricos (últimos 6 meses)
   const historicalData = useMemo(() => {
     const today = new Date();
@@ -352,47 +374,109 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
         </div>
       </div>
 
-      {/* Mini Tarjetas de Estado General de la Cartera */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10 relative z-10">
-        <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-rc-teal/20 transition-all group">
-          <div>
-            <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Clientes Activos</span>
-            <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.active}</span>
-          </div>
-          <div className="w-9 h-9 rounded-xl bg-rc-teal/10 border border-rc-teal/20 text-rc-teal flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,188,169,0.05)] group-hover:scale-105 transition-transform">
-            <CheckCircle2 size={16} />
-          </div>
-        </div>
+      {/* Mini Tarjetas de Estado Dinámicas (Clientes o Servicios) */}
+      <div className="relative z-10 mb-10 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {activeTab === 'evolution' ? (
+            <motion.div 
+              key="client-stats"
+              initial={{ opacity: 0, y: -15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 15 }}
+              transition={{ duration: 0.25 }}
+              className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+            >
+              <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-rc-teal/20 transition-all group">
+                <div>
+                  <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Clientes Activos</span>
+                  <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.active}</span>
+                </div>
+                <div className="w-9 h-9 rounded-xl bg-rc-teal/10 border border-rc-teal/20 text-rc-teal flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,188,169,0.05)] group-hover:scale-105 transition-transform">
+                  <CheckCircle2 size={16} />
+                </div>
+              </div>
 
-        <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-amber-500/20 transition-all group">
-          <div>
-            <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">En Piloto / Pruebas</span>
-            <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.trial}</span>
-          </div>
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.05)] group-hover:scale-105 transition-transform">
-            <Zap size={16} />
-          </div>
-        </div>
+              <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-amber-500/20 transition-all group">
+                <div>
+                  <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">En Piloto / Pruebas</span>
+                  <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.trial}</span>
+                </div>
+                <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.05)] group-hover:scale-105 transition-transform">
+                  <Zap size={16} />
+                </div>
+              </div>
 
-        <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-rose-500/20 transition-all group">
-          <div>
-            <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Clientes Inactivos</span>
-            <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.inactive}</span>
-          </div>
-          <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(244,63,94,0.05)] group-hover:scale-105 transition-transform">
-            <XCircle size={16} />
-          </div>
-        </div>
+              <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-rose-500/20 transition-all group">
+                <div>
+                  <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Clientes Inactivos</span>
+                  <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.inactive}</span>
+                </div>
+                <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(244,63,94,0.05)] group-hover:scale-105 transition-transform">
+                  <XCircle size={16} />
+                </div>
+              </div>
 
-        <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-purple-500/20 transition-all group">
-          <div>
-            <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Clientes en Bóveda</span>
-            <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.archived}</span>
-          </div>
-          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.05)] group-hover:scale-105 transition-transform">
-            <Archive size={16} />
-          </div>
-        </div>
+              <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-purple-500/20 transition-all group">
+                <div>
+                  <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Clientes en Bóveda</span>
+                  <span className="text-xl font-light text-white mt-1 block leading-none">{clientStatusStats.archived}</span>
+                </div>
+                <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.05)] group-hover:scale-105 transition-transform">
+                  <Archive size={16} />
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="service-stats"
+              initial={{ opacity: 0, y: -15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 15 }}
+              transition={{ duration: 0.25 }}
+              className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+            >
+              <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-rc-teal/20 transition-all group">
+                <div>
+                  <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Botmaker Activos</span>
+                  <span className="text-xl font-light text-white mt-1 block leading-none">{serviceStats.botmaker}</span>
+                </div>
+                <div className="w-9 h-9 rounded-xl bg-rc-teal/10 border border-rc-teal/20 text-rc-teal flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,188,169,0.05)] group-hover:scale-105 transition-transform">
+                  <Activity size={16} />
+                </div>
+              </div>
+
+              <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-amber-500/20 transition-all group">
+                <div>
+                  <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Yeastar Activos</span>
+                  <span className="text-xl font-light text-white mt-1 block leading-none">{serviceStats.yeastar}</span>
+                </div>
+                <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.05)] group-hover:scale-105 transition-transform">
+                  <Zap size={16} />
+                </div>
+              </div>
+
+              <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-purple-500/20 transition-all group">
+                <div>
+                  <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">IPBX Activos</span>
+                  <span className="text-xl font-light text-white mt-1 block leading-none">{serviceStats.ipbx}</span>
+                </div>
+                <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.05)] group-hover:scale-105 transition-transform">
+                  <Layers size={16} />
+                </div>
+              </div>
+
+              <div className="glass-panel px-6 py-4.5 rounded-[24px] border border-white/5 bg-white/[0.01] flex items-center justify-between hover:bg-white/[0.02] hover:border-rose-500/20 transition-all group">
+                <div>
+                  <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-widest block">Contact Centers</span>
+                  <span className="text-xl font-light text-white mt-1 block leading-none">{serviceStats.contactCenter}</span>
+                </div>
+                <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(244,63,94,0.05)] group-hover:scale-105 transition-transform">
+                  <Users size={16} />
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* 3. Panel de Contenido Dinámico */}
