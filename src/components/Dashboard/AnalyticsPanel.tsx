@@ -39,11 +39,122 @@ const MONTH_NAMES = [
   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
 ];
 
+const ChartSkeletonLoader: React.FC = () => {
+  return (
+    <div className="w-full h-full flex flex-col justify-between p-4 relative overflow-hidden animate-pulse">
+      {/* Líneas horizontales de fondo estilo rejilla del gráfico */}
+      <div className="absolute inset-0 flex flex-col justify-between py-6 pointer-events-none opacity-20">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="h-px bg-slate-700 w-full" />
+        ))}
+      </div>
+      
+      {/* Área del gráfico translúcido pulsante con efecto de barrido Shimmer */}
+      <div className="flex-1 w-full relative overflow-hidden rounded-2xl bg-white/[0.01] border border-white/5 flex items-end justify-between px-8 py-4">
+        {/* Barrido shimmer */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -translate-x-full" 
+             style={{
+               animation: 'shimmer 2s infinite',
+               background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%)',
+             }}
+        />
+        
+        {/* Columnas falsas o curvas representadas por esferas y líneas conectadas */}
+        <div className="w-full h-4/5 flex items-end justify-between gap-4 z-10">
+          {[40, 60, 50, 75, 55, 80].map((height, i) => (
+            <div 
+              key={i} 
+              className="flex-1 rounded-t-xl bg-gradient-to-t from-rc-teal/5 to-rc-teal/15 border-t border-rc-teal/20" 
+              style={{ height: `${height}%`, animationDelay: `${i * 100}ms` }}
+            />
+          ))}
+        </div>
+      </div>
+      
+      {/* XAxis esqueleto */}
+      <div className="h-6 w-full flex justify-between px-8 pt-3 shrink-0">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="h-2 w-8 bg-slate-800 rounded animate-pulse" />
+        ))}
+      </div>
+      
+      <style>{`
+        @keyframes shimmer {
+          100% {
+            transform: translateX(100%);
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
+
 export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMode }) => {
   const [activeTab, setActiveTab] = useState<'evolution' | 'services'>('evolution');
   const [evolutionType, setEvolutionType] = useState<'trend' | 'distribution'>('trend');
-  const [chartMetric, setChartMetric] = useState<'quality' | 'volume' | 'clients' | 'flow'>('quality');
+  const [chartMetric, setChartMetric] = useState<'quality' | 'volume' | 'clients' | 'services' | 'flow'>('quality');
   const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [isChartLoading, setIsChartLoading] = useState(false);
+
+  const handleMetricChange = (metricId: typeof chartMetric) => {
+    setIsChartLoading(true);
+    setChartMetric(metricId);
+    setTimeout(() => setIsChartLoading(false), 400);
+  };
+
+  const churnAlertsMap = useMemo(() => {
+    const alerts: { [projectId: string]: { isRisk: boolean; reason: string } } = {};
+    
+    projects.forEach(p => {
+      if (p.healthFlag === 'Roja' || p.healthFlag === 'Negra') {
+        alerts[p.id] = {
+          isRisk: true,
+          reason: `Estatus operativo crítico (${p.healthFlag})`
+        };
+        return;
+      }
+      
+      if (p.evaluations && p.evaluations.length >= 2) {
+        const sortedEvals = [...p.evaluations].sort((a, b) => {
+          if (a.year !== b.year) return a.year - b.year;
+          return a.month - b.month;
+        });
+        
+        const lastEval = sortedEvals[sortedEvals.length - 1];
+        const prevEval = sortedEvals[sortedEvals.length - 2];
+        
+        if (lastEval.quantitative < 70) {
+          alerts[p.id] = {
+            isRisk: true,
+            reason: `Último SLA mensual inferior al umbral mínimo (${lastEval.quantitative}%)`
+          };
+          return;
+        }
+        
+        const drop = prevEval.quantitative - lastEval.quantitative;
+        if (drop >= 12) {
+          alerts[p.id] = {
+            isRisk: true,
+            reason: `Caída drástica de calidad mensual del ${drop}% detectada`
+          };
+          return;
+        }
+      } else if (p.evaluations && p.evaluations.length === 1) {
+        const lastEval = p.evaluations[0];
+        if (lastEval.quantitative < 70) {
+          alerts[p.id] = {
+            isRisk: true,
+            reason: `Único SLA evaluado está por debajo del umbral óptimo (${lastEval.quantitative}%)`
+          };
+          return;
+        }
+      }
+      
+      alerts[p.id] = { isRisk: false, reason: '' };
+    });
+    
+    return alerts;
+  }, [projects]);
 
   // Determinar si hay alguna evaluación real en Firestore
   const hasRealEvaluations = useMemo(() => {
@@ -550,11 +661,12 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                       { id: 'quality', label: 'Calidad (SLA)' },
                       { id: 'volume', label: 'Volumen (Ecosistema)' },
                       { id: 'clients', label: 'Clientes Activos' },
+                      { id: 'services', label: 'Servicios Activos' },
                       { id: 'flow', label: 'Flujo (Altas/Bajas)' }
                     ].map(metric => (
                       <button
                         key={metric.id}
-                        onClick={() => setChartMetric(metric.id as any)}
+                        onClick={() => handleMetricChange(metric.id as any)}
                         className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all ${
                           chartMetric === metric.id
                             ? 'bg-rc-teal text-black font-black shadow-md'
@@ -593,8 +705,10 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
               </div>
 
               {/* Contenedor del Gráfico */}
-              <div className="h-[360px] w-full bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-[32px] p-6 relative flex items-center justify-center">
-                {demoMode === false && !hasRealEvaluations ? (
+              <div className="h-[360px] w-full bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-[32px] p-6 relative flex items-center justify-center overflow-hidden">
+                {isChartLoading ? (
+                  <ChartSkeletonLoader />
+                ) : demoMode === false && !hasRealEvaluations ? (
                   <div className="text-center max-w-lg mx-auto space-y-4 p-8">
                     <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto animate-pulse">
                       <ShieldCheck size={22} />
@@ -693,6 +807,20 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                         />
                       )}
 
+                      {chartMetric === 'services' && (
+                        <Area 
+                          type="monotone" 
+                          name="Servicios Operativos"
+                          dataKey="Servicios Operativos" 
+                          stroke="#F59E0B" 
+                          strokeWidth={3}
+                          fillOpacity={1} 
+                          fill="url(#colorServices)" 
+                          dot={{ r: 4, stroke: '#F59E0B', strokeWidth: 2, fill: 'var(--bg-secondary)' }}
+                          activeDot={{ r: 6, stroke: '#F59E0B', strokeWidth: 2, fill: '#F59E0B' }}
+                        />
+                      )}
+
                       {chartMetric === 'volume' && (
                         <>
                           <Area 
@@ -788,6 +916,10 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
 
                       {chartMetric === 'clients' && (
                         <Bar dataKey="Clientes Activos" name="Clientes Activos" fill="#6366F1" radius={[4, 4, 0, 0]} maxBarSize={30} />
+                      )}
+
+                      {chartMetric === 'services' && (
+                        <Bar dataKey="Servicios Operativos" name="Servicios Operativos" fill="#F59E0B" radius={[4, 4, 0, 0]} maxBarSize={30} />
                       )}
 
                       {chartMetric === 'volume' && (
@@ -956,48 +1088,75 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                 {/* Lista scrollable */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar pt-4 space-y-3.5 pr-1">
                   {activeServiceData && activeServiceData.clients.length > 0 ? (
-                    activeServiceData.clients.map((client) => (
-                      <motion.div
-                        key={client.id}
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-between group hover:border-rc-teal/30 hover:bg-white/[0.03] transition-all"
-                      >
-                        <div className="flex items-center gap-4 min-w-0">
-                          {/* Flag circular de salud */}
-                          <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-                            client.healthFlag === 'Verde' ? 'bg-emerald-500' :
-                            client.healthFlag === 'Amarilla' ? 'bg-amber-500' : 'bg-rose-500'
-                          } shadow-[0_0_8px_currentColor]`} />
-                          
-                          <div className="min-w-0">
-                            <span className="text-xs font-semibold text-white group-hover:text-rc-teal transition-colors uppercase tracking-wider block truncate">
-                              {client.clientName}
-                            </span>
-                            <span className="text-[8px] text-slate-500 uppercase tracking-widest mt-1 block">
-                              Inicio: {client.startDate}
-                            </span>
-                          </div>
-                        </div>
+                    activeServiceData.clients.map((client) => {
+                      const churnInfo = churnAlertsMap[client.id] || { isRisk: false, reason: '' };
+                      
+                      let ledColor = '#10B981';
+                      if (client.healthFlag === 'Roja' || client.healthFlag === 'Negra' || client.score < 70) {
+                        ledColor = '#F43F5E';
+                      } else if (client.healthFlag === 'Amarilla' || (client.score >= 70 && client.score <= 84)) {
+                        ledColor = '#F59E0B';
+                      }
 
-                        <div className="flex items-center gap-6 shrink-0">
-                          {/* Capacidad */}
-                          {client.capacityLabel && (
-                            <span className="text-[9px] font-bold text-rc-teal/55 bg-rc-teal/5 border border-rc-teal/10 px-2.5 py-1 rounded-lg uppercase tracking-wider">
-                              {client.capacityLabel}
-                            </span>
-                          )}
-                          
-                          {/* Calidad del servicio */}
-                          <div className="flex flex-col items-end">
-                            <span className="text-sm font-light text-white tracking-tighter leading-none">
-                              {client.score}%
-                            </span>
-                            <span className="text-[7px] text-slate-600 uppercase tracking-widest mt-1">Calidad</span>
+                      return (
+                        <motion.div
+                          key={client.id}
+                          initial={{ opacity: 0, x: 10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-between group hover:border-rc-teal/30 hover:bg-white/[0.03] transition-all"
+                        >
+                          <div className="flex items-center gap-4 min-w-0">
+                            {/* LED circular de salud dinámico */}
+                            <div 
+                              className="w-2.5 h-2.5 rounded-full shrink-0" 
+                              style={{
+                                backgroundColor: ledColor,
+                                boxShadow: `0 0 10px ${ledColor}, 0 0 18px ${ledColor}40`,
+                                animation: 'pulse-glow 2s infinite ease-in-out',
+                                ['--glow-color' as any]: ledColor,
+                                ['--glow-color-alpha' as any]: `${ledColor}40`
+                              }}
+                            />
+                            
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-xs font-semibold text-white group-hover:text-rc-teal transition-colors uppercase tracking-wider block truncate">
+                                  {client.clientName}
+                                </span>
+                                {churnInfo.isRisk && (
+                                  <span 
+                                    className="px-2 py-0.5 rounded-full text-[7px] font-black text-rose-300 bg-rose-500/10 border border-rose-500/20 animate-pulse uppercase tracking-widest cursor-help select-none shrink-0"
+                                    title={churnInfo.reason}
+                                  >
+                                    🚨 Riesgo Churn
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-[8px] text-slate-500 uppercase tracking-widest mt-1 block">
+                                Inicio: {client.startDate}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    ))
+
+                          <div className="flex items-center gap-6 shrink-0">
+                            {/* Capacidad */}
+                            {client.capacityLabel && (
+                              <span className="text-[9px] font-bold text-rc-teal/55 bg-rc-teal/5 border border-rc-teal/10 px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                                {client.capacityLabel}
+                              </span>
+                            )}
+                            
+                            {/* Calidad del servicio */}
+                            <div className="flex flex-col items-end">
+                              <span className="text-sm font-light text-white tracking-tighter leading-none">
+                                {client.score}%
+                              </span>
+                              <span className="text-[7px] text-slate-600 uppercase tracking-widest mt-1">Calidad</span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
                       <Layers size={32} className="text-slate-600 mb-4" />
@@ -1097,47 +1256,74 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                 {/* Lista scrollable */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar pt-4 space-y-3.5 pr-1">
                   {activeDensityData && activeDensityData.clients.length > 0 ? (
-                    activeDensityData.clients.map((client) => (
-                      <motion.div
-                        key={client.id}
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col gap-3 group hover:border-purple-500/30 hover:bg-white/[0.03] transition-all"
-                      >
-                        <div className="flex items-center justify-between min-w-0">
-                          <div className="flex items-center gap-3 min-w-0">
-                            {/* Flag circular de salud */}
-                            <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-                              client.healthFlag === 'Verde' ? 'bg-emerald-500' :
-                              client.healthFlag === 'Amarilla' ? 'bg-amber-500' : 'bg-rose-500'
-                            } shadow-[0_0_8px_currentColor]`} />
-                            
-                            <span className="text-xs font-semibold text-white group-hover:text-purple-400 transition-colors uppercase tracking-wider block truncate">
-                              {client.clientName}
-                            </span>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-light text-white tracking-tighter">
-                              {client.score}%
-                            </span>
-                            <span className="text-[7px] text-slate-600 uppercase tracking-widest">Salud</span>
-                          </div>
-                        </div>
+                    activeDensityData.clients.map((client) => {
+                      const churnInfo = churnAlertsMap[client.id] || { isRisk: false, reason: '' };
+                      
+                      let ledColor = '#10B981';
+                      if (client.healthFlag === 'Roja' || client.healthFlag === 'Negra' || client.score < 70) {
+                        ledColor = '#F43F5E';
+                      } else if (client.healthFlag === 'Amarilla' || (client.score >= 70 && client.score <= 84)) {
+                        ledColor = '#F59E0B';
+                      }
 
-                        {/* Listado de múltiples servicios contratados */}
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {client.servicesList.map((service, idx) => (
-                            <span 
-                              key={idx}
-                              className="text-[7px] font-black text-purple-300 bg-purple-500/5 border border-purple-500/10 px-2 py-0.5 rounded uppercase tracking-wider"
-                            >
-                              {service}
-                            </span>
-                          ))}
-                        </div>
-                      </motion.div>
-                    ))
+                      return (
+                        <motion.div
+                          key={client.id}
+                          initial={{ opacity: 0, x: 10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col gap-3 group hover:border-purple-500/30 hover:bg-white/[0.03] transition-all"
+                        >
+                          <div className="flex items-center justify-between min-w-0">
+                            <div className="flex items-center gap-3 min-w-0">
+                              {/* LED circular de salud dinámico */}
+                              <div 
+                                className="w-2.5 h-2.5 rounded-full shrink-0" 
+                                style={{
+                                  backgroundColor: ledColor,
+                                  boxShadow: `0 0 10px ${ledColor}, 0 0 18px ${ledColor}40`,
+                                  animation: 'pulse-glow 2s infinite ease-in-out',
+                                  ['--glow-color' as any]: ledColor,
+                                  ['--glow-color-alpha' as any]: `${ledColor}40`
+                                }}
+                              />
+                              
+                              <div className="min-w-0 flex items-center gap-2 flex-wrap">
+                                <span className="text-xs font-semibold text-white group-hover:text-purple-400 transition-colors uppercase tracking-wider block truncate">
+                                  {client.clientName}
+                                </span>
+                                {churnInfo.isRisk && (
+                                  <span 
+                                    className="px-2 py-0.5 rounded-full text-[7px] font-black text-rose-300 bg-rose-500/10 border border-rose-500/20 animate-pulse uppercase tracking-widest cursor-help select-none shrink-0"
+                                    title={churnInfo.reason}
+                                  >
+                                    🚨 Riesgo Churn
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-light text-white tracking-tighter">
+                                {client.score}%
+                              </span>
+                              <span className="text-[7px] text-slate-600 uppercase tracking-widest">Salud</span>
+                            </div>
+                          </div>
+
+                          {/* Listado de múltiples servicios contratados */}
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {client.servicesList.map((service, idx) => (
+                              <span 
+                                key={idx}
+                                className="text-[7px] font-black text-purple-300 bg-purple-500/5 border border-purple-500/10 px-2 py-0.5 rounded uppercase tracking-wider"
+                              >
+                                {service}
+                              </span>
+                            ))}
+                          </div>
+                        </motion.div>
+                      );
+                    })
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
                       <Layers size={32} className="text-slate-600 mb-4" />
@@ -1150,6 +1336,22 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
           )}
         </AnimatePresence>
       </div>
+
+      {/* Estilos dinámicos premium para micro-animaciones */}
+      <style>{`
+        @keyframes pulse-glow {
+          0%, 100% {
+            opacity: 0.8;
+            transform: scale(0.95);
+            box-shadow: 0 0 8px var(--glow-color), 0 0 16px var(--glow-color-alpha);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.08);
+            box-shadow: 0 0 14px var(--glow-color), 0 0 26px var(--glow-color-alpha);
+          }
+        }
+      `}</style>
     </div>
   );
 };
