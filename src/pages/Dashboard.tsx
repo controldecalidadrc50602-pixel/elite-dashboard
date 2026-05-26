@@ -23,6 +23,7 @@ import AuditDashboard from '../components/Dashboard/AuditDashboard';
 import StatCard from '../components/common/StatCard';
 import ProjectDetailsModal from '../components/ProjectDetailsModal';
 import ProjectModal from '../components/Modals/ProjectModal';
+import SkeletonDashboard from '../components/SkeletonDashboard';
 import { EliteClientCard } from '../components/Dashboard/EliteClientCard';
 import { exportService } from '../services/exportService';
 import ImageWithFallback from '../components/common/ImageWithFallback';
@@ -69,15 +70,10 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
   }, [projects, searchQuery]);
 
   if (loading) return (
-    <div className="h-full flex items-center justify-center bg-[#0B0E14]">
-       <div className="flex flex-col items-center gap-8">
-          <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-            className="w-12 h-12 border border-white/5 border-t-rc-teal rounded-full" 
-          />
-          <span className="text-[10px] font-light text-slate-500 uppercase tracking-[0.5em] animate-pulse">Iniciando Ecosistema</span>
-       </div>
+    <div className="flex-1 overflow-y-auto px-16 pt-12 pb-24 bg-[var(--bg-primary, #0B0E14)]">
+      <div className="max-w-7xl mx-auto">
+        <SkeletonDashboard />
+      </div>
     </div>
   );
 
@@ -129,18 +125,21 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
               
               {activeTab === 'overview' && (
                 <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
-                   {selectedProjectId ? (
-                      <EliteClientCard 
-                        project={projects.find(p => p.id === selectedProjectId)!} 
-                        onEdit={() => setIsSlideoverOpen(true)} 
-                      />
-                   ) : (
-                      <AuditDashboard 
-                        projects={projects} 
-                        demoMode={demoMode}
-                        onSelectClient={(id) => setSelectedProjectId(id)}
-                      />
-                   )}
+                   {(() => {
+                      const selected = projects.find(p => p.id === selectedProjectId);
+                      return selected ? (
+                        <EliteClientCard 
+                          project={selected} 
+                          onEdit={() => setIsSlideoverOpen(true)} 
+                        />
+                      ) : (
+                        <AuditDashboard 
+                          projects={projects} 
+                          demoMode={demoMode}
+                          onSelectClient={(id) => setSelectedProjectId(id)}
+                        />
+                      );
+                   })()}
                 </div>
               )}
 
