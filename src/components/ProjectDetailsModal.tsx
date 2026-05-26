@@ -436,16 +436,16 @@ const ProjectDetailsModal: React.FC<Props> = ({
             {/* Action Bar Superior */}
             <div className="p-10 border-b border-[var(--glass-border)] flex items-center justify-between bg-[var(--bg-secondary)]/50 backdrop-blur-3xl">
                <div className="flex items-center gap-10">
-                  <div className="w-20 h-20 bg-white/[0.01] rounded-[32px] border border-white/5 flex items-center justify-center p-6 transition-all group-hover:border-rc-teal/30">
+                  <div className="w-20 h-20 bg-[var(--card-bg)] rounded-[32px] border border-[var(--glass-border)] flex items-center justify-center p-6 transition-all group-hover:border-rc-teal/30">
                      {editedProject.logoUrl ? (
                         <img src={editedProject.logoUrl} className="w-full h-full object-contain filter grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
                      ) : (
-                        <ShieldCheck className="text-white opacity-10" size={32} />
+                        <ShieldCheck className="text-[var(--text-primary)] opacity-10" size={32} />
                      )}
                   </div>
                   <div>
                      <div className="flex items-center gap-6">
-                        <h2 className="text-5xl font-light text-white tracking-tighter leading-none">{editedProject.client}</h2>
+                        <h2 className="text-5xl font-light text-[var(--text-primary)] tracking-tighter leading-none">{editedProject.client}</h2>
                         <div className={`px-4 py-1.5 rounded-full border text-[9px] font-medium uppercase tracking-[0.2em] flex items-center gap-2 ${getFlagColor(editedProject.healthFlag)}`}>
                            <div className={`w-1.5 h-1.5 rounded-full ${editedProject.healthFlag === 'Verde' ? 'bg-emerald-400' : editedProject.healthFlag === 'Amarilla' ? 'bg-amber-400' : 'bg-rose-500'}`} />
                            Salud: {editedProject.healthFlag}
@@ -460,9 +460,9 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                  onClick={isAdmin ? () => setEditedProject({ ...editedProject, adminStatus: status as any }) : undefined}
                                  className={`px-5 py-2 rounded-full text-[9px] font-medium uppercase tracking-[0.2em] transition-all duration-500 ${
                                     isSelected 
-                                    ? 'bg-white text-black' 
-                                    : 'bg-white/5 text-slate-500'
-                                 } ${isAdmin && !isSelected ? 'hover:text-white hover:bg-white/10 cursor-pointer' : 'cursor-default'}`}
+                                    ? 'bg-[var(--text-primary)] text-[var(--bg-secondary)]' 
+                                    : 'bg-[var(--text-primary)]\/5 text-[var(--text-secondary)]'
+                                 } ${isAdmin && !isSelected ? 'hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]\/10 cursor-pointer' : 'cursor-default'}`}
                               >
                                  {status}
                               </button>
@@ -482,13 +482,13 @@ const ProjectDetailsModal: React.FC<Props> = ({
                   </button>
                   {isAdmin && (
                      <>
-                        <button onClick={() => onEditRequest?.(editedProject)} className="flex flex-col items-center gap-2 p-4 bg-white/5 hover:bg-white/10 rounded-[32px] border border-white/5 text-slate-400 hover:text-white transition-all cursor-pointer">
+                        <button onClick={() => onEditRequest?.(editedProject)} className="flex flex-col items-center gap-2 p-4 bg-[var(--text-primary)]\/5 hover:bg-[var(--text-primary)]\/10 rounded-[32px] border border-[var(--glass-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer">
                            <Edit3 size={18} strokeWidth={1.5} />
                            <span className="text-[8px] font-medium uppercase tracking-widest">Ajustes</span>
                         </button>
                         <button 
                           onClick={() => onArchive?.(editedProject)}
-                          className="flex flex-col items-center gap-2 p-4 bg-white/5 hover:bg-amber-500/10 rounded-[32px] border border-white/5 text-slate-400 hover:text-amber-400 transition-all cursor-pointer"
+                          className="flex flex-col items-center gap-2 p-4 bg-[var(--text-primary)]\/5 hover:bg-amber-500/10 rounded-[32px] border border-[var(--glass-border)] text-[var(--text-secondary)] hover:text-amber-400 transition-all cursor-pointer"
                         >
                            <Archive size={18} strokeWidth={1.5} />
                            <span className="text-[8px] font-medium uppercase tracking-widest">Archivar</span>
@@ -500,7 +500,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                      </>
                    )}
                   <div className="h-10 w-px bg-[var(--glass-border)] mx-4" />
-                  <button onClick={onClose} className="p-4 bg-[var(--card-bg)] hover:bg-white/10 rounded-full text-[var(--text-primary)] transition-all border border-[var(--glass-border)]">
+                  <button onClick={onClose} className="p-4 bg-[var(--card-bg)] hover:bg-[var(--text-primary)]\/10 rounded-full text-[var(--text-primary)] transition-all border border-[var(--glass-border)]">
                      <X size={24} strokeWidth={1} />
                   </button>
                </div>
@@ -513,7 +513,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                      key={tab.id}
                      onClick={() => setActiveTab(tab.id as any)}
                      className={`flex items-center gap-4 px-8 py-6 text-[11px] font-medium uppercase tracking-[0.3em] transition-all relative ${
-                        activeTab === tab.id ? 'text-[var(--text-primary)] font-semibold' : 'text-slate-500 hover:text-[var(--text-primary)]'
+                        activeTab === tab.id ? 'text-[var(--text-primary)] font-semibold' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                      }`}
                   >
                      <tab.icon size={16} strokeWidth={activeTab === tab.id ? 2 : 1.5} />
@@ -539,7 +539,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                      {activeTab === 'summary' && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
                            <div className="space-y-12">
-                              <h3 className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.5em] flex items-center gap-4 opacity-60">
+                              <h3 className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.5em] flex items-center gap-4 opacity-60">
                                  <Globe size={14} className="text-rc-teal" strokeWidth={1.5} /> ADN Tecnológico
                               </h3>
                               <div className="space-y-4">
@@ -549,39 +549,39 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                     { label: 'ISP / Conectividad', value: editedProject.techDNA?.isp },
                                     { label: 'Modelo Operativo', value: editedProject.techDNA?.operationMode }
                                  ].map(item => (
-                                    <div key={item.label} className="p-6 bg-white/[0.01] border border-white/5 rounded-3xl flex justify-between items-center group hover:bg-white/[0.02] transition-all">
-                                       <span className="text-[9px] font-medium text-slate-600 uppercase tracking-widest">{item.label}</span>
-                                       <span className="text-[11px] font-medium text-white uppercase tracking-tighter">{item.value || 'Pendiente'}</span>
+                                    <div key={item.label} className="p-6 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-3xl flex justify-between items-center group hover:bg-[var(--text-primary)]/[0.02] transition-all">
+                                       <span className="text-[9px] font-medium text-[var(--text-secondary)] uppercase tracking-widest">{item.label}</span>
+                                       <span className="text-[11px] font-medium text-[var(--text-primary)] uppercase tracking-tighter">{item.value || 'Pendiente'}</span>
                                     </div>
                                  ))}
                               </div>
                            </div>
 
                            <div className="md:col-span-2 space-y-12">
-                              <h3 className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.5em] flex items-center gap-4 opacity-60">
+                              <h3 className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.5em] flex items-center gap-4 opacity-60">
                                  <TrendingUp size={14} className="text-rc-teal" strokeWidth={1.5} /> Indicadores Estratégicos
                               </h3>
                               <div className="grid grid-cols-2 gap-10">
-                                 <div className="p-12 bg-white/[0.01] border border-white/5 rounded-[48px] flex flex-col items-center justify-center gap-6 group hover:border-rc-teal/20 transition-all">
-                                    <div className="text-7xl font-mono-data font-light text-white tracking-tighter flex items-baseline gap-2">
+                                 <div className="p-12 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-[48px] flex flex-col items-center justify-center gap-6 group hover:border-rc-teal/20 transition-all">
+                                    <div className="text-7xl font-mono-data font-light text-[var(--text-primary)] tracking-tighter flex items-baseline gap-2">
                                        {Object.values(editedProject?.quarterlyAssessment || {}).reduce((a: any, b: any) => a + (typeof b === 'number' ? b : 0), 0)}
                                        <span className="text-2xl text-rc-teal opacity-40">%</span>
                                     </div>
                                     <span className="text-[10px] font-medium text-rc-teal uppercase tracking-[0.5em]">Health Score Global</span>
                                  </div>
-                                 <div className="p-12 bg-white/[0.01] border border-white/5 rounded-[48px] flex flex-col items-center justify-center gap-6 group hover:border-rc-teal/20 transition-all">
-                                    <div className="text-7xl font-light text-white tracking-tighter">
+                                 <div className="p-12 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-[48px] flex flex-col items-center justify-center gap-6 group hover:border-rc-teal/20 transition-all">
+                                    <div className="text-7xl font-light text-[var(--text-primary)] tracking-tighter">
                                        {(editedProject.services || []).length}
                                     </div>
                                     <span className="text-[10px] font-medium text-rc-teal uppercase tracking-[0.5em]">Servicios Activos</span>
                                  </div>
                               </div>
-                              <div className="p-12 bg-white/[0.01] border border-white/5 rounded-[48px] space-y-8 backdrop-blur-xl">
+                              <div className="p-12 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-[48px] space-y-8 backdrop-blur-xl">
                                  <div className="flex items-center justify-between">
-                                    <h4 className="text-[10px] font-medium text-slate-600 uppercase tracking-[0.4em]">Análisis de Inteligencia</h4>
+                                    <h4 className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.4em]">Análisis de Inteligencia</h4>
                                     <ArrowUpRight size={16} className="text-rc-teal opacity-30" />
                                  </div>
-                                 <p className="text-lg text-slate-400 leading-relaxed font-light italic">
+                                 <p className="text-lg text-[var(--text-secondary)] leading-relaxed font-light italic">
                                     "La arquitectura proyectada muestra una maduración tecnológica superior. Se recomienda la integración de capas predictivas y optimización de flujos omnicanal para el próximo ciclo."
                                  </p>
                               </div>
@@ -592,22 +592,22 @@ const ProjectDetailsModal: React.FC<Props> = ({
                       {activeTab === 'quality' && (
                         <div className="space-y-12">
                           {/* TOP SECTION: HISTORICAL SELECTOR & TREND CHART */}
-                          <div className="glass-panel p-8 rounded-[40px] border border-white/5 bg-black/25 space-y-8">
+                          <div className="glass-panel p-8 rounded-[40px] border border-[var(--glass-border)] bg-black/25 space-y-8">
                             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                               <div className="flex flex-col sm:flex-row sm:items-center gap-6 shrink-0">
                                 <div>
                                   <span className="text-[9px] font-semibold text-rc-teal uppercase tracking-[0.4em] block mb-2">Historial de Calidad</span>
-                                  <h4 className="text-xl font-light text-white uppercase tracking-tight">Tendencia Temporal</h4>
+                                  <h4 className="text-xl font-light text-[var(--text-primary)] uppercase tracking-tight">Tendencia Temporal</h4>
                                 </div>
                                 
                                 {/* Selector de Escala Temporal (Mensual / Anual) */}
-                                <div className="flex p-1 bg-white/5 border border-white/10 rounded-full w-fit">
+                                <div className="flex p-1 bg-[var(--text-primary)]\/5 border border-white/10 rounded-full w-fit">
                                   <button
                                     onClick={() => setTimeScale('month')}
                                     className={`px-4 py-1.5 rounded-full text-[9px] font-medium uppercase tracking-[0.15em] transition-all duration-300 ${
                                       timeScale === 'month'
-                                        ? 'bg-white text-black font-bold shadow-[0_2px_10px_rgba(255,255,255,0.15)]'
-                                        : 'text-slate-400 hover:text-white'
+                                        ? 'bg-[var(--text-primary)] text-[var(--bg-secondary)] font-bold shadow-[0_2px_10px_rgba(255,255,255,0.15)]'
+                                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                                     }`}
                                   >
                                     Mensual
@@ -616,8 +616,8 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                     onClick={() => setTimeScale('year')}
                                     className={`px-4 py-1.5 rounded-full text-[9px] font-medium uppercase tracking-[0.15em] transition-all duration-300 ${
                                       timeScale === 'year'
-                                        ? 'bg-white text-black font-bold shadow-[0_2px_10px_rgba(255,255,255,0.15)]'
-                                        : 'text-slate-400 hover:text-white'
+                                        ? 'bg-[var(--text-primary)] text-[var(--bg-secondary)] font-bold shadow-[0_2px_10px_rgba(255,255,255,0.15)]'
+                                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                                     }`}
                                   >
                                     Anual
@@ -638,8 +638,8 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                       onClick={() => setSelectedPeriod({ month: p.month, year: p.year })}
                                       className={`px-5 py-3 rounded-2xl text-[10px] font-medium uppercase tracking-wider shrink-0 transition-all flex items-center gap-2 border ${
                                         isSelected
-                                          ? 'bg-white border-white text-black font-semibold shadow-[0_0_20px_rgba(255,255,255,0.15)] scale-105'
-                                          : 'bg-white/[0.02] border-white/5 text-slate-400 hover:text-white hover:bg-white/[0.05]'
+                                          ? 'bg-[var(--text-primary)] border-white text-[var(--bg-secondary)] font-semibold shadow-[0_0_20px_rgba(255,255,255,0.15)] scale-105'
+                                          : 'bg-[var(--text-primary)]/[0.02] border-[var(--glass-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--text-primary)]/[0.05]'
                                       }`}
                                     >
                                       {hasEval && (
@@ -653,7 +653,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                             </div>
 
                             {/* Recharts AreaChart */}
-                            <div className="h-[200px] w-full bg-black/10 border border-white/5 rounded-3xl p-4">
+                            <div className="h-[200px] w-full bg-black/10 border border-[var(--glass-border)] rounded-3xl p-4">
                               <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart
                                   data={chartData}
@@ -737,7 +737,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                               {/* Left Columns (2/3): Pillars Assessment */}
                               <div className="lg:col-span-2 space-y-6">
                                 <div className="flex justify-between items-center mb-4">
-                                  <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-[0.3em] flex items-center gap-3">
+                                  <h4 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-[0.3em] flex items-center gap-3">
                                     <Star size={14} className="text-rc-teal" /> 10 Pilares de Calidad ({periods.find(p => p.month === selectedPeriod.month && p.year === selectedPeriod.year)?.label})
                                   </h4>
                                   <span className="text-xs font-bold text-rc-teal uppercase bg-rc-teal/5 border border-rc-teal/20 px-4 py-1.5 rounded-full">
@@ -760,11 +760,11 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                   ].map((pillar) => {
                                      const score = (activePillars as any)?.[pillar.key] || 0;
                                      return (
-                                        <div key={pillar.key} className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] space-y-8 transition-all hover:bg-white/[0.02]">
+                                        <div key={pillar.key} className="p-10 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-[40px] space-y-8 transition-all hover:bg-[var(--text-primary)]/[0.02]">
                                            <div className="flex justify-between items-start">
                                               <div className="space-y-2">
-                                                 <span className="text-[14px] font-medium text-white uppercase tracking-tight block">{pillar.label}</span>
-                                                 <p className="text-[9px] text-slate-600 font-medium uppercase tracking-[0.2em]">{pillar.desc}</p>
+                                                 <span className="text-[14px] font-medium text-[var(--text-primary)] uppercase tracking-tight block">{pillar.label}</span>
+                                                 <p className="text-[9px] text-[var(--text-secondary)] font-medium uppercase tracking-[0.2em]">{pillar.desc}</p>
                                               </div>
                                               <span className={`text-[18px] font-light ${score >= 4 ? 'text-rc-teal' : score >= 3 ? 'text-amber-400' : 'text-rose-500'}`}>
                                                  {score}.0
@@ -787,8 +787,8 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                                     className={`flex-1 rounded-full transition-all duration-700 ${
                                                        score >= n 
                                                        ? 'bg-rc-teal shadow-[0_0_15px_rgba(59,188,169,0.3)]' 
-                                                       : 'bg-white/5'
-                                                    } ${isAdmin && selectedPeriod?.month > 0 ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`} 
+                                                       : 'bg-[var(--text-primary)]\/5'
+                                                    } ${isAdmin && selectedPeriod?.month > 0 ? 'cursor-pointer hover:bg-[var(--text-primary)]\/10' : 'cursor-default'}`} 
                                                  />
                                               ))}
                                            </div>
@@ -801,13 +801,13 @@ const ProjectDetailsModal: React.FC<Props> = ({
                               {/* Right Column (1/3): Qualitative Observations & Status */}
                               <div className="space-y-8">
                                 <div className="space-y-4">
-                                  <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-[0.3em] flex items-center gap-3">
+                                  <h4 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-[0.3em] flex items-center gap-3">
                                     <MessageSquare size={14} className="text-rc-teal" /> Diagnóstico Estratégico
                                   </h4>
                                   
                                   {/* Health Status Selector */}
-                                  <div className="p-6 bg-white/[0.01] border border-white/5 rounded-3xl space-y-4">
-                                    <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest block">Salud Operacional</span>
+                                  <div className="p-6 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-3xl space-y-4">
+                                    <span className="text-[9px] font-semibold text-[var(--text-secondary)] uppercase tracking-widest block">Salud Operacional</span>
                                     <div className="grid grid-cols-2 gap-2">
                                       {[
                                         { id: 'Stable', label: 'Estable', color: 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5' },
@@ -828,7 +828,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                             className={`px-4 py-3 rounded-2xl text-[9px] font-medium uppercase tracking-wider transition-all border ${
                                               isSelected
                                                 ? st.color + ' scale-105 border-opacity-100 font-bold shadow-lg'
-                                                : 'bg-white/[0.02] border-white/5 text-slate-500 hover:text-slate-300'
+                                                : 'bg-[var(--text-primary)]/[0.02] border-[var(--glass-border)] text-[var(--text-secondary)] hover:text-slate-300'
                                             } ${isAdmin && selectedPeriod?.month > 0 ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
                                           >
                                             {st.label}
@@ -839,8 +839,8 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                   </div>
 
                                   {/* Comments Textarea */}
-                                  <div className="p-6 bg-white/[0.01] border border-white/5 rounded-3xl space-y-4">
-                                    <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest block">Observaciones Cualitativas</span>
+                                  <div className="p-6 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-3xl space-y-4">
+                                    <span className="text-[9px] font-semibold text-[var(--text-secondary)] uppercase tracking-widest block">Observaciones Cualitativas</span>
                                     {isAdmin && selectedPeriod?.month > 0 ? (
                                       <textarea
                                         value={activeQualitative}
@@ -851,20 +851,20 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                         }}
                                         placeholder="Escribe el comentario estratégico de este mes..."
                                         rows={6}
-                                        className="w-full bg-black/20 border border-white/5 rounded-2xl p-4 text-xs font-light text-white placeholder-slate-600 focus:outline-none focus:border-rc-teal/50 transition-colors custom-scrollbar"
+                                        className="w-full bg-black/20 border border-[var(--glass-border)] rounded-2xl p-4 text-xs font-light text-[var(--text-primary)] placeholder-slate-600 focus:outline-none focus:border-rc-teal/50 transition-colors custom-scrollbar"
                                       />
                                     ) : (
-                                      <p className="text-xs font-light text-slate-400 leading-relaxed italic p-4 bg-black/10 rounded-2xl border border-white/5 whitespace-pre-line custom-scrollbar max-h-[160px] overflow-y-auto">
+                                      <p className="text-xs font-light text-[var(--text-secondary)] leading-relaxed italic p-4 bg-black/10 rounded-2xl border border-[var(--glass-border)] whitespace-pre-line custom-scrollbar max-h-[160px] overflow-y-auto">
                                         {activeQualitative || (selectedPeriod?.month === 0 ? "No hay observaciones cualitativas consolidadas para este año." : "No hay observaciones cualitativas registradas para este período.")}
                                       </p>
                                     )}
                                   </div>
 
                                   {/* Bitácora de Acciones Tácticas */}
-                                  <div className="p-6 bg-white/[0.01] border border-white/5 rounded-3xl space-y-6">
+                                  <div className="p-6 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-3xl space-y-6">
                                     <div className="flex items-center justify-between">
                                       <div className="space-y-1">
-                                        <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest block">Bitácora de Acciones</span>
+                                        <span className="text-[9px] font-semibold text-[var(--text-secondary)] uppercase tracking-widest block">Bitácora de Acciones</span>
                                         <span className="text-[8px] text-rc-teal font-medium uppercase tracking-[0.2em] block">
                                           {selectedPeriod.month === 0 ? 'Resumen Anual (Lectura)' : 'Intervenciones del Periodo'}
                                         </span>
@@ -883,7 +883,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                             'SLA': 'text-amber-400 border-amber-400/20 bg-amber-400/5',
                                             'Procesos': 'text-purple-400 border-purple-400/20 bg-purple-400/5',
                                             'Relación': 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5',
-                                            'Otros': 'text-slate-400 border-slate-400/20 bg-slate-400/5'
+                                            'Otros': 'text-[var(--text-secondary)] border-slate-400/20 bg-slate-400/5'
                                           };
                                           const isCompleted = action.status === 'Completed';
 
@@ -891,7 +891,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                             <div 
                                               key={action.id} 
                                               className={`p-4 rounded-2xl border bg-black/25 flex items-start gap-3 transition-all duration-300 ${
-                                                isCompleted ? 'border-white/5 opacity-60' : 'border-white/10 hover:border-white/20'
+                                                isCompleted ? 'border-[var(--glass-border)] opacity-60' : 'border-white/10 hover:border-white/20'
                                               }`}
                                             >
                                               {selectedPeriod.month > 0 && isAdmin ? (
@@ -899,7 +899,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                                   onClick={() => handleToggleAction(action.id)}
                                                   className={`w-5 h-5 rounded-lg border flex items-center justify-center shrink-0 transition-all ${
                                                     isCompleted 
-                                                      ? 'bg-rc-teal border-rc-teal text-white' 
+                                                      ? 'bg-rc-teal border-rc-teal text-[var(--text-primary)]' 
                                                       : 'border-white/20 text-transparent hover:border-rc-teal/50'
                                                   }`}
                                                 >
@@ -910,7 +910,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                               )}
 
                                               <div className="flex-1 space-y-1.5 min-w-0">
-                                                <p className={`text-xs font-light leading-relaxed break-words ${isCompleted ? 'line-through text-slate-500' : 'text-slate-200'}`}>
+                                                <p className={`text-xs font-light leading-relaxed break-words ${isCompleted ? 'line-through text-[var(--text-secondary)]' : 'text-slate-200'}`}>
                                                   {action.description}
                                                 </p>
                                                 <span className={`inline-block px-2.5 py-0.5 rounded-full border text-[7px] font-semibold uppercase tracking-wider ${catColors[action.category] || catColors['Otros']}`}>
@@ -921,7 +921,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                               {selectedPeriod.month > 0 && isAdmin && (
                                                 <button 
                                                   onClick={() => handleDeleteAction(action.id)}
-                                                  className="text-slate-600 hover:text-rose-500 transition-colors p-1"
+                                                  className="text-[var(--text-secondary)] hover:text-rose-500 transition-colors p-1"
                                                 >
                                                   <Trash2 size={12} />
                                                 </button>
@@ -930,23 +930,23 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                           );
                                         })
                                       ) : (
-                                        <div className="py-8 flex flex-col items-center justify-center border border-dashed border-white/5 rounded-2xl bg-white/[0.005]">
+                                        <div className="py-8 flex flex-col items-center justify-center border border-dashed border-[var(--glass-border)] rounded-2xl bg-[var(--text-primary)]/[0.005]">
                                           <Tag className="text-slate-800 mb-2" size={24} strokeWidth={1} />
-                                          <p className="text-slate-600 font-medium uppercase tracking-[0.2em] text-[8px]">Sin acciones registradas</p>
+                                          <p className="text-[var(--text-secondary)] font-medium uppercase tracking-[0.2em] text-[8px]">Sin acciones registradas</p>
                                         </div>
                                       )}
                                     </div>
 
                                     {/* Form Section (Admin Only & only in Month view) */}
                                     {selectedPeriod.month > 0 && isAdmin ? (
-                                      <div className="space-y-4 pt-4 border-t border-white/5">
+                                      <div className="space-y-4 pt-4 border-t border-[var(--glass-border)]">
                                         <div className="flex gap-2">
                                           <input
                                             type="text"
                                             value={newActionText}
                                             onChange={(e) => setNewActionText(e.target.value)}
                                             placeholder="Nueva acción o hito..."
-                                            className="flex-1 bg-black/25 border border-white/5 rounded-xl px-4 py-2.5 text-xs font-light text-white placeholder-slate-600 focus:outline-none focus:border-rc-teal/50 transition-colors"
+                                            className="flex-1 bg-black/25 border border-[var(--glass-border)] rounded-xl px-4 py-2.5 text-xs font-light text-[var(--text-primary)] placeholder-slate-600 focus:outline-none focus:border-rc-teal/50 transition-colors"
                                             onKeyDown={(e) => {
                                               if (e.key === 'Enter') {
                                                 e.preventDefault();
@@ -960,7 +960,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                             className={`px-3 rounded-xl border flex items-center justify-center transition-all ${
                                               newActionText.trim()
                                                 ? 'bg-rc-teal/10 border-rc-teal/20 text-rc-teal hover:bg-rc-teal/20'
-                                                : 'bg-white/5 border-white/5 text-slate-600 cursor-not-allowed'
+                                                : 'bg-[var(--text-primary)]\/5 border-[var(--glass-border)] text-[var(--text-secondary)] cursor-not-allowed'
                                             }`}
                                           >
                                             <Plus size={16} />
@@ -977,8 +977,8 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                                 onClick={() => setNewActionCategory(cat)}
                                                 className={`px-3 py-1.5 rounded-lg text-[8px] font-medium uppercase tracking-wider transition-all border ${
                                                   isSelected
-                                                    ? 'bg-white/10 border-white/20 text-white font-bold'
-                                                    : 'bg-white/[0.01] border-white/5 text-slate-500 hover:text-slate-300'
+                                                    ? 'bg-[var(--text-primary)]\/10 border-white/20 text-[var(--text-primary)] font-bold'
+                                                    : 'bg-[var(--card-bg)] border-[var(--glass-border)] text-[var(--text-secondary)] hover:text-slate-300'
                                                 }`}
                                               >
                                                 {cat}
@@ -1007,14 +1007,14 @@ const ProjectDetailsModal: React.FC<Props> = ({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                            {(editedProject.services || []).length > 0 ? (
                               (editedProject.services || []).map((service) => (
-                                 <div key={service.id} className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] space-y-8 transition-all hover:bg-white/[0.02]">
+                                 <div key={service.id} className="p-10 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-[40px] space-y-8 transition-all hover:bg-[var(--text-primary)]/[0.02]">
                                     <div className="flex justify-between items-start">
                                        <div className="flex items-center gap-6">
-                                          <div className="w-14 h-14 bg-white/[0.03] rounded-3xl flex items-center justify-center text-rc-teal border border-white/5">
+                                          <div className="w-14 h-14 bg-[var(--text-primary)]/[0.03] rounded-3xl flex items-center justify-center text-rc-teal border border-[var(--glass-border)]">
                                              <Zap size={24} strokeWidth={1} />
                                           </div>
                                           <div>
-                                             <span className="text-[16px] font-medium text-white uppercase tracking-tight block">{service.name}</span>
+                                             <span className="text-[16px] font-medium text-[var(--text-primary)] uppercase tracking-tight block">{service.name}</span>
                                              <span className="text-[10px] text-rc-teal font-medium uppercase tracking-[0.3em] mt-1">{service.type}</span>
                                           </div>
                                        </div>
@@ -1022,35 +1022,35 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                           {service.score}.0 Score
                                        </div>
                                     </div>
-                                    <p className="text-sm text-slate-400 leading-relaxed font-light italic opacity-80">
+                                    <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-light italic opacity-80">
                                        "{service.description || 'Proceso estratégico en ejecución continua.'}"
                                     </p>
 
                                     {/* Métricas Dinámicas */}
                                     {(service.extensionCount || service.positionsCount || service.botmakerType) && (
-                                       <div className="flex items-center gap-10 p-6 bg-white/[0.01] border border-white/5 rounded-3xl">
+                                       <div className="flex items-center gap-10 p-6 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-3xl">
                                           {service.extensionCount ? (
                                              <div className="flex flex-col">
-                                                <span className="text-[9px] font-medium text-slate-600 uppercase tracking-[0.2em] mb-2">Extensiones</span>
-                                                <span className="text-2xl font-light text-white leading-none">{service.extensionCount}</span>
+                                                <span className="text-[9px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.2em] mb-2">Extensiones</span>
+                                                <span className="text-2xl font-light text-[var(--text-primary)] leading-none">{service.extensionCount}</span>
                                              </div>
                                           ) : null}
                                           {service.positionsCount ? (
                                              <div className="flex flex-col">
-                                                <span className="text-[9px] font-medium text-slate-600 uppercase tracking-[0.2em] mb-2">Posiciones</span>
-                                                <span className="text-2xl font-light text-white leading-none">{service.positionsCount}</span>
+                                                <span className="text-[9px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.2em] mb-2">Posiciones</span>
+                                                <span className="text-2xl font-light text-[var(--text-primary)] leading-none">{service.positionsCount}</span>
                                              </div>
                                           ) : null}
                                           {service.botmakerType ? (
                                              <div className="flex flex-col">
-                                                <span className="text-[9px] font-medium text-slate-600 uppercase tracking-[0.2em] mb-2">Motor Bot</span>
-                                                <span className="text-[11px] font-medium text-white leading-none truncate max-w-[150px] uppercase">{service.botmakerType.split(' + ')[0]}</span>
+                                                <span className="text-[9px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.2em] mb-2">Motor Bot</span>
+                                                <span className="text-[11px] font-medium text-[var(--text-primary)] leading-none truncate max-w-[150px] uppercase">{service.botmakerType.split(' + ')[0]}</span>
                                              </div>
                                           ) : null}
                                        </div>
                                     )}
 
-                                    <div className="pt-6 border-t border-white/5 flex items-center justify-between opacity-40">
+                                    <div className="pt-6 border-t border-[var(--glass-border)] flex items-center justify-between opacity-40">
                                        <div className="flex items-center gap-3">
                                           <Calendar size={14} strokeWidth={1} />
                                           <span className="text-[9px] font-medium uppercase tracking-widest">Go-Live: {service.startDate}</span>
@@ -1063,9 +1063,9 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                  </div>
                               ))
                            ) : (
-                              <div className="col-span-full py-24 flex flex-col items-center justify-center border border-dashed border-white/5 rounded-[48px] bg-white/[0.01]">
+                              <div className="col-span-full py-24 flex flex-col items-center justify-center border border-dashed border-[var(--glass-border)] rounded-[48px] bg-[var(--card-bg)]">
                                  <Layers className="text-slate-800 mb-8" size={48} strokeWidth={1} />
-                                 <p className="text-slate-600 font-medium uppercase tracking-[0.4em] text-[11px]">Bóveda de servicios vacía</p>
+                                 <p className="text-[var(--text-secondary)] font-medium uppercase tracking-[0.4em] text-[11px]">Bóveda de servicios vacía</p>
                               </div>
                            )}
                         </div>
@@ -1075,15 +1075,15 @@ const ProjectDetailsModal: React.FC<Props> = ({
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                            {(editedProject.assets || []).length > 0 ? (
                               (editedProject.assets || []).map((asset) => (
-                                 <div key={asset.id} className="p-10 bg-white/[0.01] border border-white/5 rounded-[40px] space-y-8 transition-all hover:bg-white/[0.02]">
-                                    <div className="w-16 h-16 bg-white/[0.03] rounded-[28px] flex items-center justify-center text-slate-500 group-hover:text-rc-teal transition-colors border border-white/5">
+                                 <div key={asset.id} className="p-10 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-[40px] space-y-8 transition-all hover:bg-[var(--text-primary)]/[0.02]">
+                                    <div className="w-16 h-16 bg-[var(--text-primary)]/[0.03] rounded-[28px] flex items-center justify-center text-[var(--text-secondary)] group-hover:text-rc-teal transition-colors border border-[var(--glass-border)]">
                                        <Headphones size={32} strokeWidth={1} />
                                     </div>
                                     <div>
-                                       <span className="text-[16px] font-medium text-white uppercase tracking-tight block mb-2">{asset.model}</span>
+                                       <span className="text-[16px] font-medium text-[var(--text-primary)] uppercase tracking-tight block mb-2">{asset.model}</span>
                                        <div className="flex items-center gap-3 opacity-60">
                                           <User size={12} className="text-rc-teal" />
-                                          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Asignación: {asset.assignedPosition}</span>
+                                          <span className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-widest">Asignación: {asset.assignedPosition}</span>
                                        </div>
                                     </div>
                                     <div className={`px-5 py-2.5 rounded-full border text-[9px] font-medium uppercase tracking-[0.2em] w-fit ${
@@ -1096,9 +1096,9 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                  </div>
                               ))
                            ) : (
-                              <div className="col-span-full py-24 flex flex-col items-center justify-center border border-dashed border-white/5 rounded-[48px] bg-white/[0.01]">
+                              <div className="col-span-full py-24 flex flex-col items-center justify-center border border-dashed border-[var(--glass-border)] rounded-[48px] bg-[var(--card-bg)]">
                                  <Cpu className="text-slate-800 mb-8" size={48} strokeWidth={1} />
-                                 <p className="text-slate-600 font-medium uppercase tracking-[0.4em] text-[11px]">Sin activos de hardware</p>
+                                 <p className="text-[var(--text-secondary)] font-medium uppercase tracking-[0.4em] text-[11px]">Sin activos de hardware</p>
                               </div>
                            )}
                         </div>
@@ -1132,14 +1132,14 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                        }
                                     });
                                  } : undefined}
-                                 className={`p-8 bg-white/[0.01] border border-white/5 rounded-[32px] flex items-center justify-between group transition-all ${
-                                    isAdmin ? 'cursor-pointer hover:bg-white/[0.03]' : 'cursor-default'
+                                 className={`p-8 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-[32px] flex items-center justify-between group transition-all ${
+                                    isAdmin ? 'cursor-pointer hover:bg-[var(--text-primary)]/[0.03]' : 'cursor-default'
                                  }`}
                               >
-                                 <span className={`text-[12px] font-medium text-slate-500 uppercase tracking-[0.2em] ${isAdmin ? 'group-hover:text-white' : ''} transition-colors`}>{item.label}</span>
+                                 <span className={`text-[12px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.2em] ${isAdmin ? 'group-hover:text-[var(--text-primary)]' : ''} transition-colors`}>{item.label}</span>
                                  <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-700 ${
                                     editedProject.clientEvaluation?.[item.id as keyof typeof editedProject.clientEvaluation] 
-                                    ? 'bg-white border-white text-black scale-110 shadow-[0_0_20px_rgba(255,255,255,0.2)]' 
+                                    ? 'bg-[var(--text-primary)] border-white text-[var(--bg-secondary)] scale-110 shadow-[0_0_20px_rgba(255,255,255,0.2)]' 
                                     : 'border-white/10 text-transparent'
                                  }`}>
                                     <Check size={16} strokeWidth={3} />
@@ -1157,16 +1157,16 @@ const ProjectDetailsModal: React.FC<Props> = ({
                <div className="flex items-center gap-10">
                   <div className="flex -space-x-3">
                      {[1,2,3,4].map(i => (
-                        <div key={i} className="w-12 h-12 rounded-full border-4 border-[var(--bg-secondary)] bg-white/[0.02] flex items-center justify-center text-[9px] font-semibold text-slate-500 uppercase">
+                        <div key={i} className="w-12 h-12 rounded-full border-4 border-[var(--bg-secondary)] bg-[var(--text-primary)]/[0.02] flex items-center justify-center text-[9px] font-semibold text-[var(--text-secondary)] uppercase">
                            {i === 1 ? 'AI' : i === 2 ? 'PM' : i === 3 ? 'OP' : 'QA'}
                         </div>
                      ))}
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] font-medium text-white uppercase tracking-[0.5em] block opacity-80">
+                    <span className="text-[10px] font-medium text-[var(--text-primary)] uppercase tracking-[0.5em] block opacity-80">
                       {editedProject.lastModifiedBy ? `Audit: ${editedProject.lastModifiedBy}` : 'Ecosistema Rc506'}
                     </span>
-                    <span className="text-[8px] font-medium text-slate-600 uppercase tracking-widest">
+                    <span className="text-[8px] font-medium text-[var(--text-secondary)] uppercase tracking-widest">
                       {editedProject.lastModifiedAt ? `Última Modificación: ${new Date(editedProject.lastModifiedAt).toLocaleString()}` : 'Validación de Protocolo V4.2'}
                     </span>
                   </div>
@@ -1174,10 +1174,10 @@ const ProjectDetailsModal: React.FC<Props> = ({
                 <div className="flex items-center gap-10">
                    {isAdmin ? (
                       <>
-                         <button onClick={onClose} className="text-[11px] font-medium text-slate-600 uppercase tracking-[0.3em] hover:text-white transition-colors cursor-pointer">Cancelar</button>
+                         <button onClick={onClose} className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.3em] hover:text-[var(--text-primary)] transition-colors cursor-pointer">Cancelar</button>
                          <button 
                             onClick={handleSave}
-                            className="px-12 py-5 bg-white text-black text-[11px] font-medium uppercase tracking-[0.2em] rounded-full hover:bg-slate-200 active:scale-95 transition-all shadow-2xl cursor-pointer"
+                            className="px-12 py-5 bg-[var(--text-primary)] text-[var(--bg-secondary)] text-[11px] font-medium uppercase tracking-[0.2em] rounded-full hover:bg-slate-200 active:scale-95 transition-all shadow-2xl cursor-pointer"
                          >
                             Sincronizar Estrategia
                          </button>
@@ -1185,7 +1185,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                    ) : (
                       <button 
                          onClick={onClose}
-                         className="px-12 py-5 bg-white text-black text-[11px] font-medium uppercase tracking-[0.2em] rounded-full hover:bg-slate-200 active:scale-95 transition-all shadow-2xl cursor-pointer"
+                         className="px-12 py-5 bg-[var(--text-primary)] text-[var(--bg-secondary)] text-[11px] font-medium uppercase tracking-[0.2em] rounded-full hover:bg-slate-200 active:scale-95 transition-all shadow-2xl cursor-pointer"
                       >
                          Cerrar Expediente
                       </button>
