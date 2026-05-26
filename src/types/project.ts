@@ -152,6 +152,25 @@ export interface QuarterlyAssessment {
   valor: number;
 }
 
+export interface HistoryLog {
+  id: string;
+  date: string;
+  month: number;
+  year: number;
+  assessment: QuarterlyAssessment;
+  healthFlag: 'Verde' | 'Amarilla' | 'Roja' | 'Negra';
+  recordedBy: string;
+}
+
+export interface ActivityLog {
+  id: string;
+  date: string;
+  user: string;
+  action: string;
+  details: string;
+  type: 'StatusChange' | 'Comment' | 'Update' | 'Alert';
+}
+
 export interface Project {
   id: string;
   client: string;
@@ -176,4 +195,8 @@ export interface Project {
   quarterlyAssessment?: QuarterlyAssessment;
   lastModifiedBy?: string;
   lastModifiedAt?: string;
+  
+  // Novedades CRM Fase 3
+  history?: HistoryLog[];
+  activityLogs?: ActivityLog[];
 }

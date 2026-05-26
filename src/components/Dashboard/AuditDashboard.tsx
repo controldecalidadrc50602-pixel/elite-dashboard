@@ -19,19 +19,11 @@ import { AnalyticsPanel } from './AnalyticsPanel';
 
 interface AuditDashboardProps {
   projects: Project[];
-  isSingleProject?: boolean;
-  selectedProjectId?: string | null;
-  onSelectProject?: (id: string | null) => void;
   demoMode?: boolean;
+  onSelectClient?: (id: string) => void;
 }
 
-const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProject, selectedProjectId, onSelectProject, demoMode }) => {
-  const selectedProject = useMemo(() => {
-    if (isSingleProject) return projects[0];
-    if (selectedProjectId) return projects.find(p => p.id === selectedProjectId) || null;
-    return null;
-  }, [projects, isSingleProject, selectedProjectId]);
-  
+const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onSelectClient }) => {
   const stats = useMemo(() => {
     const totalProjects = projects.length;
     const optimum = projects.filter(p => p.healthFlag === 'Verde').length;
@@ -63,13 +55,6 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
       { key: 'valuePerception', label: 'Percepción' }
     ];
 
-    if (selectedProject) {
-      return pillars.map(p => ({
-        pillar: p.label,
-        value: Math.round(((selectedProject.quarterlyAssessment?.[p.key as keyof QuarterlyAssessment] || 0) / 5) * 100)
-      }));
-    }
-
     return pillars.map(p => {
       const validProjects = projects.filter(proj => proj.quarterlyAssessment && proj.quarterlyAssessment[p.key as keyof QuarterlyAssessment] !== undefined);
       const avg = validProjects.length > 0
@@ -81,18 +66,18 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
         value: Math.round((avg / 5) * 100)
       };
     });
-  }, [projects, selectedProject]);
+  }, [projects]);
 
   return (
     <div className="space-y-12 animate-in fade-in duration-700">
       {/* 1. Header & Global Metrics */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="text-5xl font-light text-white tracking-tighter leading-none">
-            {isSingleProject ? `Status: ${selectedProject?.client}` : 'Status Operativo Elite'}
+          <h2 className="text-5xl font-light text-[var(--text-primary)] tracking-tighter leading-none">
+            Status Operativo Elite
           </h2>
           <p className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.4em] mt-6 opacity-60">
-            {isSingleProject ? `Análisis Estratégico Individual` : 'Resumen de Gestión y Salud de Cartera'}
+            Resumen de Gestión y Salud de Cartera
           </p>
         </div>
         
@@ -153,12 +138,12 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
               <motion.div 
                 key={project.id}
                 whileHover={{ scale: 1.01, x: 5 }}
-                onClick={() => onSelectProject?.(selectedProjectId === project.id ? null : project.id)}
-                className={`p-6 border rounded-[32px] flex flex-col gap-6 transition-all group cursor-pointer backdrop-blur-xl ${
-                  selectedProjectId === project.id 
-                  ? 'bg-rc-teal/10 border-rc-teal shadow-[0_0_30px_rgba(59,188,169,0.1)]' 
-                  : 'bg-white/[0.02] border-white/5 hover:border-rc-teal/30'
-                }`}
+                onClick={() => {
+                  if (onSelectClient) {
+                    onSelectClient(project.id);
+                  }
+                }}
+                className={`card p-6 flex flex-col gap-6 transition-all group cursor-pointer backdrop-blur-xl`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -186,10 +171,9 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, isSingleProje
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
-                          onSelectProject?.(project.id);
-                          // Necesitamos una forma de avisar al Dashboard que abra el modal.
-                          // Por ahora, usaremos un truco: si se hace doble clic o se pulsa este botón específico.
-                          document.dispatchEvent(new CustomEvent('open-client-modal', { detail: { id: project.id } }));
+                          if (onSelectClient) {
+                            onSelectClient(project.id);
+                          }
                         }}
                         className="p-3 bg-white/5 hover:bg-rc-teal hover:text-black rounded-xl transition-all opacity-0 group-hover:opacity-100 border border-white/5"
                         title="Ver Ficha Completa"

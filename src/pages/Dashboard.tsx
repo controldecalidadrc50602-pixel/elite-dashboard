@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useDemoMode } from '../context/DemoModeContext';
@@ -22,10 +23,12 @@ import AuditDashboard from '../components/Dashboard/AuditDashboard';
 import StatCard from '../components/common/StatCard';
 import ProjectDetailsModal from '../components/ProjectDetailsModal';
 import ProjectModal from '../components/Modals/ProjectModal';
+import { EliteClientCard } from '../components/Dashboard/EliteClientCard';
 import { exportService } from '../services/exportService';
 import ImageWithFallback from '../components/common/ImageWithFallback';
 
 const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'archive' }> = ({ activeTab }) => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, isAdmin } = useAuth();
   const { demoMode } = useDemoMode();
@@ -112,7 +115,12 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
               </div>
            </div>
            
-           <StoriesBar projects={projects} selectedProjectId={selectedProjectId} onSelectProject={(id) => { setSelectedProjectId(id); setIsSlideoverOpen(true); }} />
+           <StoriesBar projects={projects} selectedProjectId={selectedProjectId} onSelectProject={(id) => { 
+             setSelectedProjectId(id); 
+             if (activeTab !== 'overview') {
+               navigate('/dashboard');
+             }
+           }} />
         </div>
 
         {/* Dynamic Content Area */}
@@ -121,13 +129,18 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
               
               {activeTab === 'overview' && (
                 <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
-                   <AuditDashboard 
-                    projects={projects} 
-                    isSingleProject={false} 
-                    selectedProjectId={selectedProjectId}
-                    onSelectProject={(id) => setSelectedProjectId(id)}
-                    demoMode={demoMode}
-                   />
+                   {selectedProjectId ? (
+                      <EliteClientCard 
+                        project={projects.find(p => p.id === selectedProjectId)!} 
+                        onEdit={() => setIsSlideoverOpen(true)} 
+                      />
+                   ) : (
+                      <AuditDashboard 
+                        projects={projects} 
+                        demoMode={demoMode}
+                        onSelectClient={(id) => setSelectedProjectId(id)}
+                      />
+                   )}
                 </div>
               )}
 
