@@ -19,7 +19,7 @@ export const brandingService = {
   // Default fallback config
   defaultConfig: {
     companyName: 'Rc506 Solutions',
-    logoUrl: '' // Empty means use default UI logo
+    logoUrl: '/logo.png' // Usa el logo local por defecto
   } as BrandingConfig,
 
   async getBranding(): Promise<BrandingConfig> {
