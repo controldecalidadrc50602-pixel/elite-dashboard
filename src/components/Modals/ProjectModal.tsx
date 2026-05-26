@@ -55,15 +55,15 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
           className="fixed inset-0 bg-[#000000]/95 backdrop-blur-[60px]" 
         />
         
-        <motion.div 
+          <motion.div 
           initial={{ opacity: 0, scale: 0.98, y: 10 }} 
           animate={{ opacity: 1, scale: 1, y: 0 }} 
           exit={{ opacity: 0, scale: 0.98, y: 10 }}
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-          className="relative w-full max-w-6xl bg-[#050505] border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.8)] rounded-[48px] overflow-hidden flex flex-col h-[80vh] backdrop-blur-3xl"
+          className="relative w-full max-w-6xl bg-[var(--bg-primary)] border border-[var(--glass-border)] shadow-[0_40px_100px_rgba(0,0,0,0.8)] rounded-[48px] overflow-hidden flex flex-col h-[80vh] backdrop-blur-3xl"
         >
           {/* Header Estático - Zoho Elite Style */}
-          <header className="relative z-20 bg-black/40 backdrop-blur-xl border-b border-white/5 shrink-0">
+          <header className="relative z-20 bg-[var(--bg-secondary)]/80 backdrop-blur-xl border-b border-[var(--glass-border)] shrink-0">
             <div className="px-12 pt-10 pb-2 flex items-center justify-between">
               <div className="flex items-center gap-10">
                 <div className="w-16 h-16 rounded-[28px] bg-white/[0.02] border border-white/10 flex items-center justify-center shadow-2xl">
@@ -185,7 +185,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
             </div>
 
             {/* Footer */}
-            <footer className="px-12 py-8 bg-black/40 border-t border-white/5 flex items-center justify-between shrink-0">
+            <footer className="px-12 py-8 bg-[var(--bg-secondary)] border-t border-[var(--glass-border)] flex items-center justify-between shrink-0">
               <button 
                 type="button" onClick={onClose} 
                 className="text-[10px] font-medium text-slate-700 hover:text-white transition-colors tracking-[0.4em] uppercase"

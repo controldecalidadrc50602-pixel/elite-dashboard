@@ -1,8 +1,10 @@
-const CACHE_NAME = 'elite-v4-cache-v1';
+const CACHE_NAME = 'elite-v4.2-cache-v2';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/favicon.ico',
+  '/favicon.png'
 ];
 
 self.addEventListener('install', event => {

@@ -204,7 +204,7 @@ He sido equipado con la nueva **Visual de Lectura Ergonómica y de Alivio Ocular
           </span>
         );
       }
-      return part;
+      return <span key={idx}>{part}</span>;
     });
   };
 

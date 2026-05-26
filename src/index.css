@@ -72,14 +72,40 @@ body {
 
 /* --- CONFIGURACIÓN DE TEMA CLARO PREMIUM (ESTILO ANTIGRAVITY IDE) --- */
 .light {
-  --bg-primary: #F8F9FA;
-  --bg-secondary: #FFFFFF;
-  --card-bg: #FFFFFF;
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(0, 0, 0, 0.04);
-  --text-primary: #1E293B;       /* Color carbón de texto del IDE */
-  --text-secondary: #64748B;     /* Gris pizarra muy suave y descansado */
-  --accent-glow: rgba(59, 188, 169, 0.05);
+  --bg-color: #f1f5f9;
+  --surface-color: #ffffff;
+  --surface-hover: #f8fafc;
+  --border-color: #e2e8f0;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  
+  --primary-color: #2563eb;
+  --secondary-color: #3b82f6;
+  --danger-color: #ef4444;
+  --warning-color: #f59e0b;
+  --success-color: #10b981;
+
+  --sidebar-bg: #1e293b;
+  --sidebar-text: #f8fafc;
+  --sidebar-hover: #334155;
+  --sidebar-active: #2563eb;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-pill: 50px;
+
+  /* Map old variables to new BI theme for compatibility */
+  --bg-primary: var(--bg-color);
+  --bg-secondary: var(--surface-color);
+  --card-bg: var(--surface-color);
+  --glass-bg: var(--surface-color);
+  --glass-border: var(--border-color);
+  --rc-teal: var(--primary-color);
 }
 
 .light body {
@@ -327,4 +353,28 @@ input:focus, select:focus, textarea:focus {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@layer components {
+  /* BI Dashboard Components */
+  .card {
+    @apply bg-[var(--surface-color)] rounded-[var(--radius-lg)] border border-[var(--border-color)] p-6;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  .kpi-info .value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    letter-spacing: -1px;
+  }
+  
+  .btn-primary {
+    @apply bg-[var(--primary-color)] text-white px-4 py-2 rounded-[var(--radius-md)] border-none font-medium hover:bg-blue-700 transition-colors;
+  }
+  
+  .btn-outline {
+    @apply bg-[var(--surface-color)] text-[var(--text-primary)] px-4 py-2 rounded-[var(--radius-md)] border border-[var(--border-color)] font-medium hover:bg-[var(--surface-hover)] transition-colors;
+  }
 }

@@ -1,10 +1,12 @@
 import React from 'react';
 import Sidebar from './Sidebar';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { Navigate, Outlet } from 'react-router-dom';
 
 const MainLayout: React.FC = () => {
   const { user, loading } = useAuth();
+  const { theme } = useTheme();
 
   if (loading) return (
     <div className="h-screen w-full flex items-center justify-center bg-[#0B0E14]">
@@ -18,17 +20,14 @@ const MainLayout: React.FC = () => {
   if (!user) return <Navigate to="/login" />;
 
   return (
-    <div className="flex h-screen w-full bg-[#0B0E14] overflow-hidden">
-      {/* Sidebar Compacto */}
-      <div className="hidden md:block w-[88px] h-full flex-shrink-0 z-50">
-        <Sidebar />
-      </div>
-
-      <main className="flex-1 h-full relative overflow-hidden">
-        {/* Universal Backdrop Blur */}
-        <div className="absolute inset-0 bg-gradient-to-br from-rc-teal/[0.02] to-transparent pointer-events-none" />
-        
-        <div className="h-full w-full">
+    <div className={`flex h-screen w-full transition-colors duration-500 overflow-hidden ${theme === 'light' ? 'bg-[var(--bg-color)]' : 'bg-[#0B0E14]'}`}>
+      <Sidebar />
+      <main className={`flex-1 h-full relative overflow-hidden flex flex-col ${theme === 'light' ? 'p-8 overflow-y-auto' : ''}`}>
+        {/* Universal Backdrop Blur for Dark Mode */}
+        {theme === 'dark' && (
+          <div className="absolute inset-0 bg-gradient-to-br from-rc-teal/[0.02] to-transparent pointer-events-none" />
+        )}
+        <div className="flex-1 w-full h-full">
           <Outlet />
         </div>
       </main>
