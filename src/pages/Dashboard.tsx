@@ -225,10 +225,10 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
          project={projects.find(p => p.id === selectedProjectId) || null}
          isOpen={isSlideoverOpen}
          onClose={() => setIsSlideoverOpen(false)}
-         onUpdate={async (p) => setProjects(await projectService.updateProject(p, projects))}
+         onUpdate={async (p) => setProjects(await projectService.updateProject(p, projects, user?.displayName || user?.email || 'Administrador'))}
          onArchive={async (p) => {
             const archived = { ...p, adminStatus: 'Archivado' as any };
-            setProjects(await projectService.updateProject(archived, projects));
+            setProjects(await projectService.updateProject(archived, projects, user?.displayName || user?.email || 'Administrador'));
             setIsSlideoverOpen(false);
          }}
          onEditRequest={(p) => { setEditingProject(p); setIsProjectModalOpen(true); setIsSlideoverOpen(false); }}
@@ -238,7 +238,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
       <ProjectModal 
          isOpen={isProjectModalOpen}
          onClose={() => setIsProjectModalOpen(false)}
-         onSave={async (p) => setProjects(editingProject ? await projectService.updateProject(p, projects) : await projectService.addProject(p, projects))}
+         onSave={async (p) => setProjects(editingProject ? await projectService.updateProject(p, projects, user?.displayName || user?.email || 'Administrador') : await projectService.addProject(p, projects, user?.displayName || user?.email || 'Administrador'))}
          project={editingProject}
       />
       

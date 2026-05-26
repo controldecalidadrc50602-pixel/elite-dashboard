@@ -57,7 +57,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[#020617]">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[var(--bg-primary)]">
       {/* Dynamic Cinematic Background */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-rc-teal/10 rounded-full blur-[160px] animate-pulse" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/10 rounded-full blur-[160px] animate-pulse" style={{ animationDelay: '2s' }} />
@@ -66,13 +66,13 @@ const Login = () => {
         initial={{ opacity: 0, y: 30, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="glass-card w-full max-w-[420px] p-10 rounded-[48px] relative z-10 border border-white/5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]"
+        className="card w-full max-w-[420px] p-10 relative z-10 border border-[var(--glass-border)] shadow-2xl"
       >
         {/* Identity Section */}
         <div className="flex flex-col items-center mb-12">
           <motion.div 
             whileHover={{ scale: 1.05, rotate: 2 }}
-            className="w-24 h-24 bg-[var(--bg-secondary)] rounded-[2.5rem] flex items-center justify-center mb-6 border border-white/10 relative shadow-2xl overflow-hidden group"
+            className="w-24 h-24 bg-[var(--bg-secondary)] rounded-[2.5rem] flex items-center justify-center mb-6 border border-[var(--glass-border)] relative shadow-2xl overflow-hidden group"
           >
              <div className="absolute inset-0 bg-gradient-to-br from-rc-teal/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
              {branding.logoUrl ? (
@@ -82,7 +82,7 @@ const Login = () => {
              )}
           </motion.div>
           
-          <h1 className="text-4xl font-semibold text-white tracking-tight uppercase mb-2">Elite Access</h1>
+          <h1 className="text-4xl font-semibold text-[var(--text-primary)] tracking-tight uppercase mb-2">Elite Access</h1>
           <div className="flex items-center gap-2">
             <ShieldCheck size={14} className="text-rc-teal" />
             <p className="label-executive">{branding.companyName}</p>
@@ -97,7 +97,7 @@ const Login = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[#0d1117] border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-white focus:outline-none focus:ring-2 focus:ring-rc-teal/40 transition-all text-sm font-semibold placeholder:text-slate-600"
+                className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl py-5 pl-14 pr-6 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-rc-teal/40 transition-all text-sm font-semibold placeholder:text-slate-500"
                 placeholder="Identificador Corporativo"
                 required
               />
@@ -109,7 +109,7 @@ const Login = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full bg-[#0d1117] border ${error ? 'border-rose-500/50' : 'border-white/10'} rounded-2xl py-5 pl-14 pr-6 text-white focus:outline-none focus:ring-2 focus:ring-rc-teal/40 transition-all text-sm font-semibold placeholder:text-slate-600`}
+                className={`w-full bg-[var(--bg-secondary)] border ${error ? 'border-rose-500/50' : 'border-[var(--glass-border)]'} rounded-2xl py-5 pl-14 pr-6 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-rc-teal/40 transition-all text-sm font-semibold placeholder:text-slate-500`}
                 placeholder="Clave de Seguridad"
                 required
               />
@@ -134,7 +134,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white text-black py-5 rounded-2xl flex items-center justify-center gap-4 transition-all text-[11px] uppercase tracking-[0.2em] shadow-2xl hover:bg-slate-200 active:scale-95"
+            className="w-full bg-[var(--text-primary)] text-[var(--bg-primary)] py-5 rounded-2xl flex items-center justify-center gap-4 transition-all text-[11px] uppercase tracking-[0.2em] shadow-2xl hover:bg-rc-teal hover:text-black active:scale-95"
           >
             {loading ? 'Validando Acceso...' : 'Sincronizar Panel'}
             {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
@@ -142,9 +142,9 @@ const Login = () => {
         </form>
 
         <div className="relative my-10">
-          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
+          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[var(--glass-border)]"></div></div>
           <div className="relative flex justify-center">
-            <span className="bg-[#020617] px-6 label-executive">Direct Login</span>
+            <span className="bg-[var(--bg-primary)] px-6 text-[10px] uppercase font-bold text-slate-500 tracking-widest">Direct Login</span>
           </div>
         </div>
 
@@ -152,7 +152,7 @@ const Login = () => {
           onClick={handleGoogleLogin}
           type="button"
           disabled={loading}
-          className="w-full bg-white text-slate-900 hover:bg-slate-100 font-medium py-5 rounded-2xl flex items-center justify-center gap-4 transition-all text-[11px] uppercase tracking-widest shadow-lg hover:shadow-white/10 active:scale-[0.98]"
+          className="w-full bg-[var(--bg-secondary)] border border-[var(--glass-border)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] font-medium py-5 rounded-2xl flex items-center justify-center gap-4 transition-all text-[11px] uppercase tracking-widest shadow-lg active:scale-[0.98]"
         >
           <GoogleIcon />
           Entrar con Google
@@ -160,7 +160,7 @@ const Login = () => {
 
 
 
-        <div className="mt-8 text-center opacity-40 hover:opacity-100 transition-opacity">
+        <div className="mt-8 text-center text-slate-500 transition-opacity">
           <p className="label-executive">
             Elite Dashboard V4.0 • Executive Edition
           </p>

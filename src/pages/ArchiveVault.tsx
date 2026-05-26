@@ -3,6 +3,7 @@ import { Archive, RotateCcw, ShieldAlert, Search, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Project } from '../types/project';
 import { projectService } from '../services/projectService';
+import { useAuth } from '../context/AuthContext';
 
 interface ArchiveVaultProps {
   projects: Project[];
@@ -10,11 +11,12 @@ interface ArchiveVaultProps {
 }
 
 const ArchiveVault: React.FC<ArchiveVaultProps> = ({ projects, setProjects }) => {
+  const { user } = useAuth();
   const archivedProjects = projects.filter(p => p.adminStatus === 'Archivado');
 
   const handleRestore = async (project: Project) => {
-    const restored = { ...project, adminStatus: 'Activo' as any };
-    const updatedProjects = await projectService.updateProject(restored, projects);
+    const restored = { ...project, adminStatus: 'En Proceso' as any };
+    const updatedProjects = await projectService.updateProject(restored, projects, user?.displayName || user?.email || 'Administrador del Archivo');
     setProjects(updatedProjects);
   };
 

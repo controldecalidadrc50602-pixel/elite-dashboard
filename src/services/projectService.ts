@@ -79,8 +79,35 @@ export const projectService = {
     }
   },
 
-  async addProject(project: Project, allProjects: Project[]): Promise<Project[]> {
+  async addProject(project: Project, allProjects: Project[], userName: string = 'Sistema'): Promise<Project[]> {
     try {
+      const dateStr = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+      
+      const newActivity = {
+        id: Math.random().toString(36).substr(2, 9),
+        date: dateStr,
+        user: userName,
+        action: 'Alta',
+        details: 'Alta del expediente en el sistema.',
+        type: 'Update' as const
+      };
+
+      project.activityLogs = [newActivity];
+
+      // Si tiene evaluación inicial, la guardamos en el histórico
+      if (project.quarterlyAssessment) {
+         const newHistory = {
+            id: Math.random().toString(36).substr(2, 9),
+            date: dateStr,
+            month: new Date().getMonth() + 1,
+            year: new Date().getFullYear(),
+            assessment: { ...project.quarterlyAssessment },
+            healthFlag: project.healthFlag || 'Verde',
+            recordedBy: userName
+         };
+         project.history = [newHistory];
+      }
+
       const sanitizedProject = sanitizeForFirestore(project);
       await setDoc(doc(db, PROJECTS_COLLECTION, project.id), sanitizedProject);
       return [...allProjects, project];
@@ -90,8 +117,63 @@ export const projectService = {
     }
   },
 
-  async updateProject(updatedProject: Project, allProjects: Project[]): Promise<Project[]> {
+  async updateProject(updatedProject: Project, allProjects: Project[], userName: string = 'Sistema'): Promise<Project[]> {
     try {
+      const oldProject = allProjects.find(p => p.id === updatedProject.id);
+      const dateStr = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      // Lógica Activity Log
+      let actionDetails = 'Actualización general del expediente.';
+      let activityType: 'StatusChange' | 'Comment' | 'Update' | 'Alert' = 'Update';
+
+      if (oldProject && oldProject.healthFlag !== updatedProject.healthFlag) {
+        actionDetails = `Cambio de Health Score de ${oldProject.healthFlag} a ${updatedProject.healthFlag}.`;
+        activityType = 'StatusChange';
+      } else if (oldProject && oldProject.adminStatus !== updatedProject.adminStatus) {
+        actionDetails = `Estado cambiado a ${updatedProject.adminStatus}.`;
+        activityType = 'StatusChange';
+      }
+
+      const newActivity = {
+        id: Math.random().toString(36).substr(2, 9),
+        date: dateStr,
+        user: userName,
+        action: 'Modificación',
+        details: actionDetails,
+        type: activityType
+      };
+
+      const newActivityLogs = [newActivity, ...(oldProject?.activityLogs || [])].slice(0, 50);
+      updatedProject.activityLogs = newActivityLogs;
+
+      // Lógica History Log
+      let newHistoryLogs = [...(oldProject?.history || [])];
+      
+      const oldAssessmentStr = JSON.stringify(oldProject?.quarterlyAssessment || {});
+      const newAssessmentStr = JSON.stringify(updatedProject.quarterlyAssessment || {});
+      
+      // Si la evaluación trimestral cambió, guardamos un snapshot histórico
+      if (oldAssessmentStr !== newAssessmentStr && updatedProject.quarterlyAssessment) {
+        const newHistory = {
+          id: Math.random().toString(36).substr(2, 9),
+          date: dateStr,
+          month: new Date().getMonth() + 1,
+          year: new Date().getFullYear(),
+          assessment: { ...updatedProject.quarterlyAssessment },
+          healthFlag: updatedProject.healthFlag || 'Verde',
+          recordedBy: userName
+        };
+        // Evitamos doble snapshot en el mismo mes si ya se hizo uno
+        const existingMonthIndex = newHistoryLogs.findIndex(h => h.month === newHistory.month && h.year === newHistory.year);
+        if (existingMonthIndex >= 0) {
+           newHistoryLogs[existingMonthIndex] = newHistory; // Sobrescribimos el del mes actual
+        } else {
+           newHistoryLogs.push(newHistory);
+        }
+      }
+      
+      updatedProject.history = newHistoryLogs;
+
       const sanitizedProject = sanitizeForFirestore(updatedProject);
       await setDoc(doc(db, PROJECTS_COLLECTION, updatedProject.id), sanitizedProject, { merge: true });
       return allProjects.map(p => p.id === updatedProject.id ? updatedProject : p);
