@@ -78,23 +78,65 @@ export const EliteClientCard: React.FC<Props> = ({ project, onEdit }) => {
         
         {/* Columna Izquierda: Actividad y Servicios (1/3) */}
         <div className="space-y-6">
-           {/* Resumen de Servicios */}
+           {/* Resumen Completo de Ecosistema */}
            <div className="card p-6 flex flex-col gap-4">
               <div className="flex items-center gap-3 mb-2">
                  <Zap size={16} className="text-rc-teal" />
                  <h3 className="text-[11px] font-medium text-[var(--text-primary)] uppercase tracking-widest">Ecosistema Activo</h3>
               </div>
-              {project.services && project.services.length > 0 ? (
-                 project.services.map(service => (
-                    <div key={service.id} className="p-4 bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl">
-                       <span className="text-[12px] font-bold text-[var(--text-primary)] uppercase tracking-wider block">{service.name}</span>
-                       <span className="text-[10px] font-medium text-slate-500 uppercase tracking-widest mt-1 block">
-                          {service.type || 'Servicio Estándar'}
-                       </span>
-                    </div>
-                 ))
-              ) : (
-                 <p className="text-[10px] text-slate-500 uppercase tracking-widest text-center py-4">No hay servicios registrados</p>
+              
+              {/* Servicios Contratados */}
+              {project.services && project.services.length > 0 && (
+                 <div className="space-y-2">
+                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1 block">Portafolio de Servicios</span>
+                   {project.services.map(service => (
+                      <div key={service.id} className="p-3 bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl flex items-center justify-between">
+                         <span className="text-[11px] font-bold text-[var(--text-primary)] uppercase tracking-wider">{service.name}</span>
+                         <span className="text-[9px] font-medium text-slate-500 uppercase tracking-widest bg-[var(--bg-primary)] px-2 py-1 rounded">
+                            {service.type || 'Servicio'}
+                         </span>
+                      </div>
+                   ))}
+                 </div>
+              )}
+
+              {/* Pulso Operativo */}
+              {project.opsPulse && (
+                 <div className="space-y-2 mt-2">
+                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1 block">Dimensión Operativa</span>
+                   <div className="grid grid-cols-2 gap-2">
+                      <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl">
+                         <span className="block text-[8px] text-slate-500 uppercase tracking-wider mb-1">Headcount Total</span>
+                         <span className="text-[11px] font-bold text-[var(--text-primary)] uppercase">{project.opsPulse.hcContracted} Asignados</span>
+                      </div>
+                      <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-xl">
+                         <span className="block text-[8px] text-slate-500 uppercase tracking-wider mb-1">Operación</span>
+                         <span className="text-[11px] font-bold text-[var(--text-primary)] uppercase">{project.opsPulse.operationType}</span>
+                      </div>
+                   </div>
+                 </div>
+              )}
+
+              {/* ADN Técnico */}
+              {project.techDNA && (
+                 <div className="space-y-2 mt-2">
+                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1 block">Infraestructura Base</span>
+                   <div className="flex flex-wrap gap-2">
+                      <span className="text-[9px] font-bold text-[var(--text-primary)] bg-[var(--bg-secondary)] border border-[var(--glass-border)] px-3 py-1.5 rounded-lg uppercase tracking-wider">
+                        {project.techDNA.operationMode}
+                      </span>
+                      <span className="text-[9px] font-bold text-[var(--text-primary)] bg-[var(--bg-secondary)] border border-[var(--glass-border)] px-3 py-1.5 rounded-lg uppercase tracking-wider">
+                        Redundancia: {project.techDNA.redundancy ? 'Activa' : 'N/A'}
+                      </span>
+                      <span className="text-[9px] font-bold text-[var(--text-primary)] bg-[var(--bg-secondary)] border border-[var(--glass-border)] px-3 py-1.5 rounded-lg uppercase tracking-wider">
+                        {project.techDNA.country}
+                      </span>
+                   </div>
+                 </div>
+              )}
+
+              {(!project.services?.length && !project.opsPulse && !project.techDNA) && (
+                 <p className="text-[10px] text-slate-500 uppercase tracking-widest text-center py-4">Sin datos de ecosistema</p>
               )}
            </div>
 
