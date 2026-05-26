@@ -35,6 +35,19 @@
   --rc-turquoise: #4fd1c5;
   --accent-glow: rgba(59, 188, 169, 0.1);
   --transition-organic: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* Sidebar Dark Theme Variables */
+  --sidebar-bg: rgba(0, 0, 0, 0.2);
+  --sidebar-border: rgba(255, 255, 255, 0.05);
+  --sidebar-text: #94A3B8;
+  --sidebar-text-hover: #ffffff;
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-active-bg: rgba(59, 188, 169, 0.1);
+  --sidebar-active-text: #3BC7AA;
+  --sidebar-shadow: none;
+  --sidebar-backdrop: blur(24px) saturate(180%);
+  --sidebar-danger-text: #f87171;
+  --sidebar-danger-hover: rgba(255, 255, 255, 0.05);
 }
 
 body {
@@ -88,9 +101,16 @@ body {
   --success-color: #10b981;
 
   --sidebar-bg: #1e293b;
-  --sidebar-text: #f8fafc;
+  --sidebar-border: transparent;
+  --sidebar-text: #94a3b8;
+  --sidebar-text-hover: #f8fafc;
   --sidebar-hover: #334155;
-  --sidebar-active: #2563eb;
+  --sidebar-active-bg: #2563eb;
+  --sidebar-active-text: #ffffff;
+  --sidebar-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --sidebar-backdrop: none;
+  --sidebar-danger-text: #ef4444;
+  --sidebar-danger-hover: #334155;
 
   --font-sans: 'Inter', sans-serif;
   --font-mono: 'Fira Code', monospace;
@@ -377,4 +397,35 @@ input:focus, select:focus, textarea:focus {
   .btn-outline {
     @apply bg-[var(--surface-color)] text-[var(--text-primary)] px-4 py-2 rounded-[var(--radius-md)] border border-[var(--border-color)] font-medium hover:bg-[var(--surface-hover)] transition-colors;
   }
+}
+
+/* Sidebar Utilities */
+.sidebar-container {
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  box-shadow: var(--sidebar-shadow);
+  backdrop-filter: var(--sidebar-backdrop);
+}
+
+.sidebar-btn {
+  color: var(--sidebar-text);
+}
+
+.sidebar-btn:hover {
+  background-color: var(--sidebar-hover);
+  color: var(--sidebar-text-hover);
+}
+
+.sidebar-btn-active {
+  background-color: var(--sidebar-active-bg);
+  color: var(--sidebar-active-text);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.sidebar-btn-danger {
+  color: var(--sidebar-danger-text);
+}
+
+.sidebar-btn-danger:hover {
+  background-color: var(--sidebar-danger-hover);
 }
