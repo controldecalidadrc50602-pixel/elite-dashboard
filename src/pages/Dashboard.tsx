@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RefreshCw, FileText, CheckCircle2, AlertTriangle, AlertCircle, Info, Calendar, Briefcase, Globe } from 'lucide-react';
+import { RefreshCw, FileText, CheckCircle2, AlertTriangle, AlertCircle, Info, Calendar, Briefcase, Globe, Zap } from 'lucide-react';
 import { KpiCard } from '../components/UI/KpiCard';
 import { FilterSelect } from '../components/UI/FilterSelect';
 import { Tabs } from '../components/UI/Tabs';
@@ -14,8 +14,12 @@ const mockChartData = [
   { name: 'Mayo', score: 88 },
 ];
 
-const Dashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('insights');
+interface DashboardProps {
+  activeTab?: string;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ activeTab: initialTab }) => {
+  const [activeTab, setActiveTab] = useState(initialTab === 'overview' ? 'insights' : initialTab || 'insights');
   const [ciclo, setCiclo] = useState('Todos');
   const [portafolio, setPortafolio] = useState('Todas (Global)');
   const [canal, setCanal] = useState('Todos');
