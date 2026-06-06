@@ -82,13 +82,13 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
         </div>
         
         <div className="flex items-center gap-4">
-            <div className="px-8 py-4 bg-white/[0.01] border border-white/5 rounded-[32px] flex items-center gap-6 backdrop-blur-xl">
-               <div className="w-12 h-12 bg-rc-teal/5 rounded-2xl flex items-center justify-center text-rc-teal border border-rc-teal/10">
-                  <Award size={20} strokeWidth={1.5} />
+            <div className="px-8 py-4 bg-white border border-slate-200 rounded-[32px] flex items-center gap-6 shadow-sm">
+               <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 border border-blue-100">
+                  <Award size={20} strokeWidth={2} />
                </div>
                <div className="flex flex-col">
-                  <span className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.3em]">Health Index Global</span>
-                  <span className="text-3xl font-light text-white leading-none mt-1">{stats.globalScore}%</span>
+                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">Health Index Global</span>
+                  <span className="text-3xl font-bold text-slate-800 leading-none mt-1">{stats.globalScore}%</span>
                </div>
             </div>
         </div>
@@ -121,15 +121,15 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
       <AnalyticsPanel projects={projects} demoMode={demoMode} />
 
       {/* 2. Client Operational Matrix */}
-      <div className="glass-panel p-10 rounded-[48px] border border-white/5 bg-black/10">
+      <div className="bg-slate-50 p-10 rounded-[48px] border border-slate-200 shadow-sm">
          <div className="flex items-center justify-between mb-12">
             <div className="space-y-2">
-               <h3 className="text-2xl font-light text-white tracking-tight uppercase">Matriz de Operaciones</h3>
-               <p className="text-[10px] font-medium text-slate-600 uppercase tracking-[0.4em]">Status de Clientes y Calidad de Servicio</p>
+               <h3 className="text-2xl font-bold text-slate-800 tracking-tight uppercase">Matriz de Operaciones</h3>
+               <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-[0.2em]">Status de Clientes y Calidad de Servicio</p>
             </div>
-            <div className="flex items-center gap-3 px-6 py-3 bg-white/[0.03] rounded-2xl border border-white/5">
-               <Search size={14} className="text-rc-teal opacity-40" />
-               <span className="text-[9px] font-medium text-slate-500 uppercase tracking-[0.3em]">Vista Consolidada</span>
+            <div className="flex items-center gap-3 px-6 py-3 bg-white rounded-2xl border border-slate-200 shadow-sm">
+               <Search size={14} className="text-slate-400" />
+               <span className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em]">Vista Consolidada</span>
             </div>
          </div>
 
@@ -143,20 +143,20 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
                     onSelectClient(project.id);
                   }
                 }}
-                className={`card p-6 flex flex-col gap-6 transition-all group cursor-pointer backdrop-blur-xl`}
+                className={`bg-white border border-slate-200 rounded-[32px] p-6 flex flex-col gap-6 transition-all group cursor-pointer shadow-sm hover:shadow-md hover:border-blue-200`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-black/40 rounded-2xl flex items-center justify-center p-2 border border-white/5 group-hover:border-rc-teal/20 transition-all">
+                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center p-2 border border-slate-100 group-hover:border-blue-100 transition-all">
                       {project.logoUrl ? (
-                        <img src={project.logoUrl} alt={project.client} className="w-full h-full object-contain opacity-60 group-hover:opacity-100 transition-opacity" />
+                        <img src={project.logoUrl} alt={project.client} className="w-full h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
                       ) : (
-                        <Activity className="text-rc-teal opacity-20" size={20} />
+                        <Activity className="text-blue-400 opacity-50" size={20} />
                       )}
                     </div>
                     <div className="flex items-center justify-between w-full">
                       <div>
-                        <h4 className="text-[13px] font-medium text-white uppercase tracking-wider">{project.client}</h4>
+                        <h4 className="text-[13px] font-bold text-slate-800 uppercase tracking-wider">{project.client}</h4>
                         <div className="flex items-center gap-2 mt-2">
                           <div className={`w-1.5 h-1.5 rounded-full ${
                             project.healthFlag === 'Verde' ? 'bg-emerald-500' : 
@@ -175,7 +175,7 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
                             onSelectClient(project.id);
                           }
                         }}
-                        className="p-3 bg-white/5 hover:bg-rc-teal hover:text-black rounded-xl transition-all opacity-0 group-hover:opacity-100 border border-white/5"
+                        className="p-3 bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-600 rounded-xl transition-all opacity-0 group-hover:opacity-100 border border-blue-100"
                         title="Ver Ficha Completa"
                       >
                          <ArrowUpRight size={14} />
@@ -183,28 +183,28 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
                     </div>
                   </div>
                   <div className="flex flex-col items-end">
-                    <span className="text-2xl font-light text-white leading-none tracking-tighter">
+                    <span className="text-2xl font-bold text-slate-800 leading-none tracking-tighter">
                       {Math.round((Object.values(project.quarterlyAssessment || {}).filter(v => typeof v === 'number') as number[]).reduce((a, b) => a + b, 0) / 50 * 100)}%
                     </span>
-                    <span className="text-[8px] font-medium text-rc-teal uppercase tracking-[0.4em] mt-1">Calidad</span>
+                    <span className="text-[9px] font-bold text-blue-500 uppercase tracking-[0.2em] mt-1">Calidad</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {project.services?.map(service => (
-                    <div key={service.id} className="flex items-center justify-between px-4 py-3 bg-white/[0.03] rounded-2xl border border-white/5 group/service hover:border-rc-teal/30 transition-all">
+                    <div key={service.id} className="flex items-center justify-between px-4 py-3 bg-slate-50 rounded-2xl border border-slate-200 group/service hover:border-blue-300 transition-all">
                       <div className="flex items-center gap-3 truncate">
-                        <Zap size={10} className="text-rc-teal shrink-0" />
+                        <Zap size={10} className="text-blue-500 shrink-0" />
                         <div className="flex flex-col truncate">
-                           <span className="text-[10px] font-medium text-slate-400 truncate uppercase tracking-wider">{service.name}</span>
+                           <span className="text-[11px] font-bold text-slate-600 truncate uppercase tracking-wider">{service.name}</span>
                            {(service.extensionCount || service.positionsCount) && (
-                              <span className="text-[8px] font-medium text-rc-teal/40 uppercase tracking-[0.2em] mt-0.5">
+                              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.1em] mt-0.5">
                                  {service.extensionCount ? `${service.extensionCount} Extensiones` : `${service.positionsCount} Posiciones`}
                               </span>
                            )}
                         </div>
                       </div>
-                      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${service.score > 4 ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${service.score > 4 ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                     </div>
                   ))}
                 </div>
@@ -216,17 +216,17 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
       {/* 3. Operational Performance Grid */}
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <TrendingUp size={16} className="text-rc-teal opacity-50" />
-          <h3 className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.5em]">Métricas de Rendimiento Operativo</h3>
+          <TrendingUp size={16} className="text-slate-400" />
+          <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Métricas de Rendimiento Operativo</h3>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
            {pillarMetrics.map((metric) => (
-             <div key={metric.pillar} className="p-8 bg-white/[0.01] border border-white/5 rounded-[32px] flex flex-col items-center text-center group hover:bg-white/[0.02] transition-all">
-                <span className="text-[8px] font-medium text-slate-600 uppercase tracking-[0.3em] mb-4">{metric.pillar}</span>
-                <div className="text-3xl font-light text-white mb-6 tracking-tighter">{metric.value}%</div>
-                <div className="w-full h-1 bg-white/[0.03] rounded-full overflow-hidden">
+             <div key={metric.pillar} className="p-8 bg-white border border-slate-200 shadow-sm rounded-[32px] flex flex-col items-center text-center group hover:shadow-md hover:border-blue-200 transition-all">
+                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">{metric.pillar}</span>
+                <div className="text-3xl font-bold text-slate-800 mb-6 tracking-tighter">{metric.value}%</div>
+                <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
                    <div 
-                    className="h-full bg-rc-teal shadow-[0_0_10px_rgba(59,188,169,0.3)] transition-all duration-1000" 
+                    className="h-full bg-blue-500 shadow-none transition-all duration-1000" 
                     style={{ width: `${metric.value}%` }} 
                    />
                 </div>
