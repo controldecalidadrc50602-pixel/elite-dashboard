@@ -1,20 +1,16 @@
 import React from 'react';
 import Sidebar from './Sidebar';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { Navigate, Outlet } from 'react-router-dom';
 
 const MainLayout: React.FC = () => {
   const { user, loading } = useAuth();
-  const { theme } = useTheme();
-  const location = useLocation();
 
   if (loading) return (
-    <div className="h-screen w-full flex items-center justify-center bg-[#0B0E14]">
+    <div className="h-screen w-full flex items-center justify-center bg-slate-50">
        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-rc-teal/20 border-t-rc-teal rounded-full animate-spin" />
-          <span className="text-[10px] font-medium text-rc-teal uppercase tracking-[0.4em] opacity-40 animate-pulse">Initializing HC V4</span>
+          <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+          <span className="text-xs font-medium text-blue-500 uppercase tracking-widest animate-pulse">Cargando Elite...</span>
        </div>
     </div>
   );
@@ -22,27 +18,10 @@ const MainLayout: React.FC = () => {
   if (!user) return <Navigate to="/login" />;
 
   return (
-    <div className={`flex h-screen w-full transition-colors duration-500 overflow-hidden ${theme === 'light' ? 'bg-[var(--bg-color)]' : 'bg-[#0B0E14]'}`}>
+    <div className="flex h-screen w-full bg-slate-50 overflow-hidden text-slate-800">
       <Sidebar />
-      <main className={`flex-1 h-full relative overflow-hidden flex flex-col ${theme === 'light' ? 'p-8 overflow-y-auto' : ''}`}>
-        {/* Universal Backdrop Blur for Dark Mode */}
-        {theme === 'dark' && (
-          <div className="absolute inset-0 bg-gradient-to-br from-rc-teal/[0.02] to-transparent pointer-events-none" />
-        )}
-        <div className="flex-1 w-full h-full">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="h-full w-full"
-            >
-              <Outlet />
-            </motion.div>
-          </AnimatePresence>
-        </div>
+      <main className="flex-1 h-full overflow-y-auto">
+        <Outlet />
       </main>
     </div>
   );

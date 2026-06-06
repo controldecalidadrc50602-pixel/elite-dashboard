@@ -1,262 +1,169 @@
-import { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
-import { useDemoMode } from '../context/DemoModeContext';
-import { 
-  Plus,
-  Search,
-  Bell,
-  Activity,
-  Zap,
-  TrendingUp,
-  LayoutGrid,
-  Users,
-  ShieldCheck
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { projectService } from '../services/projectService';
-import ArchiveVault from './ArchiveVault';
-import { Project } from '../types/project';
-import StoriesBar from '../components/Dashboard/StoriesBar';
-import AuditDashboard from '../components/Dashboard/AuditDashboard';
-import StatCard from '../components/common/StatCard';
-import ProjectDetailsModal from '../components/ProjectDetailsModal';
-import ProjectModal from '../components/Modals/ProjectModal';
-import SkeletonDashboard from '../components/SkeletonDashboard';
-import { EliteClientCard } from '../components/Dashboard/EliteClientCard';
-import { exportService } from '../services/exportService';
-import ImageWithFallback from '../components/common/ImageWithFallback';
+import React, { useState } from 'react';
+import { RefreshCw, FileText, CheckCircle2, AlertTriangle, AlertCircle, Info, Calendar, Briefcase, Globe } from 'lucide-react';
+import { KpiCard } from '../components/UI/KpiCard';
+import { FilterSelect } from '../components/UI/FilterSelect';
+import { Tabs } from '../components/UI/Tabs';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'archive' }> = ({ activeTab }) => {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { user, isAdmin } = useAuth();
-  const { demoMode } = useDemoMode();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+// Mock Data from the user's App Script image
+const mockChartData = [
+  { name: 'Enero', score: 92 },
+  { name: 'Febrero', score: 86 },
+  { name: 'Marzo', score: 91 },
+  { name: 'Abril', score: 85 },
+  { name: 'Mayo', score: 88 },
+];
 
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [isSlideoverOpen, setIsSlideoverOpen] = useState(false);
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [toast, setToast] = useState<{message: string, type: 'success' | 'info'} | null>(null);
+const Dashboard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('insights');
+  const [ciclo, setCiclo] = useState('Todos');
+  const [portafolio, setPortafolio] = useState('Todas (Global)');
+  const [canal, setCanal] = useState('Todos');
 
-  useEffect(() => {
-    const unsubscribe = projectService.subscribeToProjects((projectsData) => {
-      setProjects(projectsData);
-      setLoading(false);
-    });
-    
-    return () => unsubscribe();
-  }, []);
+  const filterOptions = [{ value: 'Todos', label: 'Todos' }];
+  const portafolioOptions = [{ value: 'Todas (Global)', label: 'Todas (Global)' }];
 
-  useEffect(() => {
-    const handleOpenModal = (e: any) => {
-      setSelectedProjectId(e.detail.id);
-      setIsSlideoverOpen(true);
-    };
-    document.addEventListener('open-client-modal', handleOpenModal);
-    return () => document.removeEventListener('open-client-modal', handleOpenModal);
-  }, []);
-
-  const filteredProjects = useMemo(() => {
-    return projects.filter(p => {
-      const matchesSearch = p.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           p.services.some(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()));
-      return p.adminStatus !== 'Archivado' && matchesSearch;
-    });
-  }, [projects, searchQuery]);
-
-  if (loading) return (
-    <div className="flex-1 overflow-y-auto px-16 pt-12 pb-24 bg-[var(--bg-primary, #0B0E14)]">
-      <div className="max-w-7xl mx-auto">
-        <SkeletonDashboard />
-      </div>
-    </div>
-  );
+  const tabs = [
+    { id: 'insights', label: 'Insights & KPIs' },
+    { id: 'tendencia', label: 'Tendencia Temporal' },
+    { id: 'distribucion', label: 'Distribución de Calidad' },
+    { id: 'adn', label: 'ADN Tecnológico (Data)' },
+  ];
 
   return (
-    <div className="flex h-full overflow-hidden bg-[#0B0E14] font-light">
-      {/* Main Content Column */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
-        
-        {/* Intelligence Header */}
-        <div className="pt-10 px-16 pb-8 glass-panel z-30 sticky top-0">
-           <div className="flex items-center justify-between mb-10">
-              <div>
-                <h2 className="text-xl font-light text-white tracking-tight">
-                  Elite Dashboard <span className="text-rc-teal font-normal opacity-80">Rc506</span>
-                </h2>
-                <p className="text-[9px] font-light text-slate-500 uppercase tracking-[0.4em] mt-2 opacity-40">Business Intelligence & Strategic Portfolio</p>
-              </div>
-              <div className="flex items-center gap-6">
-                 <button 
-                    onClick={() => exportService.exportGlobalQualityPDF(projects)}
-                    className="flex items-center gap-3 px-6 py-3 bg-rc-teal/5 hover:bg-rc-teal/10 border border-rc-teal/20 rounded-full text-rc-teal transition-all group cursor-pointer"
-                  >
-                     <ShieldCheck size={16} strokeWidth={1.5} />
-                     <span className="text-[10px] font-medium uppercase tracking-[0.2em]">Inteligencia Global</span>
-                  </button>
-                 <div className="h-8 w-px bg-white/5" />
-                  {isAdmin && (
-                    <button 
-                     onClick={() => { setEditingProject(null); setIsProjectModalOpen(true); }}
-                     className="bg-white text-black px-8 py-3 rounded-full text-[11px] font-medium uppercase tracking-[0.1em] transition-all hover:bg-slate-200 active:scale-95 shadow-xl flex items-center gap-2 cursor-pointer animate-in fade-in zoom-in duration-300"
-                    >
-                       <Plus size={16} /> Nuevo Expediente
-                    </button>
-                  )}
-              </div>
-           </div>
-           
-           <StoriesBar projects={projects} selectedProjectId={selectedProjectId} onSelectProject={(id) => { 
-             setSelectedProjectId(id); 
-             if (activeTab !== 'overview') {
-               navigate('/dashboard');
-             }
-           }} />
+    <div className="min-h-screen bg-[#F8FAFC] p-8 font-sans">
+      {/* Header */}
+      <div className="flex justify-between items-start mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Status Operativo Elite</h1>
+          <p className="text-sm text-slate-500 mt-1">Monitoreo Histórico y Capacidad de Servicios en Tiempo Real</p>
         </div>
-
-        {/* Dynamic Content Area */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar px-16 pt-12 pb-24">
-           <div className="max-w-7xl mx-auto">
-              
-              {activeTab === 'overview' && (
-                <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
-                   {(() => {
-                      const selected = projects.find(p => p.id === selectedProjectId);
-                      return selected ? (
-                        <EliteClientCard 
-                          project={selected} 
-                          onEdit={() => setIsSlideoverOpen(true)} 
-                        />
-                      ) : (
-                        <AuditDashboard 
-                          projects={projects} 
-                          demoMode={demoMode}
-                          onSelectClient={(id) => setSelectedProjectId(id)}
-                        />
-                      );
-                   })()}
-                </div>
-              )}
-
-              {activeTab === 'clients' && (
-                 <div className="space-y-16 animate-in fade-in duration-700">
-                    <div className="flex items-end justify-between">
-                       <div>
-                          <h1 className="text-6xl font-light text-white tracking-tighter">Expedientes</h1>
-                          <p className="text-[10px] text-slate-500 uppercase tracking-[0.4em] mt-4">Gestión de Cartera de Alto Nivel</p>
-                       </div>
-                       <div className="relative w-80">
-                          <Search size={16} className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-600" />
-                          <input 
-                            type="text"
-                            placeholder="Buscar en la bóveda..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-transparent border-b border-white/5 py-3 pl-8 pr-4 text-sm font-light text-white focus:border-rc-teal focus:ring-0 outline-none transition-all placeholder:text-slate-800"
-                          />
-                       </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-10">
-                       {filteredProjects.map((project) => (
-                          <motion.div 
-                            key={project.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            whileHover={{ y: -5 }}
-                            onClick={() => { setSelectedProjectId(project.id); setIsSlideoverOpen(true); }}
-                            className="cursor-pointer group flex flex-col items-center gap-6"
-                          >
-                             <div className={`w-full aspect-square rounded-[48px] glass-card flex items-center justify-center p-10 relative overflow-hidden transition-all duration-700 ${
-                                project.healthFlag === 'Verde' ? 'group-hover:border-emerald-500/40 group-hover:shadow-[0_0_40px_rgba(16,185,129,0.2),inset_0_0_20px_rgba(16,185,129,0.05)]' : 
-                                project.healthFlag === 'Amarilla' ? 'group-hover:border-amber-500/40 group-hover:shadow-[0_0_40px_rgba(245,158,11,0.2),inset_0_0_20px_rgba(245,158,11,0.05)]' : 
-                                'group-hover:border-rose-500/40 group-hover:shadow-[0_0_40px_rgba(244,63,94,0.2),inset_0_0_20px_rgba(244,63,94,0.05)]'
-                             }`}>
-                                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-                                <ImageWithFallback 
-                                  src={project.logoUrl} 
-                                  className="w-full h-full object-contain filter grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-105" 
-                                  alt={project.client}
-                                  fallbackIcon={<Users className="text-white opacity-10 group-hover:opacity-40 transition-opacity" size={32} />}
-                                />
-                                
-                                <div className={`absolute top-6 right-6 w-1.5 h-1.5 rounded-full ${
-                                   project.healthFlag === 'Verde' ? 'bg-emerald-400' : 
-                                   project.healthFlag === 'Amarilla' ? 'bg-amber-400' : 
-                                   'bg-rose-500'
-                                } shadow-[0_0_10px_currentColor]`} />
-                             </div>
-                             <span className="text-[10px] font-light text-slate-500 uppercase tracking-[0.25em] text-center group-hover:text-white transition-colors duration-500">
-                                {project.client}
-                             </span>
-                          </motion.div>
-                       ))}
-                    </div>
-                 </div>
-              )}
-
-              {activeTab === 'status' && (
-                <div className="animate-in fade-in duration-700 flex flex-col items-center justify-center h-[50vh] text-center">
-                   <div className="w-20 h-20 bg-white/[0.01] border border-white/5 rounded-[40px] flex items-center justify-center mb-10 text-rc-teal shadow-2xl">
-                      <TrendingUp size={32} strokeWidth={1} />
-                   </div>
-                   <h1 className="text-5xl font-light text-white tracking-tighter mb-6">Cierre Trimestral</h1>
-                   <p className="text-slate-500 text-[10px] font-light uppercase tracking-[0.5em] max-w-md leading-relaxed opacity-40">Motor de Evaluación HC Rc506 V4.0<br/>Analítica de los 10 Pilares Estratégicos</p>
-                </div>
-              )}
-
-              {activeTab === 'archive' && (
-                <div className="animate-in fade-in duration-700">
-                   <ArchiveVault projects={projects} setProjects={setProjects} />
-                </div>
-              )}
-
-           </div>
+        <div className="flex gap-3">
+          <button className="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors text-slate-600 shadow-sm">
+            <RefreshCw size={18} />
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors text-slate-700 shadow-sm text-sm font-medium">
+            <RefreshCw size={16} /> Sincronizar
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors text-slate-700 shadow-sm text-sm font-medium">
+            <FileText size={16} /> Reporte PDF
+          </button>
         </div>
       </div>
 
-      <ProjectDetailsModal 
-         project={projects.find(p => p.id === selectedProjectId) || null}
-         isOpen={isSlideoverOpen}
-         onClose={() => setIsSlideoverOpen(false)}
-         onUpdate={async (p) => setProjects(await projectService.updateProject(p, projects, user?.displayName || user?.email || 'Administrador'))}
-         onArchive={async (p) => {
-            const archived = { ...p, adminStatus: 'Archivado' as any };
-            setProjects(await projectService.updateProject(archived, projects, user?.displayName || user?.email || 'Administrador'));
-            setIsSlideoverOpen(false);
-         }}
-         onEditRequest={(p) => { setEditingProject(p); setIsProjectModalOpen(true); setIsSlideoverOpen(false); }}
-         onDelete={async (id) => { if(confirm('¿Eliminar permanentemente?')) setProjects(await projectService.deleteProject(id, projects)); setIsSlideoverOpen(false); }}
-      />
+      {/* Filter Bar */}
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex gap-6 mb-6">
+        <div className="w-64">
+          <FilterSelect label="Ciclo Temporal" icon={Calendar} options={filterOptions} value={ciclo} onChange={setCiclo} />
+        </div>
+        <div className="w-64">
+          <FilterSelect label="Portafolio" icon={Briefcase} options={portafolioOptions} value={portafolio} onChange={setPortafolio} />
+        </div>
+        <div className="w-64">
+          <FilterSelect label="Canal Origen" icon={Globe} options={filterOptions} value={canal} onChange={setCanal} />
+        </div>
+      </div>
 
-      <ProjectModal 
-         isOpen={isProjectModalOpen}
-         onClose={() => setIsProjectModalOpen(false)}
-         onSave={async (p) => setProjects(editingProject ? await projectService.updateProject(p, projects, user?.displayName || user?.email || 'Administrador') : await projectService.addProject(p, projects, user?.displayName || user?.email || 'Administrador'))}
-         project={editingProject}
-      />
-      
-      {/* Toast Notification */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div 
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[100] px-10 py-5 bg-[#0D1117] border border-white/5 rounded-full flex items-center gap-6 shadow-2xl shadow-black/80"
-          >
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${toast.type === 'success' ? 'bg-rc-teal/10 text-rc-teal' : 'bg-blue-500/10 text-blue-400'}`}>
-               <Activity size={16} strokeWidth={1.5} />
+      {/* Tabs */}
+      <div className="mb-6">
+        <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
+      </div>
+
+      {/* Main Content Area based on Tab */}
+      {activeTab === 'insights' && (
+        <div className="space-y-6">
+          {/* KPI Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <KpiCard 
+              title="Health Score (Óptimo)" 
+              value="89,06%" 
+              icon={CheckCircle2} 
+              iconBgClass="bg-emerald-100" 
+              iconColorClass="text-emerald-600"
+              valueColorClass="text-emerald-500"
+              prediction={<span className="text-amber-500 font-medium">Predicción (Mes Sig.): 88.4% ↓</span>}
+            />
+            <KpiCard 
+              title="Área de Mejora (Aceptable)" 
+              value="9,26%" 
+              subtitle="Total: 299 Interacciones"
+              icon={AlertTriangle} 
+              iconBgClass="bg-amber-100" 
+              iconColorClass="text-amber-600"
+              valueColorClass="text-amber-500"
+            />
+            <KpiCard 
+              title="Riesgo Operativo (Deficiente)" 
+              value="1,36%" 
+              subtitle="Total: 44 Interacciones"
+              icon={AlertCircle} 
+              iconBgClass="bg-rose-100" 
+              iconColorClass="text-rose-600"
+              valueColorClass="text-rose-500"
+            />
+            <KpiCard 
+              title="Volumen Auditado" 
+              value="3.228" 
+              subtitle="Interacciones totales procesadas"
+              icon={Info} 
+              iconBgClass="bg-blue-100" 
+              iconColorClass="text-blue-600"
+            />
+          </div>
+
+          {/* Insights Alert */}
+          <div className="mt-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 text-slate-800 font-medium">
+                <AlertCircle size={18} />
+                <h3>Insights Operativos (Reglas Duras)</h3>
+              </div>
+              <button className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors shadow-md shadow-emerald-600/20">
+                Generar Análisis IA
+              </button>
             </div>
-            <span className="text-[11px] font-light text-white uppercase tracking-[0.2em]">{toast.message}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <div className="bg-white p-4 rounded-xl border border-slate-200 text-sm text-slate-600 flex gap-3 shadow-sm">
+              <div className="text-amber-500"><Zap size={18} /></div>
+              <p>VISIÓN GLOBAL ACTIVA: Ecosistema bajo parámetros normales. Aplique filtros granulares (Mes/Proyecto) para aislar riesgos operativos o activar el motor predictivo.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'tendencia' && (
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="font-semibold text-slate-800">Tendencia Temporal</h3>
+              <p className="text-xs text-slate-500 mt-1">La línea indica el porcentaje de calidad (Óptimo). Las barras de fondo representan el volumen total de interacciones.</p>
+            </div>
+            <button className="px-4 py-1.5 bg-slate-100 text-slate-600 text-xs font-semibold rounded-full hover:bg-slate-200 transition-colors">
+              Historial de Calidad
+            </button>
+          </div>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={mockChartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dx={-10} domain={[0, 100]} />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  labelStyle={{ fontWeight: 'bold', color: '#1e293b' }}
+                />
+                <Line type="monotone" dataKey="score" stroke="#10b981" strokeWidth={3} dot={{r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#fff'}} activeDot={{r: 6}} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+      
+      {/* Distribution Placeholder */}
+      {activeTab === 'distribucion' && (
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 h-64 flex items-center justify-center text-slate-400">
+          Gráfico de barras horizontales (En desarrollo)
+        </div>
+      )}
     </div>
   );
 };
