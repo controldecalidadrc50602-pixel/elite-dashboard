@@ -88,7 +88,7 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
                </div>
                <div className="flex flex-col">
                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">Health Index Global</span>
-                  <span className="text-3xl font-bold text-slate-800 leading-none mt-1">{globalScore.toFixed(2)}%</span>
+                  <span className="text-3xl font-bold text-slate-800 leading-none mt-1">{stats.globalScore.toFixed(2)}%</span>
                </div>
             </div>
         </div>

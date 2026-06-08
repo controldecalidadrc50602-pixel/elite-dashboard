@@ -258,7 +258,7 @@ export const EliteClientCard: React.FC<Props> = ({ project, onEdit }) => {
                       domain={[0, 100]}
                     />
                     <Tooltip 
-                      formatter={(value: number) => [`${value.toFixed(2)}%`, 'Score']}
+                      formatter={(value: any) => [`${Number(value).toFixed(2)}%`, 'Score']}
                       contentStyle={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--glass-border)', borderRadius: '12px' }}
                       itemStyle={{ color: 'var(--text-primary)', fontSize: '12px', fontWeight: 'bold' }}
                     />
