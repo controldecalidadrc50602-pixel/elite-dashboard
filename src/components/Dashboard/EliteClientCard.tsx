@@ -45,7 +45,7 @@ export const EliteClientCard: React.FC<Props> = ({ project, onEdit }) => {
       return Object.entries(groupedByMonth)
         .sort(([mesA], [mesB]) => monthsOrder.indexOf(mesA) - monthsOrder.indexOf(mesB))
         .map(([mes, stats]) => {
-          const score = stats.total > 0 ? Math.round((stats.optimo / stats.total) * 100) : 0;
+          const score = stats.total > 0 ? (stats.optimo / stats.total) * 100 : 0;
           return {
             name: mes.substring(0, 3), // Ene, Feb, Mar...
             score: score
@@ -56,7 +56,7 @@ export const EliteClientCard: React.FC<Props> = ({ project, onEdit }) => {
     // Fallback a historial existente o dummy data si no hay API
     return project.history?.length ? project.history.map(h => ({
       name: `${h.month}/${h.year}`,
-      score: Math.round((Object.values(h.assessment).filter(v => typeof v === 'number') as number[]).reduce((a, b) => a + b, 0) / 10)
+      score: (Object.values(h.assessment).filter(v => typeof v === 'number') as number[]).reduce((a, b) => a + b, 0) / 10
     })) : [
       { name: 'Ene', score: 65 },
       { name: 'Feb', score: 70 },
@@ -72,7 +72,7 @@ export const EliteClientCard: React.FC<Props> = ({ project, onEdit }) => {
       return evolutionData[evolutionData.length - 1].score;
     }
     return project.quarterlyAssessment 
-      ? Math.round((Object.values(project.quarterlyAssessment).filter(v => typeof v === 'number') as number[]).reduce((a, b) => a + b, 0) / 50 * 100)
+      ? (Object.values(project.quarterlyAssessment).filter(v => typeof v === 'number') as number[]).reduce((a, b) => a + b, 0) / 50 * 100
       : 0;
   }, [evolutionData, qualityData.length, project.quarterlyAssessment]);
 
@@ -234,7 +234,7 @@ export const EliteClientCard: React.FC<Props> = ({ project, onEdit }) => {
                  </div>
                  <div className="px-6 py-3 bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-2xl flex flex-col items-end">
                     <span className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.3em]">Health Score</span>
-                    <span className="text-3xl font-light text-[var(--text-primary)] mt-1">{currentScore}%</span>
+                    <span className="text-3xl font-light text-[var(--text-primary)] mt-1">{currentScore.toFixed(2)}%</span>
                  </div>
               </div>
 
@@ -258,6 +258,7 @@ export const EliteClientCard: React.FC<Props> = ({ project, onEdit }) => {
                       domain={[0, 100]}
                     />
                     <Tooltip 
+                      formatter={(value: number) => [`${value.toFixed(2)}%`, 'Score']}
                       contentStyle={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--glass-border)', borderRadius: '12px' }}
                       itemStyle={{ color: 'var(--text-primary)', fontSize: '12px', fontWeight: 'bold' }}
                     />

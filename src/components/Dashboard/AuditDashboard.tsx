@@ -31,11 +31,11 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
     const totalServices = projects.reduce((acc, p) => acc + (p.services?.length || 0), 0);
     
     const globalScore = projects.length > 0 
-      ? Math.round(projects.reduce((acc, p) => {
+      ? projects.reduce((acc, p) => {
           if (!p.quarterlyAssessment) return acc;
           const vals = Object.values(p.quarterlyAssessment).filter(v => typeof v === 'number') as number[];
           return acc + (vals.reduce((a, b) => a + b, 0) / (vals.length * 5));
-        }, 0) / projects.length * 100)
+        }, 0) / projects.length * 100
       : 0;
 
     return { totalProjects, optimum, critical, totalServices, globalScore };
@@ -63,7 +63,7 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
       
       return {
         pillar: p.label,
-        value: Math.round((avg / 5) * 100)
+        value: (avg / 5) * 100
       };
     });
   }, [projects]);
@@ -88,7 +88,7 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
                </div>
                <div className="flex flex-col">
                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">Health Index Global</span>
-                  <span className="text-3xl font-bold text-slate-800 leading-none mt-1">{stats.globalScore}%</span>
+                  <span className="text-3xl font-bold text-slate-800 leading-none mt-1">{globalScore.toFixed(2)}%</span>
                </div>
             </div>
         </div>
@@ -184,7 +184,7 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
                   </div>
                   <div className="flex flex-col items-end">
                     <span className="text-2xl font-bold text-slate-800 leading-none tracking-tighter">
-                      {Math.round((Object.values(project.quarterlyAssessment || {}).filter(v => typeof v === 'number') as number[]).reduce((a, b) => a + b, 0) / 50 * 100)}%
+                      {((Object.values(project.quarterlyAssessment || {}).filter(v => typeof v === 'number') as number[]).reduce((a, b) => a + b, 0) / 50 * 100).toFixed(2)}%
                     </span>
                     <span className="text-[9px] font-bold text-blue-500 uppercase tracking-[0.2em] mt-1">Calidad</span>
                   </div>
@@ -223,7 +223,7 @@ const AuditDashboard: React.FC<AuditDashboardProps> = ({ projects, demoMode, onS
            {pillarMetrics.map((metric) => (
              <div key={metric.pillar} className="p-8 bg-white border border-slate-200 shadow-sm rounded-[32px] flex flex-col items-center text-center group hover:shadow-md hover:border-blue-200 transition-all">
                 <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">{metric.pillar}</span>
-                <div className="text-3xl font-bold text-slate-800 mb-6 tracking-tighter">{metric.value}%</div>
+                <div className="text-3xl font-bold text-slate-800 mb-6 tracking-tighter">{metric.value.toFixed(2)}%</div>
                 <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
                    <div 
                     className="h-full bg-blue-500 shadow-none transition-all duration-1000" 
