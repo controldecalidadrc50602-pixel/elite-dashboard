@@ -27,6 +27,8 @@ import SkeletonDashboard from '../components/SkeletonDashboard';
 import { EliteClientCard } from '../components/Dashboard/EliteClientCard';
 import { exportService } from '../services/exportService';
 import ImageWithFallback from '../components/common/ImageWithFallback';
+import CRMDataGrid from '../components/Dashboard/CRMDataGrid';
+import { List, Grid as GridIcon } from 'lucide-react';
 
 const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'archive' }> = ({ activeTab }) => {
   const navigate = useNavigate();
@@ -42,6 +44,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'info'} | null>(null);
+  const [viewMode, setViewMode] = useState<'cards' | 'grid'>('cards');
 
   useEffect(() => {
     const unsubscribe = projectService.subscribeToProjects((projectsData) => {
@@ -164,12 +167,29 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                             className="w-full bg-white border border-slate-200 rounded-lg py-3 pl-10 pr-4 text-sm font-medium text-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400 shadow-sm"
                           />
                        </div>
+                       <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm ml-6">
+                         <button 
+                           onClick={() => setViewMode('cards')}
+                           className={`p-2 rounded-lg transition-colors flex items-center justify-center ${viewMode === 'cards' ? 'bg-blue-50 text-blue-600' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
+                           title="Vista Cuadrícula (Elite)"
+                         >
+                           <GridIcon size={18} />
+                         </button>
+                         <button 
+                           onClick={() => setViewMode('grid')}
+                           className={`p-2 rounded-lg transition-colors flex items-center justify-center ${viewMode === 'grid' ? 'bg-blue-50 text-blue-600' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
+                           title="Vista Lista (CRM Clásico)"
+                         >
+                           <List size={18} />
+                         </button>
+                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-10">
-                       {filteredProjects.map((project) => (
-                          <motion.div 
-                            key={project.id}
+                    {viewMode === 'cards' ? (
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-10">
+                         {filteredProjects.map((project) => (
+                            <motion.div 
+                              key={project.id}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             whileHover={{ y: -5 }}
@@ -200,7 +220,12 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                              </span>
                           </motion.div>
                        ))}
-                    </div>
+                      </div>
+                    ) : (
+                      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <CRMDataGrid projects={activeProjects} />
+                      </div>
+                    )}
                  </div>
               )}
 
