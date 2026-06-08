@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Project } from '../../types/project';
-import { Search, Download, RefreshCw, ChevronLeft, ChevronRight, ToggleRight, ToggleLeft } from 'lucide-react';
+import { Search, Download, RefreshCw, ChevronLeft, ChevronRight, ToggleRight, ToggleLeft, Layers } from 'lucide-react';
 import { exportService } from '../../services/exportService';
+import { projectService } from '../../services/projectService';
+import { useAuth } from '../../context/AuthContext';
 
 interface CRMDataGridProps {
   projects: Project[];
@@ -11,6 +13,17 @@ const CRMDataGrid: React.FC<CRMDataGridProps> = ({ projects }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [entriesPerPage, setEntriesPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
+  const { user } = useAuth();
+
+  const handleToggleStatus = async (project: Project) => {
+    const isActive = project.adminStatus === 'Activo' || project.adminStatus === 'En Proceso';
+    const newStatus = isActive ? 'Inactivo' : 'Activo';
+    await projectService.updateProject({ ...project, adminStatus: newStatus as any }, projects, user?.displayName || user?.email || 'Administrador');
+  };
+
+  const handleOpenProject = (id: string) => {
+    document.dispatchEvent(new CustomEvent('open-client-modal', { detail: { id } }));
+  };
 
   const filteredProjects = projects.filter(p => 
     p.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -59,12 +72,12 @@ const CRMDataGrid: React.FC<CRMDataGridProps> = ({ projects }) => {
       </div>
 
       {/* Toolbar */}
-      <div className="p-4 flex items-center justify-between bg-slate-50 border-b border-slate-200">
+      <div className="p-4 flex items-center justify-between bg-slate-100 border-b border-slate-200">
         <div className="flex items-center gap-3">
           <select 
             value={entriesPerPage}
             onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-            className="border border-slate-300 rounded px-3 py-1.5 text-sm text-slate-700 bg-white focus:outline-none focus:border-blue-500"
+            className="border border-slate-400 rounded-lg px-3 py-2 text-sm text-white bg-slate-500 font-semibold focus:outline-none focus:border-blue-500 shadow-sm transition-colors hover:bg-slate-600 cursor-pointer"
           >
             <option value={10}>10</option>
             <option value={25}>25</option>
@@ -73,26 +86,26 @@ const CRMDataGrid: React.FC<CRMDataGridProps> = ({ projects }) => {
           </select>
           <button 
             onClick={() => exportService.exportGlobalQualityPDF(projects)}
-            className="flex items-center gap-2 px-4 py-1.5 bg-white border border-slate-300 rounded text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+            className="flex items-center gap-2 px-5 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
           >
             Exportar
           </button>
-          <button className="flex items-center gap-2 px-4 py-1.5 bg-white border border-slate-300 rounded text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+          <button className="flex items-center gap-2 px-5 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
             Acciones masivas
           </button>
-          <button className="p-2 bg-white border border-slate-300 rounded text-slate-500 hover:bg-slate-50 transition-colors">
-            <RefreshCw size={16} />
+          <button className="p-2 bg-white border border-slate-300 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors shadow-sm">
+            <RefreshCw size={18} />
           </button>
         </div>
 
         <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" />
           <input 
             type="text" 
             placeholder="Buscar:" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 pr-4 py-1.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-blue-500 w-64 bg-white"
+            className="pl-9 pr-4 py-2 border border-slate-400 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-72 bg-slate-500 text-white placeholder:text-slate-300 font-medium shadow-sm transition-all"
           />
         </div>
       </div>
@@ -119,17 +132,28 @@ const CRMDataGrid: React.FC<CRMDataGridProps> = ({ projects }) => {
                 <td className="px-6 py-4"><input type="checkbox" className="rounded border-slate-300" /></td>
                 <td className="px-6 py-4 text-slate-400">{(currentPage - 1) * entriesPerPage + index + 1}</td>
                 <td className="px-6 py-4">
-                  <span className="font-medium text-rc-teal">{project.client}</span>
+                  <span 
+                    onClick={() => handleOpenProject(project.id)}
+                    className="font-bold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition-colors"
+                  >
+                    {project.client}
+                  </span>
                 </td>
-                <td className="px-6 py-4 text-emerald-600">{project.partnerLiaison?.name || '-'}</td>
+                <td className="px-6 py-4 text-emerald-600 font-medium">{project.partnerLiaison?.name || '-'}</td>
                 <td className="px-6 py-4 text-rc-teal">{project.partnerLiaison?.email || '-'}</td>
-                <td className="px-6 py-4 text-emerald-600">{project.techDNA?.phoneLine || '-'}</td>
+                <td className="px-6 py-4 text-slate-600 font-medium">{project.techDNA?.phoneLine || '-'}</td>
                 <td className="px-6 py-4">
-                  {project.adminStatus !== 'Inactivo' && project.adminStatus !== 'Archivado' ? (
-                    <ToggleRight size={28} className="text-blue-500" />
-                  ) : (
-                    <ToggleLeft size={28} className="text-slate-300" />
-                  )}
+                  <button 
+                    onClick={() => handleToggleStatus(project)}
+                    className="focus:outline-none hover:scale-110 transition-transform active:scale-95"
+                    title="Alternar Estado"
+                  >
+                    {project.adminStatus !== 'Inactivo' && project.adminStatus !== 'Archivado' ? (
+                      <ToggleRight size={28} className="text-blue-500" />
+                    ) : (
+                      <ToggleLeft size={28} className="text-slate-300" />
+                    )}
+                  </button>
                 </td>
                 <td className="px-6 py-4">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${
