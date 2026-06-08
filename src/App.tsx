@@ -23,6 +23,7 @@ function App() {
           <Route path="dashboard" element={<Dashboard activeTab="overview" />} />
           <Route path="clients" element={<Dashboard activeTab="clients" />} />
           <Route path="clients/:id" element={<Dashboard activeTab="clients" />} />
+          <Route path="services" element={<Dashboard activeTab="services" />} />
           <Route path="trimestre" element={<Dashboard activeTab="status" />} />
           <Route path="archive" element={<Dashboard activeTab="archive" />} />
         </Route>

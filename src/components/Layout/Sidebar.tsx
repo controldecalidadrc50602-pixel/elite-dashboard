@@ -12,6 +12,7 @@ import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import { brandingService, BrandingConfig } from '../../services/brandingService';
 import SettingsModal from '../Modals/SettingsModal';
 import { NAV_ITEMS } from '../../config/navigation.config';
 
@@ -20,6 +21,25 @@ const Sidebar: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { logout, user, isAdmin } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [brandingConfig, setBrandingConfig] = useState<BrandingConfig>(brandingService.defaultConfig);
+
+  React.useEffect(() => {
+    const loadBranding = async () => {
+      const config = await brandingService.getBranding();
+      setBrandingConfig(config);
+    };
+    loadBranding();
+
+    const handleBrandingChange = (e: Event) => {
+      const customEvent = e as CustomEvent<BrandingConfig>;
+      setBrandingConfig(customEvent.detail);
+    };
+
+    document.addEventListener('elite-branding-changed', handleBrandingChange);
+    return () => {
+      document.removeEventListener('elite-branding-changed', handleBrandingChange);
+    };
+  }, []);
 
   const toggleLanguage = () => {
     const nextLang = i18n.language === 'es' ? 'en' : 'es';
@@ -30,14 +50,20 @@ const Sidebar: React.FC = () => {
     <aside className="w-64 flex-shrink-0 h-full flex flex-col py-6 gap-6 relative z-50 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-sm overflow-y-auto transition-colors duration-300">
       {/* Branding Logo */}
       <div className="flex items-center gap-3 px-6 mb-2">
-        <div className="w-10 h-10 flex-shrink-0 bg-blue-50 dark:bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400">
-          <Star size={20} fill="currentColor" />
+        <div className="w-10 h-10 flex-shrink-0 bg-blue-50 dark:bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 overflow-hidden">
+          {brandingConfig.logoUrl ? (
+            <img src={brandingConfig.logoUrl} alt="Logo" className="w-full h-full object-contain p-1" />
+          ) : (
+            <Star size={20} fill="currentColor" />
+          )}
         </div>
         <div className="flex flex-col">
           <span className="font-black text-slate-800 dark:text-white text-base tracking-tight leading-tight">
-            Elite Dashboard
+            CRM Gestión Rc506
           </span>
-          <span className="text-blue-600 dark:text-blue-400 text-[11px] font-bold uppercase tracking-widest mt-0.5">Rc506</span>
+          <span className="text-blue-600 dark:text-blue-400 text-[11px] font-bold uppercase tracking-widest mt-0.5">
+             {brandingConfig.companyName || 'Rc506'}
+          </span>
         </div>
       </div>
       
@@ -86,7 +112,7 @@ const Sidebar: React.FC = () => {
 
          <button 
             onClick={toggleTheme}
-            className="flex items-center px-4 py-3.5 rounded-xl gap-3 transition-colors duration-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-white w-full text-left hidden"
+            className="flex items-center px-4 py-3.5 rounded-xl gap-3 transition-colors duration-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-white w-full text-left"
          >
           {theme === 'dark' ? <Sun size={18} strokeWidth={2} /> : <Moon size={18} strokeWidth={2} />}
           <span className="font-semibold text-sm whitespace-nowrap tracking-wide">

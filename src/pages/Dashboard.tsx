@@ -29,9 +29,9 @@ import { exportService } from '../services/exportService';
 import ImageWithFallback from '../components/common/ImageWithFallback';
 import CRMDataGrid from '../components/Dashboard/CRMDataGrid';
 import ServiceRadarGrid from '../components/Dashboard/ServiceRadarGrid';
-import { List, Grid as GridIcon, Layers } from 'lucide-react';
+import { List, Grid as GridIcon, Layers, Server } from 'lucide-react';
 
-const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'archive' }> = ({ activeTab }) => {
+const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'archive' | 'services' }> = ({ activeTab }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, isAdmin } = useAuth();
@@ -45,7 +45,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'info'} | null>(null);
-  const [viewMode, setViewMode] = useState<'cards' | 'grid' | 'services'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'grid'>('cards');
 
   useEffect(() => {
     const unsubscribe = projectService.subscribeToProjects((projectsData) => {
@@ -183,13 +183,6 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                          >
                            <List size={18} />
                          </button>
-                         <button 
-                           onClick={() => setViewMode('services')}
-                           className={`p-2 rounded-lg transition-colors flex items-center justify-center ${viewMode === 'services' ? 'bg-blue-50 text-blue-600' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
-                           title="Radar de Servicios"
-                         >
-                           <Layers size={18} />
-                         </button>
                        </div>
                     </div>
 
@@ -229,15 +222,26 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                           </motion.div>
                        ))}
                        </div>
-                    ) : viewMode === 'grid' ? (
+                    ) : (
                       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <CRMDataGrid projects={projects.filter(p => p.adminStatus !== 'Archivado')} />
                       </div>
-                    ) : (
-                      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <ServiceRadarGrid projects={projects.filter(p => p.adminStatus !== 'Archivado')} />
-                      </div>
                     )}
+                 </div>
+              )}
+
+              {activeTab === 'services' && (
+                 <div className="space-y-10 animate-in fade-in duration-700">
+                    <div>
+                       <h1 className="text-4xl font-bold text-slate-800 tracking-tight flex items-center gap-4">
+                         <Server size={32} className="text-indigo-600" />
+                         Dashboard Operativo
+                       </h1>
+                       <p className="text-[11px] text-slate-500 uppercase tracking-[0.2em] mt-4 font-medium">Gestión de Servicios Integrales</p>
+                    </div>
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      <ServiceRadarGrid projects={projects.filter(p => p.adminStatus !== 'Archivado')} />
+                    </div>
                  </div>
               )}
 
