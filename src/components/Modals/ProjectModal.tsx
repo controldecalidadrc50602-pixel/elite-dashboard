@@ -66,7 +66,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
           <header className="relative z-20 bg-[var(--bg-secondary)]/80 backdrop-blur-xl border-b border-[var(--glass-border)] shrink-0">
             <div className="px-12 pt-10 pb-2 flex items-center justify-between">
               <div className="flex items-center gap-10">
-                <div className="w-16 h-16 rounded-[28px] bg-white/[0.02] border border-white/10 flex items-center justify-center shadow-2xl">
+                <div className="w-16 h-16 rounded-[28px] bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 flex items-center justify-center shadow-xl">
                   {formData.logoUrl ? (
                     <img src={formData.logoUrl} alt="Logo" className="w-10 h-10 object-contain" />
                   ) : (
@@ -74,7 +74,7 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                   )}
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-3xl font-light tracking-tighter text-white uppercase">
+                  <h2 className="text-3xl font-black tracking-tighter text-slate-800 dark:text-white uppercase">
                     {formData.client || 'Nuevo Expediente'}
                   </h2>
                   <div className="flex items-center gap-6">
