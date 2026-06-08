@@ -27,17 +27,17 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="w-64 flex-shrink-0 h-full flex flex-col py-6 gap-6 relative z-50 bg-[#1E293B] border-r border-slate-700/50 shadow-xl overflow-y-auto">
+    <aside className="w-64 flex-shrink-0 h-full flex flex-col py-6 gap-6 relative z-50 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-sm overflow-y-auto transition-colors duration-300">
       {/* Branding Logo */}
       <div className="flex items-center gap-3 px-6 mb-2">
-        <div className="w-10 h-10 flex-shrink-0 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400">
+        <div className="w-10 h-10 flex-shrink-0 bg-blue-50 dark:bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400">
           <Star size={20} fill="currentColor" />
         </div>
         <div className="flex flex-col">
-          <span className="font-bold text-white text-base tracking-tight leading-tight">
+          <span className="font-black text-slate-800 dark:text-white text-base tracking-tight leading-tight">
             Elite Dashboard
           </span>
-          <span className="text-blue-400 text-xs font-medium">Rc506</span>
+          <span className="text-blue-600 dark:text-blue-400 text-[11px] font-bold uppercase tracking-widest mt-0.5">Rc506</span>
         </div>
       </div>
       
@@ -50,14 +50,16 @@ const Sidebar: React.FC = () => {
               <NavLink
                 to={item.to}
                 className={({ isActive }) => `
-                  flex items-center px-4 py-3 rounded-lg gap-3 transition-colors duration-200
-                  ${isActive ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}
+                  flex items-center px-4 py-3.5 rounded-xl gap-3 transition-all duration-200
+                  ${isActive 
+                    ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-bold' 
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-white font-semibold'}
                 `}
               >
               {({ isActive }) => (
                 <>
                   <Icon size={18} strokeWidth={isActive ? 2.5 : 2} className="flex-shrink-0" />
-                  <span className="font-medium text-sm whitespace-nowrap">
+                  <span className="text-sm whitespace-nowrap tracking-wide">
                     {item.label}
                   </span>
                 </>
@@ -69,14 +71,14 @@ const Sidebar: React.FC = () => {
       </nav>
 
       {/* Action Buttons & Profile */}
-      <div className="mt-auto flex flex-col gap-1 pb-4 px-3 w-full border-t border-slate-700/50 pt-4">
+      <div className="mt-auto flex flex-col gap-1 pb-4 px-3 w-full border-t border-slate-200 dark:border-slate-800 pt-4">
          {isAdmin && (
            <button 
               onClick={() => setIsSettingsOpen(true)}
-              className="flex items-center px-4 py-3 rounded-lg gap-3 transition-colors duration-200 text-slate-400 hover:bg-slate-800 hover:text-white w-full text-left"
+              className="flex items-center px-4 py-3.5 rounded-xl gap-3 transition-colors duration-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-white w-full text-left"
            >
             <Settings size={18} strokeWidth={2} className="flex-shrink-0" />
-            <span className="font-medium text-sm whitespace-nowrap">
+            <span className="font-semibold text-sm whitespace-nowrap tracking-wide">
                Configuración SLA
             </span>
            </button>
@@ -84,26 +86,26 @@ const Sidebar: React.FC = () => {
 
          <button 
             onClick={toggleTheme}
-            className="flex items-center px-4 py-3 rounded-lg gap-3 transition-colors duration-200 text-slate-400 hover:bg-slate-800 hover:text-white w-full text-left hidden"
+            className="flex items-center px-4 py-3.5 rounded-xl gap-3 transition-colors duration-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-white w-full text-left hidden"
          >
           {theme === 'dark' ? <Sun size={18} strokeWidth={2} /> : <Moon size={18} strokeWidth={2} />}
-          <span className="font-medium text-sm whitespace-nowrap">
+          <span className="font-semibold text-sm whitespace-nowrap tracking-wide">
              {theme === 'dark' ? 'Tema Claro' : 'Tema Oscuro'}
           </span>
          </button>
 
          <button 
             onClick={logout}
-            className="flex items-center px-4 py-3 rounded-lg gap-3 transition-colors duration-200 text-red-400 hover:bg-red-500/10 hover:text-red-300 w-full text-left"
+            className="flex items-center px-4 py-3.5 rounded-xl gap-3 transition-colors duration-200 text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300 w-full text-left"
          >
           <LogOut size={18} strokeWidth={2} className="flex-shrink-0" />
-          <span className="font-medium text-sm whitespace-nowrap">
+          <span className="font-semibold text-sm whitespace-nowrap tracking-wide">
              Cerrar Sesión
           </span>
          </button>
 
-         <div className="mt-4 flex items-center gap-3 px-4 py-2 bg-slate-800/50 rounded-lg mx-2">
-            <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-600">
+         <div className="mt-4 flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-xl mx-2">
+            <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white dark:border-slate-600 shadow-sm">
                <img 
                   src={user?.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.displayName || 'Marilyn'}`} 
                   alt="Profile" 
@@ -111,8 +113,11 @@ const Sidebar: React.FC = () => {
                />
             </div>
             <div className="flex flex-col overflow-hidden">
-               <span className="text-xs font-semibold text-white truncate">{user?.displayName || 'Usuario'}</span>
-               <span className="text-[10px] text-slate-400 truncate text-emerald-400">● Online</span>
+               <span className="text-xs font-bold text-slate-800 dark:text-white truncate">{user?.displayName || 'Usuario'}</span>
+               <div className="flex items-center gap-1.5 mt-0.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.6)]"></div>
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Online</span>
+               </div>
             </div>
          </div>
       </div>
