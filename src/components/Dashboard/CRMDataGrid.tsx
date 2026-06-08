@@ -13,6 +13,7 @@ const CRMDataGrid: React.FC<CRMDataGridProps> = ({ projects }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [entriesPerPage, setEntriesPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { user } = useAuth();
 
   const handleToggleStatus = async (project: Project) => {
@@ -23,6 +24,24 @@ const CRMDataGrid: React.FC<CRMDataGridProps> = ({ projects }) => {
 
   const handleOpenProject = (id: string) => {
     document.dispatchEvent(new CustomEvent('open-client-modal', { detail: { id } }));
+  };
+
+  const handleBulkDeactivate = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`¿Estás seguro de desactivar (poner en Inactivo) a ${selectedIds.size} clientes seleccionados?`)) return;
+    
+    let currentProjects = [...projects];
+    for (const id of Array.from(selectedIds)) {
+      const p = currentProjects.find(x => x.id === id);
+      if (p && p.adminStatus !== 'Inactivo' && p.adminStatus !== 'Archivado') {
+        currentProjects = await projectService.updateProject(
+          { ...p, adminStatus: 'Inactivo' }, 
+          currentProjects, 
+          user?.displayName || user?.email || 'Administrador'
+        );
+      }
+    }
+    setSelectedIds(new Set());
   };
 
   const filteredProjects = projects.filter(p => 
@@ -85,13 +104,21 @@ const CRMDataGrid: React.FC<CRMDataGridProps> = ({ projects }) => {
             <option value={100}>100</option>
           </select>
           <button 
-            onClick={() => exportService.exportGlobalQualityPDF(projects)}
+            onClick={() => exportService.exportCRMToExcel(projects)}
             className="flex items-center gap-2 px-5 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
           >
-            Exportar
+            <Download size={16} /> Exportar Excel
           </button>
-          <button className="flex items-center gap-2 px-5 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
-            Acciones masivas
+          <button 
+            onClick={handleBulkDeactivate}
+            disabled={selectedIds.size === 0}
+            className={`flex items-center gap-2 px-5 py-2 border rounded-lg text-sm font-medium transition-colors shadow-sm ${
+              selectedIds.size > 0 
+                ? 'bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100' 
+                : 'bg-white border-slate-300 text-slate-400 cursor-not-allowed'
+            }`}
+          >
+            Desactivar ({selectedIds.size})
           </button>
           <button className="p-2 bg-white border border-slate-300 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors shadow-sm">
             <RefreshCw size={18} />
@@ -115,7 +142,20 @@ const CRMDataGrid: React.FC<CRMDataGridProps> = ({ projects }) => {
         <table className="w-full text-left text-sm text-slate-600">
           <thead className="text-xs uppercase bg-slate-50 border-b border-slate-200 font-semibold text-slate-500">
             <tr>
-              <th className="px-6 py-4 w-12"><input type="checkbox" className="rounded border-slate-300" /></th>
+              <th className="px-6 py-4 w-12">
+                <input 
+                  type="checkbox" 
+                  className="rounded border-slate-300 w-4 h-4 text-blue-600 focus:ring-blue-500" 
+                  checked={currentData.length > 0 && selectedIds.size === currentData.length}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedIds(new Set(currentData.map(p => p.id)));
+                    } else {
+                      setSelectedIds(new Set());
+                    }
+                  }}
+                />
+              </th>
               <th className="px-6 py-4 w-16">#</th>
               <th className="px-6 py-4">Empresa</th>
               <th className="px-6 py-4">Contacto principal</th>
@@ -128,8 +168,20 @@ const CRMDataGrid: React.FC<CRMDataGridProps> = ({ projects }) => {
           </thead>
           <tbody className="divide-y divide-slate-100 bg-white">
             {currentData.length > 0 ? currentData.map((project, index) => (
-              <tr key={project.id} className="hover:bg-slate-50 transition-colors">
-                <td className="px-6 py-4"><input type="checkbox" className="rounded border-slate-300" /></td>
+              <tr key={project.id} className={`transition-colors ${selectedIds.has(project.id) ? 'bg-blue-50' : 'hover:bg-slate-50'}`}>
+                <td className="px-6 py-4">
+                  <input 
+                    type="checkbox" 
+                    className="rounded border-slate-300 w-4 h-4 text-blue-600 focus:ring-blue-500" 
+                    checked={selectedIds.has(project.id)}
+                    onChange={(e) => {
+                      const newSet = new Set(selectedIds);
+                      if (e.target.checked) newSet.add(project.id);
+                      else newSet.delete(project.id);
+                      setSelectedIds(newSet);
+                    }}
+                  />
+                </td>
                 <td className="px-6 py-4 text-slate-400">{(currentPage - 1) * entriesPerPage + index + 1}</td>
                 <td className="px-6 py-4">
                   <span 

@@ -54,6 +54,41 @@ export const exportService = {
   },
 
   /**
+   * EXPORT CRM TO EXCEL (.xlsx)
+   * Generates a flat operational report representing the CRM Data Grid.
+   */
+  exportCRMToExcel: (projects: Project[]) => {
+    try {
+      const crmData = projects.map(p => ({
+        ID: p.id,
+        Empresa: p.client,
+        Contacto_Principal: p.partnerLiaison?.name || 'N/A',
+        Email: p.partnerLiaison?.email || 'N/A',
+        Telefono: p.techDNA?.phoneLine || 'N/A',
+        Estatus: p.adminStatus,
+        Salud: p.healthFlag,
+        Total_Servicios: p.services?.length || 0,
+        Fecha_Creacion: new Date(p.startDate).toLocaleDateString('es-ES')
+      }));
+
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(crmData);
+      
+      // Auto-size columns slightly
+      const colWidths = [
+        { wch: 10 }, { wch: 25 }, { wch: 20 }, { wch: 30 }, 
+        { wch: 15 }, { wch: 15 }, { wch: 10 }, { wch: 15 }, { wch: 15 }
+      ];
+      ws['!cols'] = colWidths;
+
+      XLSX.utils.book_append_sheet(wb, ws, "Base CRM Operativa");
+      XLSX.writeFile(wb, `RC506_CRM_Operativo_${new Date().toISOString().split('T')[0]}.xlsx`);
+    } catch (error) {
+      console.error('Error exporting CRM to Excel:', error);
+    }
+  },
+
+  /**
    * EXPORT TO PDF (BRANDED EXECUTIVE REPORT)
    * Replicates the RC506 branding model: Black header/footer + Curves.
    */
