@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Project, ClientService } from '../../types/project';
-import { Search, Download, RefreshCw, Server, Globe, MessageSquare, HeadphonesIcon, Cpu } from 'lucide-react';
+import { Search, Download, RefreshCw, Server, Globe, MessageSquare, HeadphonesIcon, Cpu, Layers } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 interface ServiceRadarGridProps {
