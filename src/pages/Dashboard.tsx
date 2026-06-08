@@ -61,13 +61,17 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
     return () => document.removeEventListener('open-client-modal', handleOpenModal);
   }, []);
 
+  const activeProjects = useMemo(() => {
+    return projects.filter(p => p.adminStatus !== 'Archivado' && p.adminStatus !== 'Inactivo');
+  }, [projects]);
+
   const filteredProjects = useMemo(() => {
-    return projects.filter(p => {
+    return activeProjects.filter(p => {
       const matchesSearch = p.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           p.services.some(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()));
-      return p.adminStatus !== 'Archivado' && matchesSearch;
+                           (p.services && p.services.some(s => s.name.toLowerCase().includes(searchQuery.toLowerCase())));
+      return matchesSearch;
     });
-  }, [projects, searchQuery]);
+  }, [activeProjects, searchQuery]);
 
   if (loading) return (
     <div className="flex-1 overflow-y-auto px-16 pt-12 pb-24 bg-[var(--bg-primary)]">
@@ -93,7 +97,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
               </div>
               <div className="flex items-center gap-6">
                  <button 
-                    onClick={() => exportService.exportGlobalQualityPDF(projects)}
+                     onClick={() => exportService.exportGlobalQualityPDF(activeProjects)}
                     className="flex items-center gap-3 px-6 py-3 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-full text-blue-600 transition-all group cursor-pointer"
                   >
                      <ShieldCheck size={16} strokeWidth={2} />
@@ -111,7 +115,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
               </div>
            </div>
            
-           <StoriesBar projects={projects} selectedProjectId={selectedProjectId} onSelectProject={(id) => { 
+           <StoriesBar projects={activeProjects} selectedProjectId={selectedProjectId} onSelectProject={(id) => { 
              setSelectedProjectId(id); 
              if (activeTab !== 'overview') {
                navigate('/dashboard');
@@ -134,7 +138,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                         />
                       ) : (
                         <AuditDashboard 
-                          projects={projects} 
+                          projects={activeProjects} 
                           demoMode={demoMode}
                           onSelectClient={(id) => setSelectedProjectId(id)}
                         />
