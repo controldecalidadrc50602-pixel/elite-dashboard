@@ -223,7 +223,7 @@ const Dashboard: React.FC<{ activeTab: 'overview' | 'clients' | 'status' | 'arch
                       </div>
                     ) : (
                       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <CRMDataGrid projects={activeProjects} />
+                        <CRMDataGrid projects={projects.filter(p => p.adminStatus !== 'Archivado')} />
                       </div>
                     )}
                  </div>
