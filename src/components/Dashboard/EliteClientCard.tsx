@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Project } from '../../types/project';
 import { Shield, Zap, TrendingUp, Clock, Activity, MessageSquare } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { qualityDataService, QualityRecord } from '../../services/qualityDataService';
 
 interface Props {
   project: Project;
@@ -10,22 +11,70 @@ interface Props {
 }
 
 export const EliteClientCard: React.FC<Props> = ({ project, onEdit }) => {
-  // Generate dummy data for the evolution chart if none exists
-  const evolutionData = project.history?.length ? project.history.map(h => ({
-    name: `${h.month}/${h.year}`,
-    score: Math.round(Object.values(h.assessment).filter(v => typeof v === 'number').reduce((a, b) => a + b, 0) / 10)
-  })) : [
-    { name: 'Ene', score: 65 },
-    { name: 'Feb', score: 70 },
-    { name: 'Mar', score: 85 },
-    { name: 'Abr', score: 78 },
-    { name: 'May', score: 92 },
-  ];
+  const [qualityData, setQualityData] = useState<QualityRecord[]>([]);
 
-  // Calculate current score
-  const currentScore = project.quarterlyAssessment 
-    ? Math.round(Object.values(project.quarterlyAssessment).filter(v => typeof v === 'number').reduce((a, b) => a + b, 0) / 50 * 100)
-    : 0;
+  useEffect(() => {
+    const loadQuality = async () => {
+      const allData = await qualityDataService.fetchQualityData();
+      // Búsqueda insensible a mayúsculas
+      const clientKey = Object.keys(allData).find(k => k.toLowerCase() === project.client.toLowerCase());
+      if (clientKey) {
+        setQualityData(allData[clientKey]);
+      } else {
+        setQualityData([]);
+      }
+    };
+    loadQuality();
+  }, [project.client]);
+
+  // Transformar datos de App Script agrupando chats y llamadas por mes
+  const evolutionData = useMemo(() => {
+    if (qualityData.length > 0) {
+      const groupedByMonth = qualityData.reduce((acc, curr) => {
+        if (!acc[curr.mes]) {
+          acc[curr.mes] = { optimo: 0, total: 0 };
+        }
+        // Asegurarse de convertir a números en caso de que vengan como strings
+        acc[curr.mes].optimo += Number(curr.optimo) || 0;
+        acc[curr.mes].total += Number(curr.total) || 0;
+        return acc;
+      }, {} as Record<string, { optimo: number, total: number }>);
+
+      const monthsOrder = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+      return Object.entries(groupedByMonth)
+        .sort(([mesA], [mesB]) => monthsOrder.indexOf(mesA) - monthsOrder.indexOf(mesB))
+        .map(([mes, stats]) => {
+          const score = stats.total > 0 ? Math.round((stats.optimo / stats.total) * 100) : 0;
+          return {
+            name: mes.substring(0, 3), // Ene, Feb, Mar...
+            score: score
+          };
+        });
+    }
+
+    // Fallback a historial existente o dummy data si no hay API
+    return project.history?.length ? project.history.map(h => ({
+      name: `${h.month}/${h.year}`,
+      score: Math.round((Object.values(h.assessment).filter(v => typeof v === 'number') as number[]).reduce((a, b) => a + b, 0) / 10)
+    })) : [
+      { name: 'Ene', score: 65 },
+      { name: 'Feb', score: 70 },
+      { name: 'Mar', score: 85 },
+      { name: 'Abr', score: 78 },
+      { name: 'May', score: 92 },
+    ];
+  }, [qualityData, project.history]);
+
+  // Calculate current score based on API or Fallback
+  const currentScore = useMemo(() => {
+    if (evolutionData.length > 0 && qualityData.length > 0) {
+      return evolutionData[evolutionData.length - 1].score;
+    }
+    return project.quarterlyAssessment 
+      ? Math.round((Object.values(project.quarterlyAssessment).filter(v => typeof v === 'number') as number[]).reduce((a, b) => a + b, 0) / 50 * 100)
+      : 0;
+  }, [evolutionData, qualityData.length, project.quarterlyAssessment]);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
