@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { AreaChart, Area } from 'recharts';
 
 interface Props {
@@ -8,37 +8,40 @@ interface Props {
 
 const PortalTrendChart: React.FC<Props> = ({ quarterlyAssessment, brandColor = '#ffffff' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ width: 0, height: 200 });
+  const [mounted, setMounted] = useState(false);
+  const [chartWidth, setChartWidth] = useState(300);
 
+  // Fase 1: Esperamos a que el componente esté montado en el DOM
   useEffect(() => {
-    if (!containerRef.current) return;
-    
-    // Fallback inicial
-    setSize({ 
-      width: containerRef.current.offsetWidth, 
-      height: containerRef.current.offsetHeight || 200 
-    });
+    // Delay para asegurar que Framer Motion terminó la animación de entrada
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        if (entry.contentRect.width > 0) {
-          setSize({
-            width: entry.contentRect.width,
-            height: entry.contentRect.height > 0 ? entry.contentRect.height : 200
-          });
-        }
+  // Fase 2: Solo medimos cuando ya está montado
+  useEffect(() => {
+    if (!mounted || !containerRef.current) return;
+
+    const measure = () => {
+      if (containerRef.current) {
+        const w = containerRef.current.offsetWidth;
+        if (w > 0) setChartWidth(w);
       }
-    });
+    };
 
+    measure();
+
+    const observer = new ResizeObserver(() => measure());
     observer.observe(containerRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [mounted]);
 
   // Procesamos los datos para Recharts
   const data = useMemo(() => {
     if (!quarterlyAssessment) return [];
     
-    // Convertimos el objeto en un array de valores (Data Art)
     const values = Object.entries(quarterlyAssessment)
       .map(([key, value]) => ({
         name: key,
@@ -46,7 +49,6 @@ const PortalTrendChart: React.FC<Props> = ({ quarterlyAssessment, brandColor = '
       }))
       .filter(item => item.value > 0);
     
-    // Si hay muy pocos datos, inventamos una pequeña rampa inicial para el efecto estético
     if (values.length < 3) {
        const baseVal = values.length > 0 ? values[0].value : 80;
        return [
@@ -58,18 +60,25 @@ const PortalTrendChart: React.FC<Props> = ({ quarterlyAssessment, brandColor = '
     return values;
   }, [quarterlyAssessment]);
 
+  // Usamos un gradientId único por instancia para evitar colisiones de SVG
+  const gradientId = useRef(`brandGrad-${Math.random().toString(36).slice(2, 9)}`);
+
   return (
-    <div ref={containerRef} className="w-full h-full min-h-[150px] relative overflow-hidden group rounded-3xl">
-      {/* Glow effects detrás del chart */}
+    <div 
+      ref={containerRef} 
+      className="w-full relative overflow-hidden group rounded-3xl"
+      style={{ height: '200px' }}
+    >
+      {/* Glow sutil */}
       <div 
         className="absolute inset-0 opacity-10 blur-3xl transition-opacity duration-1000 group-hover:opacity-30"
         style={{ background: brandColor }}
       />
       
-      {size.width > 0 && (
-        <AreaChart width={size.width} height={size.height} data={data}>
+      {mounted && chartWidth > 0 && data.length > 0 && (
+        <AreaChart width={chartWidth} height={200} data={data}>
           <defs>
-            <linearGradient id="colorBrand" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={gradientId.current} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={brandColor} stopOpacity={0.6} />
               <stop offset="100%" stopColor={brandColor} stopOpacity={0.0} />
             </linearGradient>
@@ -81,11 +90,9 @@ const PortalTrendChart: React.FC<Props> = ({ quarterlyAssessment, brandColor = '
             stroke={brandColor}
             strokeWidth={4}
             fillOpacity={1}
-            fill="url(#colorBrand)"
-            animationEasing="ease-in-out"
-            isAnimationActive={false} // Deshabilitado temporalmente para estabilidad
+            fill={`url(#${gradientId.current})`}
+            isAnimationActive={false}
             dot={false}
-            activeDot={{ r: 6, fill: brandColor, stroke: '#000', strokeWidth: 2 }}
           />
         </AreaChart>
       )}

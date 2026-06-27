@@ -24,13 +24,28 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>
 );
 
-// Service Worker Unregistration to clear aggressive caching
+// ============================================================
+// SERVICE WORKER CLEANUP — Fuerza la eliminación del SW y caches
+// ============================================================
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.ready.then(registration => {
-    registration.unregister().then(boolean => {
-      if (boolean) {
-        console.log('SW Unregistered successfully.');
+  // Estrategia agresiva: buscamos TODAS las registraciones y las matamos
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      registration.unregister().then((success) => {
+        if (success) {
+          console.log('[SW Cleanup] Unregistered:', registration.scope);
+        }
+      });
+    }
+  });
+
+  // Limpiamos todas las caches del navegador por si el SW ya las llenó
+  if ('caches' in window) {
+    caches.keys().then((names) => {
+      for (const name of names) {
+        caches.delete(name);
+        console.log('[Cache Cleanup] Deleted cache:', name);
       }
     });
-  });
+  }
 }
