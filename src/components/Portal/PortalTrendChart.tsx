@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { AreaChart, Area, ResponsiveContainer } from 'recharts';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { AreaChart, Area } from 'recharts';
 
 interface Props {
   quarterlyAssessment: any | null;
@@ -7,6 +7,33 @@ interface Props {
 }
 
 const PortalTrendChart: React.FC<Props> = ({ quarterlyAssessment, brandColor = '#ffffff' }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ width: 0, height: 200 });
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    // Fallback inicial
+    setSize({ 
+      width: containerRef.current.offsetWidth, 
+      height: containerRef.current.offsetHeight || 200 
+    });
+
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        if (entry.contentRect.width > 0) {
+          setSize({
+            width: entry.contentRect.width,
+            height: entry.contentRect.height > 0 ? entry.contentRect.height : 200
+          });
+        }
+      }
+    });
+
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   // Procesamos los datos para Recharts
   const data = useMemo(() => {
     if (!quarterlyAssessment) return [];
@@ -32,15 +59,15 @@ const PortalTrendChart: React.FC<Props> = ({ quarterlyAssessment, brandColor = '
   }, [quarterlyAssessment]);
 
   return (
-    <div className="w-full h-full min-h-[150px] relative overflow-hidden group rounded-3xl">
+    <div ref={containerRef} className="w-full h-full min-h-[150px] relative overflow-hidden group rounded-3xl">
       {/* Glow effects detrás del chart */}
       <div 
         className="absolute inset-0 opacity-10 blur-3xl transition-opacity duration-1000 group-hover:opacity-30"
         style={{ background: brandColor }}
       />
       
-      <ResponsiveContainer width="99%" height={200}>
-        <AreaChart data={data}>
+      {size.width > 0 && (
+        <AreaChart width={size.width} height={size.height} data={data}>
           <defs>
             <linearGradient id="colorBrand" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={brandColor} stopOpacity={0.6} />
@@ -56,12 +83,12 @@ const PortalTrendChart: React.FC<Props> = ({ quarterlyAssessment, brandColor = '
             fillOpacity={1}
             fill="url(#colorBrand)"
             animationEasing="ease-in-out"
-            isAnimationActive={false} // Deshabilitado para evitar conflictos con React 19 y Framer Motion
+            isAnimationActive={false} // Deshabilitado temporalmente para estabilidad
             dot={false}
             activeDot={{ r: 6, fill: brandColor, stroke: '#000', strokeWidth: 2 }}
           />
         </AreaChart>
-      </ResponsiveContainer>
+      )}
     </div>
   );
 };
