@@ -2,7 +2,8 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Project } from '../../types/project';
 import { Shield, Zap, TrendingUp, Clock, Activity, MessageSquare } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import ChartContainer from '../common/ChartContainer';
 import { qualityDataService, QualityRecord } from '../../services/qualityDataService';
 
 interface Props {
@@ -240,7 +241,7 @@ export const EliteClientCard: React.FC<Props> = ({ project, onEdit }) => {
 
               {/* Chart */}
               <div className="w-full flex-1 min-h-[250px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ChartContainer width="100%" height="100%">
                   <LineChart data={evolutionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" vertical={false} />
                     <XAxis 
@@ -271,7 +272,7 @@ export const EliteClientCard: React.FC<Props> = ({ project, onEdit }) => {
                       activeDot={{ r: 6, strokeWidth: 0 }}
                     />
                   </LineChart>
-                </ResponsiveContainer>
+                </ChartContainer>
               </div>
 
               <div className="flex items-center justify-between pt-6 border-t border-[var(--glass-border)]">

@@ -10,12 +10,13 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   AreaChart, 
-  Area, 
-  XAxis, 
+  Area,
+  XAxis,
   YAxis, 
-  Tooltip, 
-  ResponsiveContainer 
+  CartesianGrid, 
+  Tooltip
 } from 'recharts';
+import ChartContainer from './common/ChartContainer';
 import { Project, QuarterlyAssessment, ClientEvaluation, Evaluation, PeriodAction } from '../types/project';
 import { exportService } from '../services/exportService';
 import { useAuth } from '../context/AuthContext';
@@ -680,7 +681,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
 
                             {/* Recharts AreaChart */}
                             <div className="h-[200px] w-full bg-black/10 border border-[var(--glass-border)] rounded-3xl p-4">
-                              <ResponsiveContainer width="100%" height="100%">
+                              <ChartContainer width="100%" height="100%">
                                 <AreaChart
                                   data={chartData}
                                   margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
@@ -753,7 +754,7 @@ const ProjectDetailsModal: React.FC<Props> = ({
                                     }}
                                   />
                                 </AreaChart>
-                              </ResponsiveContainer>
+                              </ChartContainer>
                             </div>
                           </div>
 

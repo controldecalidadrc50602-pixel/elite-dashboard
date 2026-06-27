@@ -6,11 +6,11 @@ import {
   XAxis, 
   YAxis, 
   Tooltip, 
-  ResponsiveContainer,
   BarChart,
   Bar,
   Cell
 } from 'recharts';
+import ChartContainer from '../common/ChartContainer';
 import { 
   TrendingUp, 
   BarChart3, 
@@ -724,7 +724,7 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                     </p>
                   </div>
                 ) : evolutionType === 'trend' ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ChartContainer width="100%" height="100%">
                     <AreaChart
                       data={historicalData}
                       margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
@@ -871,9 +871,9 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                         </>
                       )}
                     </AreaChart>
-                  </ResponsiveContainer>
+                  </ChartContainer>
                 ) : (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ChartContainer width="100%" height="100%">
                     <BarChart
                       data={historicalData}
                       margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
@@ -936,7 +936,7 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                         </>
                       )}
                     </BarChart>
-                  </ResponsiveContainer>
+                  </ChartContainer>
                 )}
               </div>
 
@@ -993,7 +993,7 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                 </div>
 
                 <div className="h-[280px] bg-black/25 border border-white/5 rounded-[32px] p-6">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ChartContainer width="100%" height="100%">
                     <BarChart
                       data={serviceMetrics}
                       layout="vertical"
@@ -1049,7 +1049,7 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                         ))}
                       </Bar>
                     </BarChart>
-                  </ResponsiveContainer>
+                  </ChartContainer>
                 </div>
 
                 {/* Métricas Agregadas del Servicio Seleccionado */}
@@ -1179,7 +1179,7 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                 </div>
 
                 <div className="h-[280px] bg-black/25 border border-white/5 rounded-[32px] p-6">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ChartContainer width="100%" height="100%">
                     <BarChart
                       data={densityMetrics}
                       margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
@@ -1235,7 +1235,7 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ projects, demoMo
                         ))}
                       </Bar>
                     </BarChart>
-                  </ResponsiveContainer>
+                  </ChartContainer>
                 </div>
               </div>
 
