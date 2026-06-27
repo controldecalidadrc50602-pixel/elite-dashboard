@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, Shield, Wifi } from 'lucide-react';
+import { Globe, Shield, Wifi, Radio, Zap, Server, Network, Layers, Laptop, PhoneCall, Cpu, Cloud } from 'lucide-react';
 import { TechDNA, Country, SipTrunkVirtual } from '../../../types/project';
 
 interface Props {
@@ -9,24 +9,12 @@ interface Props {
 }
 
 const TechDNASection: React.FC<Props> = ({ techDNA, onUpdate }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
-  
-  const options = [
-    { value: 'RC506', label: 'Rc506' },
-    { value: 'WYP', label: 'WYP' },
-    { value: 'IPBX', label: 'IPBX Central' },
-    { value: 'HÍBRIDO', label: 'Híbrido' }
-  ];
-
-  const currentOption = options.find(o => o.value === (techDNA?.operationMode || 'RC506')) || options[0];
-
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }} 
       animate={{ opacity: 1, y: 0 }} 
       className="space-y-10 font-light"
     >
-      {/* Trellis Design Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         
         {/* Región y Conectividad */}
@@ -42,17 +30,27 @@ const TechDNASection: React.FC<Props> = ({ techDNA, onUpdate }) => {
             </div>
           </div>
           <div className="space-y-6">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">País Sede</label>
-              <select 
-                value={techDNA?.country || ''}
-                onChange={e => onUpdate({ country: e.target.value as Country })}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none appearance-none cursor-pointer"
-              >
-                <option value="">Seleccionar País</option>
-                <option value="Costa Rica">Costa Rica</option>
-                <option value="Venezuela">Venezuela</option>
-              </select>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { id: 'Costa Rica', label: 'Costa Rica', icon: Globe },
+                  { id: 'Venezuela', label: 'Venezuela', icon: Globe }
+                ].map(country => (
+                  <button
+                    key={country.id}
+                    type="button"
+                    onClick={() => onUpdate({ country: country.id as Country })}
+                    className={`px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border ${
+                      techDNA?.country === country.id
+                        ? 'bg-blue-50 text-blue-600 border-blue-200 shadow-sm'
+                        : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    <country.icon size={14} /> {country.label}
+                  </button>
+                ))}
+              </div>
             </div>
             
             <div className="space-y-2">
@@ -94,17 +92,28 @@ const TechDNASection: React.FC<Props> = ({ techDNA, onUpdate }) => {
               </div>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-3">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tecnología de Enlace</label>
-              <select 
-                value={techDNA?.connectivityType || ''}
-                onChange={e => onUpdate({ connectivityType: e.target.value as any })}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all outline-none appearance-none cursor-pointer"
-              >
-                <option value="Fibra Óptica">Fibra Óptica (FO)</option>
-                <option value="Radiofrecuencia">Radiofrecuencia (RF)</option>
-                <option value="Cobre">HFC / Cobre</option>
-              </select>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { id: 'Fibra Óptica', label: 'Fibra', icon: Network },
+                  { id: 'Radiofrecuencia', label: 'Radio', icon: Radio },
+                  { id: 'Cobre', label: 'HFC', icon: Zap }
+                ].map(conn => (
+                  <button
+                    key={conn.id}
+                    type="button"
+                    onClick={() => onUpdate({ connectivityType: conn.id as any })}
+                    className={`px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 border ${
+                      techDNA?.connectivityType === conn.id
+                        ? 'bg-emerald-50 text-emerald-600 border-emerald-200 shadow-sm'
+                        : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    <conn.icon size={12} /> {conn.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -122,19 +131,30 @@ const TechDNASection: React.FC<Props> = ({ techDNA, onUpdate }) => {
             </div>
           </div>
           <div className="space-y-6">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Proveedor Troncal SIP</label>
-              <select 
-                value={techDNA?.sipTrunkVirtual || 'N/A.'}
-                onChange={e => onUpdate({ sipTrunkVirtual: e.target.value as SipTrunkVirtual })}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none appearance-none cursor-pointer"
-              >
-                <option value="N/A.">No Aplica (N/A)</option>
-                <option value="Navegalo">Navegalo</option>
-                <option value="Vocex">Vocex</option>
-                <option value="ICE">ICE</option>
-                <option value="Call My Way">Call My Way</option>
-              </select>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { id: 'N/A.', label: 'N/A' },
+                  { id: 'Navegalo', label: 'Navegalo' },
+                  { id: 'Vocex', label: 'Vocex' },
+                  { id: 'ICE', label: 'ICE' },
+                  { id: 'Call My Way', label: 'CMW' }
+                ].map(sip => (
+                  <button
+                    key={sip.id}
+                    type="button"
+                    onClick={() => onUpdate({ sipTrunkVirtual: sip.id as SipTrunkVirtual })}
+                    className={`px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 border ${
+                      techDNA?.sipTrunkVirtual === sip.id
+                        ? 'bg-purple-50 text-purple-600 border-purple-200 shadow-sm'
+                        : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    <PhoneCall size={12} /> {sip.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -143,10 +163,10 @@ const TechDNASection: React.FC<Props> = ({ techDNA, onUpdate }) => {
                 <button 
                   type="button"
                   onClick={() => onUpdate({ redundancy: !techDNA?.redundancy })}
-                  className={`w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border ${
+                  className={`w-full py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
                     techDNA?.redundancy 
-                      ? 'bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-500/20 dark:border-purple-500/30' 
-                      : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100 dark:bg-slate-800 dark:border-slate-700'
+                      ? 'bg-purple-50 text-purple-600 border-purple-200 shadow-sm' 
+                      : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'
                   }`}
                 >
                   {techDNA?.redundancy ? 'Activo' : 'Ninguno'}
@@ -167,57 +187,48 @@ const TechDNASection: React.FC<Props> = ({ techDNA, onUpdate }) => {
         </div>
       </div>
 
-      {/* Modelo Operativo - Zoho Style Custom Dropdown */}
-      <div className="max-w-3xl mx-auto mt-12 p-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm flex flex-col items-center text-center space-y-6">
-        <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 mb-2">
-          <Shield size={24} strokeWidth={2} />
+      {/* Modelo Operativo - Pills Grid */}
+      <div className="max-w-4xl mx-auto mt-12 p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm flex flex-col space-y-6">
+        <div className="flex items-center gap-4">
+           <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 mb-2">
+             <Server size={24} strokeWidth={2} />
+           </div>
+           <div>
+             <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider">Arquitectura de Operaciones</h3>
+             <p className="text-[10px] text-slate-500 uppercase tracking-widest">Modelo de Despliegue Tecnológico</p>
+           </div>
         </div>
-        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Arquitectura de Operaciones</label>
         
-        <div className="relative w-full max-w-sm">
-          <button
-            type="button"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className={`w-full py-4 px-6 text-2xl font-bold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-800 border-2 rounded-2xl transition-all flex items-center justify-between group ${isDropdownOpen ? 'border-indigo-500 shadow-lg shadow-indigo-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-indigo-300'}`}
-          >
-            {currentOption.label}
-            <motion.div
-              animate={{ rotate: isDropdownOpen ? 180 : 0 }}
-              className={`${isDropdownOpen ? 'text-indigo-500' : 'text-slate-400'}`}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </motion.div>
-          </button>
-
-          <AnimatePresence>
-            {isDropdownOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-                className="absolute z-50 left-0 right-0 mt-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl overflow-hidden"
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+           {[
+              { id: 'RC506', label: 'Rc506', icon: Cpu, desc: 'Nube Privada Elite' },
+              { id: 'WYP', label: 'WYP', icon: Cloud, desc: 'WorkYourPitch' },
+              { id: 'IPBX', label: 'IPBX Central', icon: PhoneCall, desc: 'PBX Local' },
+              { id: 'HÍBRIDO', label: 'Híbrido', icon: Layers, desc: 'Multi-Cluster' }
+           ].map(opt => (
+              <button
+                 key={opt.id}
+                 type="button"
+                 onClick={() => onUpdate({ operationMode: opt.id as any })}
+                 className={`p-6 rounded-3xl transition-all border text-left flex flex-col gap-4 group ${
+                   techDNA?.operationMode === opt.id
+                   ? 'bg-indigo-50 border-indigo-200 shadow-md ring-1 ring-indigo-500/20'
+                   : 'bg-slate-50 border-slate-200 hover:border-indigo-300 hover:shadow-sm'
+                 }`}
               >
-                {options.map(option => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      onUpdate({ operationMode: option.value as any });
-                      setIsDropdownOpen(false);
-                    }}
-                    className={`w-full px-6 py-4 text-sm font-bold text-left transition-all border-b border-slate-100 dark:border-slate-700 last:border-0 ${
-                      techDNA?.operationMode === option.value 
-                      ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10' 
-                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                 <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
+                   techDNA?.operationMode === opt.id ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30' : 'bg-slate-200 text-slate-500 group-hover:text-indigo-500 group-hover:bg-indigo-100'
+                 } transition-colors`}>
+                    <opt.icon size={20} />
+                 </div>
+                 <div>
+                    <span className={`text-xs font-bold uppercase tracking-wider block ${
+                       techDNA?.operationMode === opt.id ? 'text-indigo-900' : 'text-slate-700'
+                    }`}>{opt.label}</span>
+                    <span className="text-[9px] font-medium text-slate-500 uppercase tracking-widest mt-1 block">{opt.desc}</span>
+                 </div>
+              </button>
+           ))}
         </div>
       </div>
     </motion.div>

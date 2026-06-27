@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Project, ClientService, OperationPulse, TechDNA, HardwareAsset, StrategySLA, ClientEvaluation } from '../types/project';
+import { useDebounce } from './useDebounce';
+import { deepEqual } from '../utils/compare';
+import { storageService } from '../services/storageService';
 
 interface UseProjectFormProps {
   project?: Project | null;
@@ -46,6 +49,10 @@ export const useProjectForm = ({ project, isOpen, onSave, onClose }: UseProjectF
   };
 
   const [formData, setFormData] = useState<Partial<Project>>(initialData);
+  const [isSaving, setIsSaving] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
+
+  const debouncedFormData = useDebounce(formData, 1500);
 
   useEffect(() => {
     if (project) {
@@ -69,6 +76,42 @@ export const useProjectForm = ({ project, isOpen, onSave, onClose }: UseProjectF
   const updateFormData = (updates: Partial<Project>) => {
     setFormData(prev => ({ ...prev, ...updates }));
   };
+
+  // Autosave Effect
+  useEffect(() => {
+    if (!project || !isOpen) return;
+    
+    // Convert current project to similar structure for comparison
+    const baseProject = {
+      ...project,
+      services: project.services || [],
+      opsPulse: project.opsPulse || initialData.opsPulse,
+      techDNA: project.techDNA || initialData.techDNA,
+      assets: project.assets || initialData.assets,
+      strategy: project.strategy || initialData.strategy,
+      adminStatus: project.adminStatus || 'En Proceso',
+      clientEvaluation: project.clientEvaluation || initialData.clientEvaluation,
+      quarterlyAssessment: project.quarterlyAssessment || initialData.quarterlyAssessment
+    };
+
+    if (!deepEqual(debouncedFormData, baseProject)) {
+      if (!debouncedFormData.client?.trim()) return; // Don't autosave if no client name
+      setIsSaving(true);
+      
+      const cleanServices = (debouncedFormData.services || []).filter((s: ClientService) => s.name?.trim() !== '');
+      const finalProject: Project = {
+        ...debouncedFormData,
+        id: project.id,
+        client: debouncedFormData.client.trim(),
+        services: cleanServices,
+        healthFlag: debouncedFormData.healthFlag as any || 'Verde',
+        adminStatus: debouncedFormData.adminStatus as any || 'En Proceso'
+      } as Project;
+
+      onSave(finalProject);
+      setTimeout(() => setIsSaving(false), 800);
+    }
+  }, [debouncedFormData, project, isOpen]);
 
   const updateService = (index: number, updates: Partial<ClientService>) => {
     const s = [...(formData.services || [])];
@@ -94,18 +137,24 @@ export const useProjectForm = ({ project, isOpen, onSave, onClose }: UseProjectF
     setFormData(prev => ({ ...prev, services: s }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 800000) {
-        alert('El logo es muy pesado. Intenta con uno menor a 800KB.');
+      if (file.size > 2000000) {
+        alert('El logo es muy pesado. Intenta con uno menor a 2MB.');
         return;
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, logoUrl: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
+      setLogoUploading(true);
+      try {
+        const clientId = project?.id || formData.client?.replace(/\s+/g, '-').toLowerCase() || 'new';
+        const url = await storageService.uploadLogo(file, clientId);
+        setFormData(prev => ({ ...prev, logoUrl: url }));
+      } catch (err) {
+        console.error('Error uploading logo', err);
+        alert('Hubo un error al subir el logotipo.');
+      } finally {
+        setLogoUploading(false);
+      }
     }
   };
 
@@ -152,6 +201,8 @@ export const useProjectForm = ({ project, isOpen, onSave, onClose }: UseProjectF
     addService,
     removeService,
     handleFileChange,
-    handleSubmit
+    handleSubmit,
+    isSaving,
+    logoUploading
   };
 };

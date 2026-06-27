@@ -5,7 +5,7 @@ import {
   X, Trash2, Calendar, Star, ShieldCheck, Edit3, AlertCircle, Save, Bell, 
   CheckCircle, AlertTriangle, FileText, Activity, Globe, Headphones, Cpu, Zap, Wifi, Layers,
   ChevronDown, MessageSquare, User, Users, Clock, History, Phone, ShieldAlert, Archive, Trash,
-  TrendingUp, ArrowUpRight, Check, Plus, Tag
+  TrendingUp, ArrowUpRight, Check, Plus, Tag, Wand2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -409,6 +409,24 @@ const ProjectDetailsModal: React.FC<Props> = ({
     }
   };
 
+  const [isTyping, setIsTyping] = useState(false);
+  const [aiText, setAiText] = useState("La arquitectura proyectada muestra una maduración tecnológica superior. Se recomienda la integración de capas predictivas y optimización de flujos omnicanal para el próximo ciclo.");
+
+  const handleAiSuggestion = () => {
+    setIsTyping(true);
+    const text = "✨ AI Insight: El Health Score indica estabilidad, pero escalar el enlace a Fibra Óptica Híbrida incrementaría la resiliencia operativa en un 15%. Sugerimos automatizar flujos omnicanal para maximizar el LTV del cliente.";
+    setAiText("");
+    let i = 0;
+    const timer = setInterval(() => {
+      setAiText(text.slice(0, i));
+      i++;
+      if (i > text.length) {
+        clearInterval(timer);
+        setIsTyping(false);
+      }
+    }, 25);
+  };
+
   const tabs = [
     { id: 'summary', label: 'Resumen', icon: Activity },
     { id: 'services', label: 'Servicios', icon: Layers },
@@ -427,11 +445,10 @@ const ProjectDetailsModal: React.FC<Props> = ({
             className="absolute inset-0 bg-black/60 dark:bg-black/85 backdrop-blur-md" 
           />
           <motion.div 
-            initial={{ scale: 0.96, opacity: 0, y: 30 }} 
-            animate={{ scale: 1, opacity: 1, y: 0 }} 
-            exit={{ scale: 0.96, opacity: 0, y: 30 }}
-            transition={{ type: "spring", damping: 42, stiffness: 220 }}
-            className="relative w-[85vw] h-[90vh] bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-[48px] shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col z-[110] font-light text-[var(--text-primary)]"
+          initial={{ opacity: 0, scale: 0.95, y: 20 }} 
+          animate={{ opacity: 1, scale: 1, y: 0 }} 
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          className="relative w-full max-w-[1400px] bg-[var(--bg-primary)] border border-[var(--glass-border)] shadow-2xl shadow-black/80 rounded-[48px] overflow-hidden flex flex-col h-[90vh] backdrop-blur-[80px]"
           >
             {/* Action Bar Superior */}
             <div className="p-10 border-b border-[var(--glass-border)] flex items-center justify-between bg-[var(--bg-secondary)]/50 backdrop-blur-3xl">
@@ -530,11 +547,11 @@ const ProjectDetailsModal: React.FC<Props> = ({
                <AnimatePresence mode="wait">
                   <motion.div
                      key={activeTab}
-                     initial={{ opacity: 0, y: 5 }}
-                     animate={{ opacity: 1, y: 0 }}
-                     exit={{ opacity: 0, y: -5 }}
-                     transition={{ duration: 0.4 }}
-                     className="max-w-7xl mx-auto w-full min-h-full"
+                     initial={{ opacity: 0, x: 50 }}
+                     animate={{ opacity: 1, x: 0 }}
+                     exit={{ opacity: 0, x: -50 }}
+                     transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                     className="max-w-[1200px] mx-auto pb-20"
                   >
                      {activeTab === 'summary' && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
@@ -579,10 +596,19 @@ const ProjectDetailsModal: React.FC<Props> = ({
                               <div className="p-12 bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-[48px] space-y-8 backdrop-blur-xl">
                                  <div className="flex items-center justify-between">
                                     <h4 className="text-[10px] font-medium text-[var(--text-secondary)] uppercase tracking-[0.4em]">Análisis de Inteligencia</h4>
-                                    <ArrowUpRight size={16} className="text-rc-teal opacity-30" />
+                                    <button 
+                                      onClick={handleAiSuggestion}
+                                      disabled={isTyping}
+                                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-[8px] font-bold uppercase tracking-widest transition-all ${
+                                        isTyping ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' : 'bg-[var(--text-primary)]\/5 border-white/10 text-white hover:border-rc-teal/50 hover:text-rc-teal shadow-[0_0_15px_rgba(255,255,255,0.05)]'
+                                      }`}
+                                    >
+                                      <Wand2 size={12} className={isTyping ? 'animate-pulse' : ''} />
+                                      {isTyping ? 'Generando...' : 'Sugerencia por IA'}
+                                    </button>
                                  </div>
-                                 <p className="text-lg text-[var(--text-secondary)] leading-relaxed font-light italic">
-                                    "La arquitectura proyectada muestra una maduración tecnológica superior. Se recomienda la integración de capas predictivas y optimización de flujos omnicanal para el próximo ciclo."
+                                 <p className="text-lg text-[var(--text-secondary)] leading-relaxed font-light italic min-h-[80px]">
+                                    "{aiText}"<span className={isTyping ? 'animate-pulse text-rc-teal' : 'hidden'}>|</span>
                                  </p>
                               </div>
                            </div>

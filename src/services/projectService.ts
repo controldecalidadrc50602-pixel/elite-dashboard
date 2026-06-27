@@ -11,7 +11,38 @@ import {
 import { Project } from '../types/project';
 
 const PROJECTS_COLLECTION = 'projects';
+const PORTALS_COLLECTION = 'portals';
 
+export const generateSlug = (name: string): string => {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+};
+
+// Extrae SOLO los datos permitidos para la Capa de Exhibición
+const extractShowcaseData = (project: Project) => {
+  return {
+    id: project.id,
+    client: project.client,
+    logoUrl: project.logoUrl || null,
+    startDate: project.startDate,
+    services: project.services?.map(s => ({
+      id: s.id,
+      name: s.name,
+      score: s.score,
+      type: s.type || null
+    })) || [],
+    evaluations: project.evaluations || [],
+    healthFlag: project.healthFlag,
+    opsPulse: project.opsPulse || null,
+    quarterlyAssessment: project.quarterlyAssessment || null,
+    slug: project.slug || generateSlug(project.client),
+    brandColor: project.brandColor || '#3b82f6', // Tailwind blue-500 default
+  };
+};
 // Injecta campos de auditoría automáticamente
 const injectAuditFields = (project: Project): Project => {
   const user = auth.currentUser;
@@ -67,9 +98,18 @@ export const projectService = {
       const batch = writeBatch(db);
       
       for (const project of projects) {
+        if (!project.slug) {
+          project.slug = generateSlug(project.client);
+        }
         const docRef = doc(db, PROJECTS_COLLECTION, project.id);
         const sanitizedProject = sanitizeForFirestore(project);
         batch.set(docRef, sanitizedProject, { merge: true });
+
+        // Save to portals
+        if (project.slug) {
+          const portalRef = doc(db, PORTALS_COLLECTION, project.slug);
+          batch.set(portalRef, extractShowcaseData(project), { merge: true });
+        }
       }
       
       await batch.commit();
@@ -108,8 +148,18 @@ export const projectService = {
          project.history = [newHistory];
       }
 
+      if (!project.slug) {
+        project.slug = generateSlug(project.client);
+      }
+
       const sanitizedProject = sanitizeForFirestore(project);
       await setDoc(doc(db, PROJECTS_COLLECTION, project.id), sanitizedProject);
+      
+      // Save to portals
+      if (project.slug) {
+        await setDoc(doc(db, PORTALS_COLLECTION, project.slug), extractShowcaseData(project));
+      }
+      
       return [...allProjects, project];
     } catch (err) {
       console.error('Firestore add error:', err);
@@ -174,8 +224,18 @@ export const projectService = {
       
       updatedProject.history = newHistoryLogs;
 
+      if (!updatedProject.slug) {
+        updatedProject.slug = generateSlug(updatedProject.client);
+      }
+
       const sanitizedProject = sanitizeForFirestore(updatedProject);
       await setDoc(doc(db, PROJECTS_COLLECTION, updatedProject.id), sanitizedProject, { merge: true });
+      
+      // Save to portals
+      if (updatedProject.slug) {
+        await setDoc(doc(db, PORTALS_COLLECTION, updatedProject.slug), extractShowcaseData(updatedProject), { merge: true });
+      }
+      
       return allProjects.map(p => p.id === updatedProject.id ? updatedProject : p);
     } catch (err) {
       console.error('Firestore update error:', err);
@@ -185,7 +245,13 @@ export const projectService = {
 
   async deleteProject(id: string, allProjects: Project[]): Promise<Project[]> {
     try {
+      const projectToDelete = allProjects.find(p => p.id === id);
       await deleteDoc(doc(db, PROJECTS_COLLECTION, id));
+      
+      if (projectToDelete?.slug) {
+        await deleteDoc(doc(db, PORTALS_COLLECTION, projectToDelete.slug));
+      }
+      
       return allProjects.filter(p => p.id !== id);
     } catch (err) {
       console.error('Firestore delete error:', err);

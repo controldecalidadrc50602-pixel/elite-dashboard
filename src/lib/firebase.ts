@@ -7,6 +7,7 @@ import {
   persistentMultipleTabManager,
   memoryLocalCache
 } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -44,4 +45,7 @@ export const googleProvider = new GoogleAuthProvider();
 
 // Initialize Analytics safely
 export const analytics = isSupported().then(yes => yes ? getAnalytics(app) : null);
+
+// Initialize Storage
+export const storage = getStorage(app);
 

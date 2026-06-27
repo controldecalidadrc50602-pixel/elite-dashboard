@@ -4,6 +4,8 @@ import Login from './pages/Login';
 import MainLayout from './components/Layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import PortalLayout from './components/Layout/PortalLayout';
+import Portal from './pages/Portal/Portal';
 
 function App() {
   const { isAuthenticated, loading } = useAuth();
@@ -13,6 +15,11 @@ function App() {
   return (
     <ErrorBoundary>
       <Routes>
+        {/* Rutas Públicas (Capa de Exhibición) */}
+        <Route path="/portal" element={<PortalLayout />}>
+          <Route path=":clientSlug" element={<Portal />} />
+        </Route>
+
         <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" />} />
         
         <Route 

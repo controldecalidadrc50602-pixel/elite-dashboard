@@ -199,4 +199,8 @@ export interface Project {
   // Novedades CRM Fase 3
   history?: HistoryLog[];
   activityLogs?: ActivityLog[];
+  
+  // Portal Showcase
+  slug?: string;
+  brandColor?: string;
 }

@@ -31,7 +31,9 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
     addService,
     removeService,
     handleFileChange,
-    handleSubmit
+    handleSubmit,
+    isSaving,
+    logoUploading
   } = useProjectForm({ project, isOpen, onSave, onClose });
 
   const tabs = [
@@ -67,7 +69,9 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
             <div className="px-12 pt-10 pb-2 flex items-center justify-between">
               <div className="flex items-center gap-10">
                 <div className="w-16 h-16 rounded-[28px] bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 flex items-center justify-center shadow-xl">
-                  {formData.logoUrl ? (
+                  {logoUploading ? (
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-rc-teal"></div>
+                  ) : formData.logoUrl ? (
                     <img src={formData.logoUrl} alt="Logo" className="w-10 h-10 object-contain" />
                   ) : (
                     <Settings className="text-rc-teal" size={32} strokeWidth={1.5} />
@@ -84,10 +88,18 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
                         Salud General: <span className="text-rc-teal ml-2 font-bold">{averagePillars} / 5</span>
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                     <div className="flex items-center gap-2">
                        <Shield className="text-slate-700" size={14} />
                        <span className="text-[9px] font-medium text-slate-600 uppercase tracking-widest">{formData.accountManager || 'Sin Auditor'}</span>
-                    </div>
+                     </div>
+                     {project && (
+                        <div className="flex items-center gap-2 ml-4">
+                           <div className={`w-2 h-2 rounded-full ${isSaving ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400'}`} />
+                           <span className="text-[9px] font-medium text-slate-500 uppercase tracking-widest">
+                              {isSaving ? 'Sincronizando...' : 'Guardado'}
+                           </span>
+                        </div>
+                     )}
                   </div>
                 </div>
               </div>
@@ -192,12 +204,22 @@ const ProjectModal: React.FC<Props> = ({ isOpen, onClose, onSave, project }) => 
               >
                 Cerrar Panel
               </button>
-              <button 
-                type="submit"
-                className="px-10 py-4 bg-white text-black text-[12px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-slate-200 transition-all duration-500 shadow-[0_20px_40px_rgba(255,255,255,0.1)] active:scale-95"
-              >
-                {project ? 'Sincronizar Cambios' : 'Finalizar Alta'}
-              </button>
+              {!project ? (
+                <button 
+                  type="submit"
+                  className="px-10 py-4 bg-white text-black text-[12px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-slate-200 transition-all duration-500 shadow-[0_20px_40px_rgba(255,255,255,0.1)] active:scale-95"
+                >
+                  Finalizar Alta
+                </button>
+              ) : (
+                <button 
+                  type="button"
+                  onClick={onClose}
+                  className="px-10 py-4 bg-[var(--text-primary)] text-[var(--bg-secondary)] text-[11px] font-medium uppercase tracking-[0.2em] rounded-full hover:bg-slate-200 active:scale-95 transition-all shadow-2xl cursor-pointer"
+                >
+                  Cerrar Expediente
+                </button>
+              )}
             </footer>
           </form>
         </motion.div>
