@@ -39,7 +39,7 @@ const PortalTrendChart: React.FC<Props> = ({ quarterlyAssessment, brandColor = '
         style={{ background: brandColor }}
       />
       
-      <ResponsiveContainer width="100%" height="100%" minHeight={150} minWidth={100}>
+      <ResponsiveContainer width="99%" height={200}>
         <AreaChart data={data}>
           <defs>
             <linearGradient id="colorBrand" x1="0" y1="0" x2="0" y2="1">
@@ -55,10 +55,9 @@ const PortalTrendChart: React.FC<Props> = ({ quarterlyAssessment, brandColor = '
             strokeWidth={4}
             fillOpacity={1}
             fill="url(#colorBrand)"
-            animationDuration={2500} // Larga duración para un efecto fluido y elegante
             animationEasing="ease-in-out"
-            isAnimationActive={true}
-            dot={false} // Sin puntos, solo la línea continua
+            isAnimationActive={false} // Deshabilitado para evitar conflictos con React 19 y Framer Motion
+            dot={false}
             activeDot={{ r: 6, fill: brandColor, stroke: '#000', strokeWidth: 2 }}
           />
         </AreaChart>
