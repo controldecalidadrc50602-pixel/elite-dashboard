@@ -47,7 +47,11 @@ const Login = () => {
     setError(null);
     const { error: authError } = await loginWithGoogle();
     if (authError) {
-      if (authError.includes('popup-closed-by-user')) {
+      const errStr = typeof authError === 'string' 
+        ? authError 
+        : (authError as any)?.code || (authError as any)?.message || '';
+      
+      if (errStr.includes('popup-closed-by-user') || errStr.includes('auth/popup-closed-by-user')) {
         setError('El proceso de autenticación fue cancelado.');
       } else {
         setError('Error al conectar con Google. Verifique los pop-ups.');
