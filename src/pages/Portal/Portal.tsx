@@ -1,13 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
-import { portalService, PortalData } from '../../services/portalService';
+import { portalService } from '../../services/portalService';
 import PortalLoading from '../../components/Portal/PortalLoading';
-import PortalTrendChart from '../../components/Portal/PortalTrendChart';
 import PortalErrorBoundary from '../../components/Portal/PortalErrorBoundary';
 
 // ============================================================
-// CONSTANTES FUERA DEL COMPONENTE (no se recrean en cada render)
+// HELPER FUNCTIONS & CONSTANTS OUTSIDE THE COMPONENT
 // ============================================================
 
 const getContrastColor = (hexcolor: string): string => {
@@ -30,6 +29,20 @@ const safeString = (value: unknown, fallback: string = '—'): string => {
   return fallback;
 };
 
+interface CleanPortalData {
+  client: string;
+  logoUrl: string | null;
+  brandColor: string;
+  healthScore: number;
+  servicesCount: number;
+  healthFlag: string;
+  operationMode: string;
+  connectivityType: string;
+  internetSpeed: string;
+  lastEvalDate: string;
+  quarterlyAssessment: any | null;
+}
+
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
@@ -49,28 +62,77 @@ const itemVariants: Variants = {
 
 const Portal = () => {
   const { clientSlug } = useParams<{ clientSlug: string }>();
-  const [data, setData] = useState<PortalData | null>(null);
+  const [data, setData] = useState<CleanPortalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // useRef para evitar múltiples suscripciones simultáneas
-  const isSubscribed = useRef(false);
+  // useRef para rastrear la suscripción activa actual
+  const activeSubscriptionRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!clientSlug) return;
 
-    // Guard: evitar doble suscripción (StrictMode en dev, o re-renders rápidos)
-    if (isSubscribed.current) return;
-    isSubscribed.current = true;
-
+    // Evitamos suscribirnos si ya tenemos una suscripción activa para este slug
+    if (activeSubscriptionRef.current === clientSlug) {
+      return;
+    }
+    activeSubscriptionRef.current = clientSlug;
     setLoading(true);
 
     const unsubscribe = portalService.subscribeToPortal(clientSlug, (portalData) => {
       if (portalData) {
-        setData(portalData);
-        const brand = portalData.brandColor || '#ffffff';
-        document.documentElement.style.setProperty('--brand-primary', brand);
-        document.documentElement.style.setProperty('--brand-contrast', getContrastColor(brand));
+        // --- Cálculo y sanitización dentro de la suscripción (antes del setState) ---
+        const brandColor = portalData.brandColor || '#ffffff';
+        
+        let healthScore = 0;
+        try {
+          if (portalData.quarterlyAssessment && typeof portalData.quarterlyAssessment === 'object') {
+            healthScore = Object.values(portalData.quarterlyAssessment).reduce(
+              (acc: number, val: unknown) => acc + (typeof val === 'number' ? val : 0), 0
+            );
+          }
+        } catch (e) {
+          healthScore = 0;
+        }
+
+        const servicesCount = Array.isArray(portalData.services) ? portalData.services.length : 0;
+        const healthFlag = safeString(portalData.healthFlag, 'N/A');
+        const operationMode = safeString(portalData.opsPulse?.techDNA?.operationMode, 'Cloud Híbrida');
+        const connectivityType = safeString(portalData.opsPulse?.techDNA?.connectivityType, 'Fibra Óptica');
+        const internetSpeed = safeString(portalData.opsPulse?.techDNA?.internetSpeed, '1000');
+        
+        let lastEvalDate = 'Ciclo Actual';
+        try {
+          if (Array.isArray(portalData.evaluations) && portalData.evaluations.length > 0) {
+            lastEvalDate = safeString(portalData.evaluations[portalData.evaluations.length - 1]?.date, 'Ciclo Actual');
+          }
+        } catch (e) {}
+
+        const nextData: CleanPortalData = {
+          client: safeString(portalData.client, 'Portal'),
+          logoUrl: portalData.logoUrl,
+          brandColor,
+          healthScore,
+          servicesCount,
+          healthFlag,
+          operationMode,
+          connectivityType,
+          internetSpeed,
+          lastEvalDate,
+          quarterlyAssessment: portalData.quarterlyAssessment
+        };
+
+        // --- Comparación profunda (JSON.stringify) ---
+        setData((prev) => {
+          if (JSON.stringify(prev) !== JSON.stringify(nextData)) {
+            // Aplicar variables CSS dinámicas de branding
+            document.documentElement.style.setProperty('--brand-primary', brandColor);
+            document.documentElement.style.setProperty('--brand-contrast', getContrastColor(brandColor));
+            return nextData;
+          }
+          return prev;
+        });
+
         setError(null);
       } else {
         setError('Cliente no encontrado');
@@ -79,16 +141,12 @@ const Portal = () => {
     });
 
     return () => {
-      isSubscribed.current = false;
+      activeSubscriptionRef.current = null;
       unsubscribe();
       document.documentElement.style.removeProperty('--brand-primary');
       document.documentElement.style.removeProperty('--brand-contrast');
     };
   }, [clientSlug]);
-
-  // ============================================================
-  // ESTRATEGIA "DATA-FIRST": No renderizar NADA hasta tener datos
-  // ============================================================
 
   if (loading) {
     return <PortalLoading clientName={clientSlug} logoUrl={null} />;
@@ -104,39 +162,6 @@ const Portal = () => {
       </div>
     );
   }
-
-  // ============================================================
-  // EXTRACCIÓN SEGURA DE DATOS (todo primitivo, nunca objetos crudos)
-  // ============================================================
-
-  const healthScore = (() => {
-    try {
-      if (!data.quarterlyAssessment || typeof data.quarterlyAssessment !== 'object') return 0;
-      return Object.values(data.quarterlyAssessment).reduce(
-        (acc: number, val: unknown) => acc + (typeof val === 'number' ? val : 0), 0
-      );
-    } catch {
-      return 0;
-    }
-  })();
-
-  const servicesCount = Array.isArray(data.services) ? data.services.length : 0;
-  const healthFlag = safeString(data.healthFlag, 'N/A');
-  const operationMode = safeString(data.opsPulse?.techDNA?.operationMode, 'Cloud Híbrida');
-  const connectivityType = safeString(data.opsPulse?.techDNA?.connectivityType, 'Fibra Óptica');
-  const internetSpeed = safeString(data.opsPulse?.techDNA?.internetSpeed, '1000');
-  const lastEvalDate = (() => {
-    try {
-      if (Array.isArray(data.evaluations) && data.evaluations.length > 0) {
-        return safeString(data.evaluations[data.evaluations.length - 1]?.date, 'Ciclo Actual');
-      }
-    } catch { /* silenciar */ }
-    return 'Ciclo Actual';
-  })();
-
-  // ============================================================
-  // RENDER: Solo se ejecuta cuando data !== null (Data-First)
-  // ============================================================
 
   return (
     <div className="min-h-screen p-8 md:p-12 lg:p-20 max-w-[1600px] mx-auto text-white overflow-x-hidden">
@@ -164,7 +189,7 @@ const Portal = () => {
           <img src={data.logoUrl} alt="Logo" className="h-24 object-contain drop-shadow-2xl" />
         )}
         {!data.logoUrl && (
-           <h1 className="text-5xl md:text-6xl font-thin tracking-tight">{safeString(data.client, 'Portal')}</h1>
+           <h1 className="text-5xl md:text-6xl font-thin tracking-tight">{data.client}</h1>
         )}
       </motion.header>
 
@@ -185,19 +210,21 @@ const Portal = () => {
           <h3 className="text-white/40 uppercase tracking-[0.4em] text-xs font-bold z-10">Health Score Global</h3>
           <div className="z-10 flex flex-col justify-end h-full mt-10">
              <div className="text-9xl md:text-[12rem] font-thin text-[var(--brand-primary)] leading-none tracking-tighter drop-shadow-2xl">
-               {healthScore}<span className="text-6xl opacity-30">%</span>
+               {data.healthScore}<span className="text-6xl opacity-30">%</span>
              </div>
           </div>
         </motion.div>
 
-        {/* Item 2: Trend Chart — 2x1 (altura fija) */}
+        {/* Item 2: Trend Chart — 2x1 (MODO EMERGENCIA: Desactivado temporalmente) */}
         <motion.div 
            variants={itemVariants} 
-           className="md:col-span-2 md:row-span-1 relative rounded-[40px] bg-white/[0.02] border border-white/5 backdrop-blur-3xl p-8 group hover:border-[var(--brand-primary)]/40 transition-colors duration-700 flex flex-col"
+           className="md:col-span-2 md:row-span-1 relative rounded-[40px] bg-white/[0.02] border border-white/5 backdrop-blur-3xl p-8 group hover:border-[var(--brand-primary)]/40 transition-colors duration-700 flex flex-col justify-between"
         >
-          <h3 className="text-white/40 uppercase tracking-[0.4em] text-xs font-bold mb-4">Tendencia Operativa</h3>
-          <div style={{ width: '100%', height: '200px' }}>
-            <PortalTrendChart quarterlyAssessment={data.quarterlyAssessment} brandColor={data.brandColor} />
+          <h3 className="text-white/40 uppercase tracking-[0.4em] text-xs font-bold">Tendencia Operativa</h3>
+          <div className="flex-1 w-full flex items-center justify-center border border-white/5 rounded-3xl bg-black/10 mt-2">
+            <span className="text-white/30 text-xs uppercase tracking-widest">
+              Visualización en calibración
+            </span>
           </div>
         </motion.div>
 
@@ -208,7 +235,7 @@ const Portal = () => {
         >
           <h3 className="text-white/40 uppercase tracking-[0.4em] text-xs font-bold">Servicios</h3>
           <div className="text-8xl font-thin text-white drop-shadow-lg tracking-tighter">
-            {servicesCount}
+            {data.servicesCount}
           </div>
         </motion.div>
 
@@ -219,7 +246,7 @@ const Portal = () => {
         >
           <h3 className="text-white/40 uppercase tracking-[0.4em] text-xs font-bold">Health Flag</h3>
           <div className="text-4xl font-light text-white uppercase tracking-widest" style={{ color: data.brandColor }}>
-            {healthFlag}
+            {data.healthFlag}
           </div>
         </motion.div>
 
@@ -231,10 +258,10 @@ const Portal = () => {
           <h3 className="text-white/40 uppercase tracking-[0.4em] text-xs font-bold">Infraestructura Core</h3>
           <div className="flex flex-col gap-2 mt-4">
             <div className="text-2xl font-light text-white uppercase tracking-widest border-l-4 pl-4" style={{ borderColor: 'var(--brand-primary)' }}>
-               {operationMode}
+               {data.operationMode}
             </div>
             <div className="text-sm font-light text-white/50 tracking-widest ml-5">
-               {connectivityType} | {internetSpeed} Mbps
+               {data.connectivityType} | {data.internetSpeed} Mbps
             </div>
           </div>
         </motion.div>
@@ -247,7 +274,7 @@ const Portal = () => {
           <h3 className="text-white/40 uppercase tracking-[0.4em] text-xs font-bold">Última Revisión</h3>
           <div className="flex flex-col gap-2 mt-4">
             <div className="text-4xl font-light text-white uppercase tracking-tight">
-               {lastEvalDate}
+               {data.lastEvalDate}
             </div>
             <div className="text-sm font-light text-white/50 tracking-widest">
                Sincronización Inteligente Activa
