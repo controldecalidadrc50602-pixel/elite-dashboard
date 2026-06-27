@@ -4,6 +4,7 @@ import { motion, Variants } from 'framer-motion';
 import { portalService, PortalData } from '../../services/portalService';
 import PortalLoading from '../../components/Portal/PortalLoading';
 import PortalTrendChart from '../../components/Portal/PortalTrendChart';
+import PortalErrorBoundary from '../../components/Portal/PortalErrorBoundary';
 
 // Helper function to calculate luminance and set a contrast color
 const getContrastColor = (hexcolor: string) => {
@@ -202,4 +203,10 @@ const Portal = () => {
   );
 };
 
-export default Portal;
+export default function PortalWithErrorBoundary() {
+  return (
+    <PortalErrorBoundary>
+      <Portal />
+    </PortalErrorBoundary>
+  );
+}

@@ -24,11 +24,13 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>
 );
 
-// Service Worker Registration for PWA Support
+// Service Worker Unregistration to clear aggressive caching
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('SW Registered:', reg.scope))
-      .catch(err => console.log('SW Registration Failed:', err));
+  navigator.serviceWorker.ready.then(registration => {
+    registration.unregister().then(boolean => {
+      if (boolean) {
+        console.log('SW Unregistered successfully.');
+      }
+    });
   });
 }
