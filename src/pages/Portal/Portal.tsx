@@ -69,6 +69,7 @@ const Portal = () => {
   // useRef para rastrear la suscripción activa actual
   const activeSubscriptionRef = useRef<string | null>(null);
 
+  // 1. Efecto para manejar la suscripción de Firebase
   useEffect(() => {
     if (!clientSlug) return;
 
@@ -81,7 +82,7 @@ const Portal = () => {
 
     const unsubscribe = portalService.subscribeToPortal(clientSlug, (portalData) => {
       if (portalData) {
-        // --- Cálculo y sanitización dentro de la suscripción (antes del setState) ---
+        // --- Cálculo y sanitización dentro de la suscripción ---
         const brandColor = portalData.brandColor || '#ffffff';
         
         let healthScore = 0;
@@ -122,12 +123,9 @@ const Portal = () => {
           quarterlyAssessment: portalData.quarterlyAssessment
         };
 
-        // --- Comparación profunda (JSON.stringify) ---
+        // --- Comparación profunda limpia y pura ---
         setData((prev) => {
           if (JSON.stringify(prev) !== JSON.stringify(nextData)) {
-            // Aplicar variables CSS dinámicas de branding
-            document.documentElement.style.setProperty('--brand-primary', brandColor);
-            document.documentElement.style.setProperty('--brand-contrast', getContrastColor(brandColor));
             return nextData;
           }
           return prev;
@@ -143,10 +141,22 @@ const Portal = () => {
     return () => {
       activeSubscriptionRef.current = null;
       unsubscribe();
+    };
+  }, [clientSlug]);
+
+  // 2. Efecto para aplicar de forma segura las variables CSS de Branding en el DOM
+  useEffect(() => {
+    if (!data?.brandColor) return;
+    
+    const brand = data.brandColor;
+    document.documentElement.style.setProperty('--brand-primary', brand);
+    document.documentElement.style.setProperty('--brand-contrast', getContrastColor(brand));
+
+    return () => {
       document.documentElement.style.removeProperty('--brand-primary');
       document.documentElement.style.removeProperty('--brand-contrast');
     };
-  }, [clientSlug]);
+  }, [data?.brandColor]);
 
   if (loading) {
     return <PortalLoading clientName={clientSlug} logoUrl={null} />;
