@@ -1,28 +1,14 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
 import { useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import MainLayout from './components/Layout/MainLayout';
 import Dashboard from './pages/Dashboard';
 import ErrorBoundary from './components/common/ErrorBoundary';
-
-// ============================================================
-// LAZY LOADING: Portal se carga en un chunk completamente separado.
-// Esto aísla Recharts del Dashboard y evita que ResponsiveContainer
-// se evalúe cuando el usuario está en /portal/:slug.
-// ============================================================
-const PortalLayout = lazy(() => import('./components/Layout/PortalLayout'));
-const Portal = lazy(() => import('./pages/Portal/Portal'));
-
-// Fallback minimalista mientras carga el chunk
-const ChunkLoading = () => (
-  <div className="min-h-screen flex items-center justify-center bg-black">
-    <div className="w-8 h-8 border-2 border-white/20 border-t-white/80 rounded-full animate-spin" />
-  </div>
-);
+import PortalLayout from './components/Layout/PortalLayout';
+import Portal from './pages/Portal/Portal';
 
 function App() {
-  console.log('BUILD_VERSION_4.0_CODESPLIT — ' + new Date().toISOString());
+  console.log('BUILD_VERSION_5.0_STABLE — ' + new Date().toISOString());
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) return null;
@@ -30,17 +16,9 @@ function App() {
   return (
     <ErrorBoundary>
       <Routes>
-        {/* Rutas Públicas (Capa de Exhibición) — Chunk separado */}
-        <Route path="/portal" element={
-          <Suspense fallback={<ChunkLoading />}>
-            <PortalLayout />
-          </Suspense>
-        }>
-          <Route path=":clientSlug" element={
-            <Suspense fallback={<ChunkLoading />}>
-              <Portal />
-            </Suspense>
-          } />
+        {/* Rutas Públicas (Capa de Exhibición) - Importados Síncronamente para Evitar Error 310 */}
+        <Route path="/portal" element={<PortalLayout />}>
+          <Route path=":clientSlug" element={<Portal />} />
         </Route>
 
         <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" />} />
