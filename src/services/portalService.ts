@@ -22,10 +22,23 @@ export interface PortalData {
   brandColor: string;
 }
 
+/**
+ * Sanitiza datos de Firestore eliminando referencias internas,
+ * clases de Firebase, y propiedades no serializables.
+ * Esto previene que React 19 detecte cambios fantasma en el estado.
+ */
+function sanitizeFirebaseData(raw: any): PortalData | null {
+  try {
+    return JSON.parse(JSON.stringify(raw)) as PortalData;
+  } catch {
+    console.error('[portalService] Failed to sanitize Firebase data');
+    return null;
+  }
+}
+
 export const portalService = {
   /**
-   * Obtiene los datos públicos de un cliente por su slug.
-   * Almacenados en la colección "portals" accesible sin autenticación.
+   * Lectura única (one-shot) de los datos del portal.
    */
   async getPortalBySlug(slug: string): Promise<PortalData | null> {
     try {
@@ -33,7 +46,7 @@ export const portalService = {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        return docSnap.data() as PortalData;
+        return sanitizeFirebaseData(docSnap.data());
       } else {
         return null;
       }
@@ -44,14 +57,17 @@ export const portalService = {
   },
 
   /**
-   * Suscripción en tiempo real a los datos del portal.
-   * Utilizado para el efecto "Live Showcase".
+   * Suscripción real-time con sanitización de datos.
+   * Los datos pasan por JSON.parse(JSON.stringify()) para eliminar
+   * cualquier referencia interna de Firebase que React 19 interprete
+   * como un cambio de estado (causando re-renders infinitos).
    */
   subscribeToPortal(slug: string, callback: (data: PortalData | null) => void): () => void {
     const docRef = doc(db, PORTALS_COLLECTION, slug);
     return onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
-        callback(docSnap.data() as PortalData);
+        const clean = sanitizeFirebaseData(docSnap.data());
+        callback(clean);
       } else {
         callback(null);
       }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
 import { portalService, PortalData } from '../../services/portalService';
@@ -6,7 +6,10 @@ import PortalLoading from '../../components/Portal/PortalLoading';
 import PortalTrendChart from '../../components/Portal/PortalTrendChart';
 import PortalErrorBoundary from '../../components/Portal/PortalErrorBoundary';
 
-// Helper: calcula luminancia para auto-contraste
+// ============================================================
+// CONSTANTES FUERA DEL COMPONENTE (no se recrean en cada render)
+// ============================================================
+
 const getContrastColor = (hexcolor: string): string => {
   try {
     const hex = hexcolor.replace('#', '');
@@ -20,7 +23,6 @@ const getContrastColor = (hexcolor: string): string => {
   }
 };
 
-// Helper: extrae un valor seguro (string o number) de datos Firebase
 const safeString = (value: unknown, fallback: string = '—'): string => {
   if (value === null || value === undefined) return fallback;
   if (typeof value === 'string') return value;
@@ -28,7 +30,6 @@ const safeString = (value: unknown, fallback: string = '—'): string => {
   return fallback;
 };
 
-// Variants de animación definidos FUERA del componente (nunca cambian)
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
@@ -42,15 +43,26 @@ const itemVariants: Variants = {
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 20 } }
 };
 
+// ============================================================
+// COMPONENTE PORTAL
+// ============================================================
+
 const Portal = () => {
   const { clientSlug } = useParams<{ clientSlug: string }>();
   const [data, setData] = useState<PortalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // useRef para evitar múltiples suscripciones simultáneas
+  const isSubscribed = useRef(false);
+
   useEffect(() => {
     if (!clientSlug) return;
-    
+
+    // Guard: evitar doble suscripción (StrictMode en dev, o re-renders rápidos)
+    if (isSubscribed.current) return;
+    isSubscribed.current = true;
+
     setLoading(true);
 
     const unsubscribe = portalService.subscribeToPortal(clientSlug, (portalData) => {
@@ -67,11 +79,16 @@ const Portal = () => {
     });
 
     return () => {
+      isSubscribed.current = false;
       unsubscribe();
       document.documentElement.style.removeProperty('--brand-primary');
       document.documentElement.style.removeProperty('--brand-contrast');
     };
   }, [clientSlug]);
+
+  // ============================================================
+  // ESTRATEGIA "DATA-FIRST": No renderizar NADA hasta tener datos
+  // ============================================================
 
   if (loading) {
     return <PortalLoading clientName={clientSlug} logoUrl={null} />;
@@ -88,7 +105,10 @@ const Portal = () => {
     );
   }
 
-  // Cálculo seguro del Health Score
+  // ============================================================
+  // EXTRACCIÓN SEGURA DE DATOS (todo primitivo, nunca objetos crudos)
+  // ============================================================
+
   const healthScore = (() => {
     try {
       if (!data.quarterlyAssessment || typeof data.quarterlyAssessment !== 'object') return 0;
@@ -100,7 +120,6 @@ const Portal = () => {
     }
   })();
 
-  // Extraemos datos seguros (nunca renderizamos objetos Firebase crudos)
   const servicesCount = Array.isArray(data.services) ? data.services.length : 0;
   const healthFlag = safeString(data.healthFlag, 'N/A');
   const operationMode = safeString(data.opsPulse?.techDNA?.operationMode, 'Cloud Híbrida');
@@ -114,6 +133,10 @@ const Portal = () => {
     } catch { /* silenciar */ }
     return 'Ciclo Actual';
   })();
+
+  // ============================================================
+  // RENDER: Solo se ejecuta cuando data !== null (Data-First)
+  // ============================================================
 
   return (
     <div className="min-h-screen p-8 md:p-12 lg:p-20 max-w-[1600px] mx-auto text-white overflow-x-hidden">
@@ -167,13 +190,13 @@ const Portal = () => {
           </div>
         </motion.div>
 
-        {/* Item 2: Trend Chart — 2x1 */}
+        {/* Item 2: Trend Chart — 2x1 (altura fija) */}
         <motion.div 
            variants={itemVariants} 
            className="md:col-span-2 md:row-span-1 relative rounded-[40px] bg-white/[0.02] border border-white/5 backdrop-blur-3xl p-8 group hover:border-[var(--brand-primary)]/40 transition-colors duration-700 flex flex-col"
         >
           <h3 className="text-white/40 uppercase tracking-[0.4em] text-xs font-bold mb-4">Tendencia Operativa</h3>
-          <div className="flex-1 w-full" style={{ minHeight: '200px' }}>
+          <div style={{ width: '100%', height: '200px' }}>
             <PortalTrendChart quarterlyAssessment={data.quarterlyAssessment} brandColor={data.brandColor} />
           </div>
         </motion.div>

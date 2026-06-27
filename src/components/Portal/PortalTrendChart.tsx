@@ -1,5 +1,15 @@
-import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
-import { AreaChart, Area } from 'recharts';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
+
+/**
+ * PortalTrendChart — "Data Art" minimalista.
+ * 
+ * DECISIÓN DE INGENIERÍA: Se eliminó Recharts completamente como prueba de fuerza bruta.
+ * Se usa un SVG puro con path calculado a mano.
+ * Esto elimina de raíz el bug de ResponsiveContainer + React 19 + Framer Motion.
+ * 
+ * Si este componente funciona sin errores en producción, se puede reintroducir
+ * Recharts con dimensiones fijas más adelante.
+ */
 
 interface Props {
   quarterlyAssessment: any | null;
@@ -7,95 +17,97 @@ interface Props {
 }
 
 const PortalTrendChart: React.FC<Props> = ({ quarterlyAssessment, brandColor = '#ffffff' }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
-  const [chartWidth, setChartWidth] = useState(300);
+  const gradientId = useRef(`grad-${Math.random().toString(36).slice(2, 9)}`);
 
-  // Fase 1: Esperamos a que el componente esté montado en el DOM
-  useEffect(() => {
-    // Delay para asegurar que Framer Motion terminó la animación de entrada
-    const timer = setTimeout(() => {
-      setMounted(true);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Fase 2: Solo medimos cuando ya está montado
-  useEffect(() => {
-    if (!mounted || !containerRef.current) return;
-
-    const measure = () => {
-      if (containerRef.current) {
-        const w = containerRef.current.offsetWidth;
-        if (w > 0) setChartWidth(w);
+  // Extraemos los valores numéricos de forma segura
+  const values = useMemo(() => {
+    if (!quarterlyAssessment || typeof quarterlyAssessment !== 'object') return [];
+    
+    try {
+      const nums = Object.values(quarterlyAssessment)
+        .filter((v): v is number => typeof v === 'number' && v > 0);
+      
+      // Si hay muy pocos puntos, generamos una rampa suave para el efecto estético
+      if (nums.length < 3) {
+        const base = nums.length > 0 ? nums[0] : 80;
+        return [base * 0.6, base * 0.75, base * 0.85, ...nums, (nums[nums.length - 1] || base) * 1.02];
       }
-    };
-
-    measure();
-
-    const observer = new ResizeObserver(() => measure());
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, [mounted]);
-
-  // Procesamos los datos para Recharts
-  const data = useMemo(() => {
-    if (!quarterlyAssessment) return [];
-    
-    const values = Object.entries(quarterlyAssessment)
-      .map(([key, value]) => ({
-        name: key,
-        value: typeof value === 'number' ? value : 0,
-      }))
-      .filter(item => item.value > 0);
-    
-    if (values.length < 3) {
-       const baseVal = values.length > 0 ? values[0].value : 80;
-       return [
-         { name: 'Start', value: baseVal * 0.8 },
-         { name: 'Mid', value: baseVal * 0.9 },
-         ...values
-       ];
+      return nums;
+    } catch {
+      return [];
     }
-    return values;
   }, [quarterlyAssessment]);
 
-  // Usamos un gradientId único por instancia para evitar colisiones de SVG
-  const gradientId = useRef(`brandGrad-${Math.random().toString(36).slice(2, 9)}`);
+  if (values.length === 0) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <p className="text-white/20 text-xs uppercase tracking-widest">Sin datos de tendencia</p>
+      </div>
+    );
+  }
+
+  // Calculamos el path SVG manualmente (curva suave tipo monotone)
+  const width = 400;
+  const height = 180;
+  const padding = 10;
+  const maxVal = Math.max(...values);
+  const minVal = Math.min(...values);
+  const range = maxVal - minVal || 1;
+
+  const points = values.map((v, i) => ({
+    x: padding + (i / (values.length - 1)) * (width - padding * 2),
+    y: padding + (1 - (v - minVal) / range) * (height - padding * 2)
+  }));
+
+  // Construimos un path con curvas Bezier suaves
+  let pathD = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 1; i < points.length; i++) {
+    const prev = points[i - 1];
+    const curr = points[i];
+    const cpx = (prev.x + curr.x) / 2;
+    pathD += ` C ${cpx} ${prev.y}, ${cpx} ${curr.y}, ${curr.x} ${curr.y}`;
+  }
+
+  // Path para el área (fill) — cierra por abajo
+  const areaD = pathD + ` L ${points[points.length - 1].x} ${height} L ${points[0].x} ${height} Z`;
 
   return (
-    <div 
-      ref={containerRef} 
-      className="w-full relative overflow-hidden group rounded-3xl"
-      style={{ height: '200px' }}
-    >
+    <div className="w-full relative overflow-hidden group rounded-3xl" style={{ height: '200px' }}>
       {/* Glow sutil */}
       <div 
         className="absolute inset-0 opacity-10 blur-3xl transition-opacity duration-1000 group-hover:opacity-30"
         style={{ background: brandColor }}
       />
       
-      {mounted && chartWidth > 0 && data.length > 0 && (
-        <AreaChart width={chartWidth} height={200} data={data}>
-          <defs>
-            <linearGradient id={gradientId.current} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={brandColor} stopOpacity={0.6} />
-              <stop offset="100%" stopColor={brandColor} stopOpacity={0.0} />
-            </linearGradient>
-          </defs>
-          
-          <Area
-            type="monotone"
-            dataKey="value"
-            stroke={brandColor}
-            strokeWidth={4}
-            fillOpacity={1}
-            fill={`url(#${gradientId.current})`}
-            isAnimationActive={false}
-            dot={false}
-          />
-        </AreaChart>
-      )}
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="none"
+        className="w-full h-full relative z-10"
+        style={{ display: 'block' }}
+      >
+        <defs>
+          <linearGradient id={gradientId.current} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={brandColor} stopOpacity={0.5} />
+            <stop offset="100%" stopColor={brandColor} stopOpacity={0.0} />
+          </linearGradient>
+        </defs>
+
+        {/* Área con gradiente */}
+        <path
+          d={areaD}
+          fill={`url(#${gradientId.current})`}
+        />
+
+        {/* Línea principal */}
+        <path
+          d={pathD}
+          fill="none"
+          stroke={brandColor}
+          strokeWidth={3}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </div>
   );
 };

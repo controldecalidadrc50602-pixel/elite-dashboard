@@ -8,6 +8,7 @@ import PortalLayout from './components/Layout/PortalLayout';
 import Portal from './pages/Portal/Portal';
 
 function App() {
+  console.log('BUILD_VERSION_3.0_STABLE — ' + new Date().toISOString());
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) return null;
