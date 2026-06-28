@@ -57,10 +57,10 @@ const itemVariants: Variants = {
 };
 
 // ============================================================
-// COMPONENTE PORTAL
+// COMPONENTE CONTENIDO DEL PORTAL (PortalContent)
 // ============================================================
 
-const Portal = () => {
+const PortalContent = () => {
   const { clientSlug } = useParams<{ clientSlug: string }>();
   const [data, setData] = useState<CleanPortalData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -300,7 +300,7 @@ const Portal = () => {
 export default function PortalWithErrorBoundary() {
   return (
     <PortalErrorBoundary>
-      <Portal />
+      <PortalContent />
     </PortalErrorBoundary>
   );
 }
