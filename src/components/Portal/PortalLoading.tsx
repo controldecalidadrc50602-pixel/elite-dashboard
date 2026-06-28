@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion';
-
 interface PortalLoadingProps {
   clientName?: string;
   logoUrl?: string | null;
@@ -8,25 +6,9 @@ interface PortalLoadingProps {
 const PortalLoading = ({ clientName, logoUrl }: PortalLoadingProps) => {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-black z-50">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative flex flex-col items-center justify-center"
-      >
-        {/* Pulsing glow effect */}
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute w-40 h-40 bg-brand-primary/20 rounded-full blur-3xl"
-        />
+      <div className="relative flex flex-col items-center justify-center">
+        {/* Pulsing glow effect using native CSS pulse */}
+        <div className="absolute w-40 h-40 bg-brand-primary/20 rounded-full blur-3xl animate-pulse" />
         
         {logoUrl ? (
           <img 
@@ -41,16 +23,11 @@ const PortalLoading = ({ clientName, logoUrl }: PortalLoadingProps) => {
             </span>
           </div>
         )}
-      </motion.div>
+      </div>
       
-      <motion.p
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.8 }}
-        className="mt-8 text-white/40 font-light tracking-[0.2em] text-sm uppercase"
-      >
+      <p className="mt-8 text-white/40 font-light tracking-[0.2em] text-sm uppercase animate-pulse">
         Estableciendo conexión
-      </motion.p>
+      </p>
     </div>
   );
 };
